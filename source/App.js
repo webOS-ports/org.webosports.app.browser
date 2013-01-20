@@ -33,8 +33,11 @@ enyo.kind({
 	components: [
 		{kind: "Signals", onUrlChange: "handleUrlChange"},
 		{name: "AddressBarAnimator", kind: "Animator", value: 1, onStep: "animatorStep"},
-		{fit: true,
+		{name: "AppContent",
+		kind: "enyo.Control",
+		fit: true,
 		ondragstart: "dragStarted",
+		style: "position: relative;",
 		components:[
 			{name: "AddressBar",
 			kind: "AddressBar",
@@ -43,7 +46,7 @@ enyo.kind({
 			onAddressChanged: "openAddress"},
 			{name: "WebView",
 			kind: "WebView",
-			style: "min-width: 100%; min-height: 100%;",
+			style: "width: 100%; height: 100%;",
 			onLoadStarted: "loadStarted",
 			onLoadProgress: "loadProgress",
 			onLoadStopped: "loadStopped",
@@ -55,7 +58,7 @@ enyo.kind({
 			max: 100,
 			value: 0,
 			style: "right: 8px; bottom: 8px; z-index: 10;",
-			content: "R",
+			content: "",
 			ontap: "progressOrbTapped",
 			loading: false}
 		]},

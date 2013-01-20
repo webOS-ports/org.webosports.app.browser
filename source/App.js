@@ -32,18 +32,14 @@ enyo.kind({
 	layoutKind: "FittableRowsLayout",
 	components: [
 		{kind: "Signals", onUrlChange: "handleUrlChange"},
-		{name: "AddressBarAnimator", kind: "Animator", value: 1, onStep: "animatorStep"},
+		{name: "AddressBarAnimator", kind: "Animator", value: 1, onStep: "animatorStepBar"},
+		{name: "ScrimAnimator", kind: "Animator", startValue: 1, endValue: 0, value: 1, onStep: "animatorStepScrim"},
 		{name: "AppContent",
 		kind: "enyo.Control",
 		fit: true,
 		ondragstart: "dragStarted",
 		style: "position: relative;",
 		components:[
-			{name: "AddressBar",
-			kind: "AddressBar",
-			classes: "onyx-toolbar",
-			style: "height: 32px; left: 10px; right: 10px; top: 10px; z-index: 10; border-radius: 32px;",
-			onAddressChanged: "openAddress"},
 			{name: "WebView",
 			kind: "WebView",
 			style: "width: 100%; height: 100%;",
@@ -52,12 +48,19 @@ enyo.kind({
 			onLoadStopped: "loadStopped",
 			onLoadComplete: "loadComplete",
 			onError: "loadError"},
+			{name: "Scrim",
+			classes: "home-scrim"},
+			{name: "AddressBar",
+			kind: "AddressBar",
+			classes: "onyx-toolbar",
+			style: "height: 32px; left: 10px; right: 10px; top: 10px; border-radius: 32px;",
+			onAddressChanged: "openAddress"},
 			{name: "ProgressOrb",
 			kind: "ProgressOrb",
 			min: 0,
 			max: 100,
 			value: 0,
-			style: "right: 8px; bottom: 8px; z-index: 10;",
+			style: "right: 8px; bottom: 8px;",
 			content: "",
 			ontap: "progressOrbTapped",
 			loading: false}
@@ -65,8 +68,15 @@ enyo.kind({
 		{kind: "CoreNavi", fingerTracking: true}
 	],
 	//Handlers
-	animatorStep: function(inSender) {
+	rendered: function() {
+		this.inherited(arguments);
+		this.$.AddressBar.hasNode().focus();
+	},
+	animatorStepBar: function(inSender) {
 		this.$.AddressBar.applyStyle("top", -64 + (74 * inSender.value) + "px");
+	},
+	animatorStepScrim: function(inSender) {
+		enyo.Arranger.opacifyControl(this.$.Scrim, inSender.value);
 	},
 	loadStarted: function(inSender, inEvent) {
 		this.$.ProgressOrb.loading = true;
@@ -93,6 +103,9 @@ enyo.kind({
 	openAddress: function(inSender, inEvent) {
 		this.$.WebView.setUrl(inEvent.value);
 		this.hideAddressBar();
+		if(this.$.ScrimAnimator.value == 1) {
+			this.$.ScrimAnimator.play();
+		}
 	},
 	debugLogUrl: function(inSender, inEvent) {
 		enyo.log(this.$.WebView.getUrl());

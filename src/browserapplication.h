@@ -20,6 +20,7 @@
 #define TELEPHONYAPPLICATION_H_
 
 #include <QApplication>
+#include <QGLWidget>
 #include <QDeclarativeView>
 
 class BrowserApplication : public QApplication
@@ -30,6 +31,7 @@ public:
 	~BrowserApplication();
 
 private:
+	QGLWidget *_widget;
 	QDeclarativeView *_view;
 };
 

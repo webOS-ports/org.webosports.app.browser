@@ -23,8 +23,9 @@ BrowserApplication::BrowserApplication(int &argc, char **argv)
 {
 	setApplicationName("org.webosports.app.browser");
 
-	_view = new QDeclarativeView();
-	_view->show();
+	_widget = new QGLWidget();
+	_view = new QDeclarativeView(_widget);
+	_widget->show();
 }
 
 BrowserApplication::~BrowserApplication()

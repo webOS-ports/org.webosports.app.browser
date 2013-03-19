@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = org.webosports.app.browser
 CONFIG += qt warn_on link_pkgconfig
-QT += core gui declarative network
+QT += core gui declarative network opengl
 
 PKGCONFIG = glib-2.0 gthread-2.0
 

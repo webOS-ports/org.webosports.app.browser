@@ -21,5 +21,4 @@ set(APPLICATION_DATA
     appinfo.json)
 
 install (FILES ${APPLICATION_DATA} DESTINATION ${WEBOS_INSTALL_WEBOS_APPLICATIONSDIR}/org.webosports.app.browser)
-
-webos_build_program()
+install(TARGETS universe-browser DESTINATION ${WEBOS_INSTALL_WEBOS_APPLICATIONSDIR}/org.webosports.app.browser)

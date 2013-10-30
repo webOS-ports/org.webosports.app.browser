@@ -5,7 +5,7 @@
 	"vendor": "WebOS Ports",
 	"vendor_url": "https://github.com/webOS-ports/org.webosports.app.browser",
 	"type": "qt",
-	"main": "/usr/bin/universe-browser",
+	"main": "universe-browser",
 	"icon": "icon.png",
 	"splashicon": "icon-256x256.png",
 	"uiRevision": "2",

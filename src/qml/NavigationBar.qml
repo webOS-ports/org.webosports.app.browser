@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import LunaNext.Common 0.1
 
 Rectangle {
     id: navigationBar
@@ -7,26 +8,17 @@ Rectangle {
     property Item webView
 
     color: "#efefef"
-    height: 38
-    z: webView.z + 1
-    anchors {
-        top: parent.top
-        left: parent.left
-        right: parent.right
-    }
 
     Rectangle {
         color: "white"
-        height: 26
         border.width: 1
         border.color: "#bfbfbf"
         radius: 3
         anchors {
-            left: parent.left
-            right: parent.right
+            fill: parent
             margins: 6
-            verticalCenter: parent.verticalCenter
         }
+
         Rectangle {
             anchors {
                 top: parent.top
@@ -39,31 +31,33 @@ Rectangle {
             opacity: 0.3
             visible: webView.loading
         }
+
         Image {
             id: favIcon
             source: webView.icon != '' ? webView.icon : '../icons/favicon.png'
-            width: 16
-            height: 16
+            width: Units.gu(2)
+            height: Units.gu(2)
             anchors {
                 left: parent.left
-                leftMargin: 6
+                leftMargin: Units.gu(1)
                 verticalCenter: parent.verticalCenter
             }
         }
+
         TextInput {
             id: addressLine
             clip: true
             selectByMouse: true
             horizontalAlignment: TextInput.AlignLeft
             font {
-                pointSize: 11
-                family: "Sans"
+                pointSize: FontUtils.sizeToPixels("small")
+                family: "Prelude"
             }
             anchors {
                 verticalCenter: parent.verticalCenter
                 left: favIcon.right
                 right: parent.right
-                margins: 6
+                margins: Units.gu(1)
             }
 
             Keys.onReturnPressed:{

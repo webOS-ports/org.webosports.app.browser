@@ -11,6 +11,11 @@ Window
     /* Without this line, we won't ever see the window... */
     Component.onCompleted: root.visible = true;
 
+    Connections {
+        target: application // this is luna-qml-launcher C++ object instance
+        onRelaunched: console.log("The browser has been relaunched with parameters: " + parameters);
+    }
+
     Flickable {
         id: flickableWebview
 

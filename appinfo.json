@@ -9,6 +9,6 @@
 	"icon": "icon.png",
 	"splashicon": "icon-256x256.png",
 	"uiRevision": "2",
-	"keywords": [ "web", "Browser", "Internet" ],
+    "keywords": [ "web", "Browser", "Internet" ]
 }
 

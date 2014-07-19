@@ -6,7 +6,8 @@ Window
 {
     id: root
 
-    flags: Qt.CustomizeWindowHint /* for sure we can even do better, see doc in Qt about that flag */
+    width: 800
+    height: 600
 
     /* Without this line, we won't ever see the window... */
     Component.onCompleted: root.visible = true;
@@ -16,22 +17,11 @@ Window
         onRelaunched: console.log("The browser has been relaunched with parameters: " + parameters);
     }
 
-    Flickable {
-        id: flickableWebview
+    WebView {
+        id: webViewItem
 
-        anchors { fill: parent; topMargin: 50; leftMargin: 10; rightMargin: 10; bottomMargin: 10 }
-        contentWidth: 800
-        contentHeight: 1280
-        boundsBehavior: Flickable.DragOverBounds
-        clip: true
+        anchors.fill: parent
 
-        WebView {
-            id: webViewItem
-
-            width: 800
-            height: 1280
-
-            url: "http://webos-ports.org/" // of course !
-        }
+        url: "http://webos-ports.org/" // of course !
     }
 }

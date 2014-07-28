@@ -1,13 +1,15 @@
-universe-browser
-===============
+Universe Navigator
+==================
+
+Next generation Universe web browser.
 
 Summary
 -------
-The universe browser which will be the default web browser for the webOS ports project.
+The Universe web navigator, which will be the default web browser for the webOS ports project.
 
 Description
 -----------
-The universe browser is build on top of Qt WebKit and enables the user to browse the web.
+The Universe web navigator is built on top of Qt WebKit and enables the user to browse the web.
 
 ## Contributing
 
@@ -19,3 +21,4 @@ can be merged.
 
 Please refer to http://www.webos-ports.org/wiki/Communications for information about how to
 contact the developers of this project.
+

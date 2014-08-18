@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Window 2.1
-import QtWebKit 3.0
+import QtWebKit 3.1
 
 Window
 {
@@ -17,10 +17,18 @@ Window
         onRelaunched: console.log("The browser has been relaunched with parameters: " + parameters);
     }
 
+    NavigationBar {
+        id: navigationBar
+        webView: webViewItem
+    }
+
     WebView {
         id: webViewItem
 
-        anchors.fill: parent
+        anchors.top: navigationBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
 
         url: "http://webos-ports.org/" // of course !
     }

@@ -21,7 +21,10 @@ Rectangle {
             anchors.verticalCenter: addressBar.verticalCenter
             source: webView && webView.icon
         }
-
+        
+        font.pixelSize: Units.gu(2)
+        font.family: "Prelude"
+        
         anchors.margins: Units.gu(1)
         focus: true
         text: webView && webView.url

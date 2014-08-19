@@ -1,11 +1,9 @@
 import QtQuick 2.0
 import QtQuick.Window 2.1
 import QtWebKit 3.0
-import QtQuick.Controls 1.2
-import QtQuick.Controls.Styles 1.2
+import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
-import "JS/util.js" as URLUtil
-import "JS/tld.js" as TldUtil
 
 Window
 {
@@ -34,7 +32,7 @@ Window
         anchors.left: parent.left
         anchors.right: parent.right
 
-        url: "" // of course !
+        url: "http://www.webos-ports.org" // of course !
     }
 
     ProgressBar {

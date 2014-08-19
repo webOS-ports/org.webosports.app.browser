@@ -3,8 +3,6 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
 import "js/util.js" as URLUtil
-import "js/tld.js" as TldUtil
-
 
 Rectangle {
     id: navigationBar
@@ -48,34 +46,34 @@ Rectangle {
         width: navigationBar.width - forwardImage.width - backImage.width -shareImage.width - newCardImage.width - bookmarkImage.width - 20
         height: Units.gu(3)
         style: TextFieldStyle {
-                textColor: "#e5e5e5"
+                //textColor: "#e5e5e5"
                 background: Rectangle {
                     radius: 3
                     implicitWidth: addressBar.width
                     implicitHeight: addressBar.height
-                    border.color: "#333"
+                    //border.color: "#333"
                     border.width: 1
                 }
             }
         // anchors.fill: parent
 
 
-        Image {
+        /*Image {
             id: secureSite
             anchors.verticalCenter: addressBar.verticalCenter
-            source: webView & "images/secure-lock.png"
-        }
+            source: "images/secure-lock.png" & webView.url
+        }*/
 
         Image {
             id: faviconImage
             anchors.verticalCenter: addressBar.verticalCenter
-            source: webView && webView.icon
+            source: webView.icon
         }
 
         Image {
             id: stopImage
             anchors.right: addressBar.right
-            anchors.verticalCenter: addresBar.verticalCenter
+            anchors.verticalCenter: addressBar.verticalCenter
             source: "images/menu-icon-stop.png"
             height: 24
             width: 24
@@ -84,33 +82,35 @@ Rectangle {
             verticalAlignment: Image.AlignTop
         }
 
-        font.pixelSize: Units.gu(1.8)
+        font.pixelSize: FontUtils.sizeToPixels("Medium")
         font.family: "Prelude"
 
         anchors.margins: Units.gu(1)
         focus: true
         //text: webView && webView.url
-        text: "Enter URL or search terms"
+        //text: webView.url
+        placeholderText: "Enter URL or search terms"
 
         onAccepted: updateURL()
 
         //TODO Dirty function for prefixing with http:// for now. Needs to be replaced by proper solution for example: https://github.com/isis-project/isis-browser/blob/master/source/util.js
         function updateURL() {
-            /*if (text.substring(0,7) === "http://" || text.substring(0,8) === "https://")
-            {
-                webView.url = text
+            var uri = URLUtil.parseUri(addressBar.text)
+            if ((URLUtil.isValidScheme(uri) && URLUtil.isUri(addressBar.text, uri)) || (enyo.windowParams.allowAllSchemes && uri.scheme)) {
+                if(text.substring(0,7)==="http://" || text.substring(0,8)==="https://")
+                {
+                    webView.url = addressBar.text;
+                }
+                else
+                {
+                    webView.url = "http://" + addressBar.text;
+                    addressBar.text = "http://" + addressBar.text;
+                }
             }
-            else
-            {
-                webView.url = "http://" + text
-            }*/
-            var uri = URLUtil.enyo.uri.parseUri("http://www.herrie.org")
-            if (uri.scheme != "http" && uri.scheme != "https" && uri.scheme != "ftp") {
-            this.openResource(inResponse.uri);
-                    } else {
-                        this.downloadResource(inResponse.uri, inRequest.params.mime);
-                    }
-            console.log(uri.scheme + " " + uri.tld)
+            else {
+                //TODO URL handling for "invalid URI's"
+                console.log("invalid URL")
+            }
         }
     }
 

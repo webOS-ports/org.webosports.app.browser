@@ -33,6 +33,8 @@ Rectangle {
     height: Units.gu(5.2)
     color: "#343434"
 
+    signal newTab
+
     /////// private //////
     LunaService {
         id: luna
@@ -375,7 +377,7 @@ Rectangle {
             onPressed: {
                 console.log("New Card Pressed")
                 newCardImage.verticalAlignment = Image.AlignBottom
-                navigationBar.__launchApplication("org.webosports.app.browser", "{}");
+                navigationBar.newTab()
             }
             onReleased: {
                 console.log("New Card Released")

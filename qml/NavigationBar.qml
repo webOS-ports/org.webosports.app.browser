@@ -40,16 +40,14 @@ Rectangle {
     }
 
     /////// private //////
-    property QtObject __lunaNextLS2Service: LunaService {
-        id: lunaNextLS2Service
-        name: "org.webosports.luna"
-        usePrivateBus: true
+    LunaService {
+        id: luna
     }
 
     function __launchApplication(id, params) {
         console.log("launching app " + id + " with params " + params);
-        lunaNextLS2Service.call("luna://com.palm.applicationManager/launch",
-        JSON.stringify({"id": id, "params": params}), undefined, __handleLaunchAppError)
+        luna.call("luna://com.palm.applicationManager/launch",
+            JSON.stringify({"id": id, "params": params}), undefined, __handleLaunchAppError)
     }
 
     function __handleLaunchAppError(message) {

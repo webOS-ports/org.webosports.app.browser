@@ -1,4 +1,5 @@
 //   Copyright 2012 Hewlett-Packard Development Company, L.P.
+//   Copyright 2014 Herman van Hazendonk (github.com@herrie.org)
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
 //   you may not use this file except in compliance with the License.
@@ -741,7 +742,8 @@
     function isUri (inText, inUri) {
         // probably a search term if there is a space
         //TODO investigate MATCH
-        /*if (inText.match(/\s/)) {
+        /*if (inText.match('/\s/')) {
+            console.log("no valid url")
             return false;
         }*/
         return isValidUri(inUri);

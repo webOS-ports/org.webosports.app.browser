@@ -4,6 +4,22 @@ The following files are distributed under the Apache License, Version 2.0 :
 
 src/icon.png
 src/icon-256x256.png
+src/qml/images/background-startpage.png
+src/qml/images/input-tool-center.png
+src/qml/images/input-tool-left.png
+src/qml/images/input-tool-right.png
+src/qml/images/menu-icon-back.png
+src/qml/images/menu-icon-bookmark.png
+src/qml/images/menu-icon-forward.png
+src/qml/images/menu-icon-newcard.png
+src/qml/images/menu-icon-refresh.png
+src/qml/images/menu-icon-share.png
+src/qml/images/menu-icon-stop.png
+src/qml/images/secure-lock.png
+src/qml/images/startpage-placeholder.png
+src/qml/images/toolbar.png
+src/qml/js/util.js
+
 
 -------------------------------------------------------------------------
 

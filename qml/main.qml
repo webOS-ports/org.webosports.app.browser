@@ -42,7 +42,8 @@ Window {
     }
 
     function createNewTab(url) {
-        tabView.addTab("test", browserTab);
+        var newTab = tabView.addTab("test", browserTab);
+        newTab.item.url = url;
     }
 
     Connections {

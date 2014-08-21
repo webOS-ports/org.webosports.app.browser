@@ -33,12 +33,6 @@ Rectangle {
     height: Units.gu(5.2)
     color: "#343434"
 
-    //Add below so we can launch other apps :)
-    signal launchApplication(string appId, string appParams);
-    onLaunchApplication: {
-        navigationBar.__launchApplication(appId, appParams);
-    }
-
     /////// private //////
     LunaService {
         id: luna
@@ -381,7 +375,7 @@ Rectangle {
             onPressed: {
                 console.log("New Card Pressed")
                 newCardImage.verticalAlignment = Image.AlignBottom
-                navigationBar.launchApplication("org.webosports.app.browser", "{}");
+                navigationBar.__launchApplication("org.webosports.app.browser", "{}");
             }
             onReleased: {
                 console.log("New Card Released")

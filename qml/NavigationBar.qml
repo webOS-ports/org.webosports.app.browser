@@ -195,7 +195,7 @@ Rectangle {
                                 anchors.left: addressBar.left
                                             source: "images/secure-lock.png" & webView.url
                                             //visible: false
-          */                                          }
+                                                    }*/
 
         /*Image {
                     id: faviconImage
@@ -280,7 +280,6 @@ Rectangle {
                     pb2.height = 0
                     //TODO fix the addressBar text for forward and backward
                     //addressBar.text = webView.url
-
                 }
 
                 loadingIndicator.source = "images/menu-icon-refresh.png"

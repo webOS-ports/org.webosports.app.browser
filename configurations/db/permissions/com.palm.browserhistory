@@ -1,6 +1,6 @@
 [	{	"type"		: "db.kind"
 	,	"object"	: "com.palm.browserhistory:1"
-	,	"caller"	: "com.palm.app.enyo-browser"
+	,	"caller"	: "org.webosports.app.browser"
 	,	"operations":
 		{	"create": "allow"
 		,	"read"	: "allow"

@@ -1,7 +1,7 @@
 [
 	{	"type"		: "db.kind"
 	,	"object"	: "com.palm.browserpreferences:1"
-	,	"caller"	: "com.palm.app.enyo-browser"
+	,	"caller"	: "org.webports.app.browser"
 	,	"operations":
 		{	"create": "allow"
 		,	"read"	: "allow"

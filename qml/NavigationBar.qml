@@ -445,7 +445,7 @@ Rectangle {
 
                 if (addressBar.selectedText === "") {
                     loadingIndicator.source = "images/menu-icon-refresh.png"
-                    urlTimer.stop
+                    urlTimer.stop()
                 }
                 if (webView.canGoBack) {
                     backImage.opacity = 1.0

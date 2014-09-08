@@ -290,7 +290,7 @@ Window {
 
                     Image {
                         id: bookmarkButtonImage
-                        source: "images/radiobuttondarkleftpressed.png" //"images/radiobuttondarkleft.png"
+                        source: "images/radiobuttondarkleftpressed.png" 
                         anchors.fill: parent
                         anchors.left: bookmarkButton.left
                         MouseArea {
@@ -452,7 +452,7 @@ Window {
                         }
                         else
                         {
-                            return "'{}'"
+                            return '{}'
                         }
 
                     }
@@ -494,7 +494,7 @@ Window {
                         anchors.top: dataSectionRect.top
                         anchors.topMargin: Units.gu(0.75)
                         height: dataSectionRect.height
-                        width:  dataMode === "history" ? parent.width - Units.gu(5) : parent.width - Units.gu(2)//Units.gu(30) //parent.width * 0.75
+                        width:  dataMode === "history" ? parent.width - Units.gu(5) : parent.width - Units.gu(2)
                         anchors.left: dataResultsRect.right
                         anchors.leftMargin: Units.gu(0.5)
                         clip: true
@@ -517,7 +517,7 @@ Window {
                             font.pixelSize: FontUtils.sizeToPixels("small")
                             text: model.url || ""
                             color: "#838383"
-                            //elide: Text.elideRight
+                            elide: Text.elideRight
                         }
                     }
                     Rectangle {

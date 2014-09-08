@@ -1,0 +1,27 @@
+[
+    {
+        "category": "browser",
+        "owner": "org.webosports.app.browser",
+        "prefs": [
+			{
+                "group": "Browser Preferences",
+                "restart": "none",
+                "label": "Always show progress bar",
+                "help": "Always show the progress bar with loading status",
+                "key": "alwaysShowProgressBarKey",
+                "type": "ToggleButton",
+                "value": true
+            }
+			,
+			{
+                "group": "Browser Preferences",
+                "restart": "none",
+                "label": "Enable Private Browsing by default",
+                "help": "Sets whether Private Browsing is enabled by default.",
+                "key": "privateByDefaultKey",
+                "type": "ToggleButton",
+                "value": false
+            }
+        ]
+    }
+]

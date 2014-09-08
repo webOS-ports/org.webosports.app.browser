@@ -40,8 +40,8 @@ Rectangle {
     property bool isSecureSite: false
     property int addressBarWidth: 0
     property string urlHistoryMode: "history"
-    property var urlHistoryBookMarkData
-    property var urlHistoryHistoryData
+    property string urlHistoryBookMarkData: '{}'
+    property string urlHistoryHistoryData: '{}'
 
     width: parent.width
     height: Units.gu(5.2)

@@ -91,9 +91,9 @@ Window {
     property bool historyAvailable: false
     property bool forwardAvailable: false
     property bool enableDebugOutput: true
-    property var myBookMarkData
-    property var myDownloadsData
-    property var myHistoryData
+    property string myBookMarkData: '{}'
+    property string myDownloadsData: '{}'
+    property string myHistoryData: '{}'
     property string dataMode: "bookmarks"
 
     /* Without this line, we won't ever see the window... */

@@ -468,24 +468,22 @@ Rectangle {
             interval: 500
             onTriggered: {
 
-                var D = new Date()
-                var historyEntry = {
-                    _kind: "com.palm.browserhistory:1",
-                    url: "" + webViewItem.url,
-                    title: "" + webViewItem.title,
-                    date: Math.floor((new Date(D.getUTCFullYear(),
-                                               D.getUTCMonth(), D.getUTCDate(),
-                                               D.getUTCHours(),
-                                               D.getUTCMinutes(),
-                                               D.getUTCSeconds()).getTime(
-                                          )) / 1000)
-                }
+                        //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
+                        navigationBar.__queryDB("del", '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"'+webViewItem.url+'"}]}}')
+
+                        var history = {
+                            _kind: "com.palm.browserhistory:1",
+                            url: "" + webViewItem.url,
+                            title: "" + webViewItem.title,
+                            date: (new Date()).getTime()
+                        }
+
 
                 //Only create history item in case we're not using Private Browsing
                 //TODO make sure no entry is added when loading failed
                 if (!privateByDefault && !webView.loading ){
                     //Put the URL in browser history after the page is loaded successfully :)
-                    navigationBar.__queryPutDB(historyEntry)
+                    navigationBar.__queryPutDB(history)
                 } else {
                     console.log("Private browsing enabled so we don't create a history entry")
                 }

@@ -97,7 +97,15 @@ Window {
     property string dataMode: "bookmarks"
 
     /* Without this line, we won't ever see the window... */
-    Component.onCompleted: root.visible = true
+    Component.onCompleted:
+    {
+        root.visible = true
+        //Run query so we have the bookmarks item on first load of the panel
+        root.__queryDB(
+                    "find",
+                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
+    }
 
     Connections {
         target: application // this is luna-qml-launcher C++ object instance
@@ -271,6 +279,8 @@ Window {
             anchors.top: parent.top
             anchors.left: parent.left
             visible: true
+            z:3
+            
             Rectangle {
                 id: buttonRow
                 width: Screen.width < 900 ? parent.width : Units.gu(30)
@@ -280,6 +290,7 @@ Window {
                 color: "transparent"
                 anchors.verticalCenter: parent.verticalCenter
                 visible: true
+                z:3
 
                 Rectangle {
                     id: bookmarkButton
@@ -429,6 +440,7 @@ Window {
             color: "#E5E5E5"
             anchors.top: sidePanelHeader.bottom
             visible: true
+            z:2
 
             ListView {
                 anchors.top: sidePanelBody.top
@@ -589,6 +601,11 @@ Window {
                         }
 
                         root.__queryPutDB(bookMarkEntry)
+                        //Query right away to make sure that the UI is updated again :)
+                        root.__queryDB(
+                                    "find",
+                                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
                         addBookMark.verticalAlignment = Image.AlignBottom
                     }
                     onReleased: {

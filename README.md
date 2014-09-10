@@ -30,8 +30,8 @@ Known bugs:
 
 1. After closing bookmarks/history/downloads panel, tapping on URL bar doesn't bring up Virtual Keyboard.
 2. URL suggestions only looks in browser history, not in bookmarks yet.
-3. Bookmarks panel is empty on loading.
-4. Search doesn't always work yet.
+3. <s>Bookmarks panel is empty on loading.</s>
+4. <s>Search doesn't always work yet.</s>
 5. Various layout and rendering issues.
 6. Page gets added to browser history, even when not loaded (for example when there's no network connectivity).
 7. Progress bar doesn't always behave properly.
@@ -51,6 +51,7 @@ To do:
 8. Add "search in page"
 9. Add select, copy & paste where possible
 10. Fix share dialog
+11. Flexible User Agent implementation, see Ubuntu approach.
 
 ## Contributing
 

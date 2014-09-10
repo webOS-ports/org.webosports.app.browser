@@ -39,13 +39,10 @@ Rectangle {
     property string defaultSearchDisplayName: "Google"
     property bool isSecureSite: false
     property int addressBarWidth: 0
-    property string urlHistoryMode: "all"
-    property var _searchResults
-    property var _searchResults2
-    //property var _searchResults3: []
-    //This one works
-    //property var _searchResults3: {"results": ['+']}
-    property var _searchResults4: []
+    property string urlHistoryMode: "history"
+    property string urlHistoryBookMarkData: '{}'
+    property string urlHistoryHistoryData: '{}'
+
     width: parent.width
     height: Units.gu(5.2)
     color: "#343434"
@@ -126,86 +123,13 @@ Rectangle {
 
     function __handleQueryDBSuccess(message) {
         console.log("Queried DB : " + JSON.stringify(message.payload))
-
-        if (urlHistoryMode === "all")
-        {
-            //console.log("UrlHistoryMode = all")
-        _searchResults = JSON.parse(message.payload)
-            //console.log("this searchresults: "+_searchResults.results+" length:"+_searchResults.results.length)
-            if (_searchResults.results.length >= 32) {
-                console.log("this searchresults over 32")
-                return _searchResults.results;
-            }
-            else
-            {
-                console.log("this searchresults less than 32")
-                navigationBar.__queryHDB(
-                "search",
-                '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
-            }
+        if (urlHistoryMode === "bookmarks") {
+            urlHistoryBookMarkData = message.payload
+        } else if (urlHistoryMode === "history") {
+            urlHistoryHistoryData = message.payload
         }
-
 
     }
-
-    function __queryHDB(action, params) {
-        if (enableDebugOutput) {
-            console.log("Querying History DB with action: " + action + " and params: " + params)
-            console.log("urlHistoryMode: "+urlHistoryMode)
-
-        }
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryHDBSuccess, __handleQueryHDBError)
-    }
-
-    function __handleQueryHDBError(message) {
-        console.log("Could not query History DB : " + message)
-    }
-
-    function __handleQueryHDBSuccess(message) {
-        console.log("Queried History DB : " + JSON.stringify(message.payload))
-
-
-        _searchResults2 = JSON.parse(message.payload)
-
-        for (var i = 0, s; s = _searchResults2.results[i]; i++) {
-            //_searchResults3.results.length = 0;
-            _searchResults4.length = 0;
-            console.log("Herrie s.url: "+s.url+ " s.title: "+ s.title)
-             //       _searchResults3.results.push({url:s.url, title: s.title, icon: "images/header-icon-history.png"})
-                //   _searchResults4.push("url:"+s.url, "title:"+ s.title, "icon:images/header-icon-history.png")
-            _searchResults4.push({url: s.url, title: s.title, icon:"images/header-icon-history.png"})
-        }
-
-        for (var j = 0, t; t = _searchResults.results[j]; j++) {
-                    console.log("Herrie t.url: "+t.url+ " t.title: "+ t.title)
-            //_searchResults3.results.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
-            _searchResults4.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
-                 //_searchResults4.push("url:"+t.url, "title:"+ t.title, "icon:images/header-icon-history.png")
-        }
-
-
-
-        /*for (var k = 0, u; u = _searchResults3.results[k]; k++) {
-                    console.log("Herrie u.url: "+u.url+ " u.title: "+ u.title + " u.icon: "+u.icon)
-            //_searchResults3.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
-        }*/
-
-        for (var k = 0, u; u = _searchResults4[k]; k++) {
-                    console.log("Herrie u.url: "+u.url+ " u.title: "+ u.title + " u.icon: "+u.icon)
-            //_searchResults3.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
-        }
-
-
-
-       // console.log("looped through 4"+_searchResults4)
-
-                console.log("parse 4: "+JSON.parse(_searchResults4))
-                console.log("stringify 4: "+JSON.stringify(_searchResults4))
-                return _searchResults4;
-    }
-
-
 
     function __queryPutDB(myData) {
         if (enableDebugOutput) {
@@ -245,6 +169,7 @@ Rectangle {
 
     function __handleGetSearchSuccess(message) {
         var defbrows2 = JSON.parse(message.payload)
+
         //Maybe not very pretty, but it works
         for (var i = 0, s; s = defbrows2.UniversalSearchList[i]; i++) {
                     console.log("Herrie s.id: "+s.id)
@@ -376,10 +301,9 @@ Rectangle {
 
         onContentSizeChanged: {
             addressBarWidth = addressBar.width
-            console.log("contentsizechanged")
             navigationBar.__queryDB(
             "search",
-            '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+            '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
             optSearch.text = defaultSearchDisplayName
             imgSearch.source = defaultSearchIcon
             suggestionsBackground.height = (urlModel.count + 1) * Units.gu(6)
@@ -521,7 +445,7 @@ Rectangle {
 
                 if (addressBar.selectedText === "") {
                     loadingIndicator.source = "images/menu-icon-refresh.png"
-                    urlTimer.stop
+                    urlTimer.stop()
                 }
                 if (webView.canGoBack) {
                     backImage.opacity = 1.0
@@ -665,6 +589,15 @@ Rectangle {
 
             onPressed: {
                 shareOptions.visible = true
+
+                navigationBar.__queryDB(
+                            "find",
+                            '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
+
+                navigationBar.__queryDB(
+                            "find",
+                            '{"query":{"from":"com.palm.browserhistory:1", "orderBy":"date", "limit":50}}')
 
                 var msg = ("Here's a website I think you'll like: <a href=\"{$src}\">{$title}</a>")
                 msg = EnyoUtils.macroize(msg, {
@@ -831,27 +764,20 @@ Rectangle {
 
             JSONListModel {
                 id: urlModel
-                data: _searchResults4
-                //json: getURLHistory()
-                //query: "$.results[*]"
-                query: "$[*]"
+                json: getURLHistory()
+                query: "$.results[*]"
 
-                /*function getURLHistory()
+                function getURLHistory()
                 {
-                    console.log("GetURLHistory")
-                    //console.log("JSON.parse(_searchResults3)"+JSON.parse(_searchResults3))
-                    //console.log("JSON.stringify(_searchResults3)"+JSON.stringify(_searchResults3))
-                    //console.log("JSON.parse(_searchResults4)"+JSON.parse(_searchResults4))
-                    //console.log("JSON.stringify(_searchResults4)"+JSON.stringify(_searchResults4))
-
-                    //console.log("JSON.stringify(_searchResults3): "+JSON.stringify(_searchResults3))
-                    //console.log("_searchResults3): "+_searchResults3)
-                 //return JSON.parse(_searchResults3)
-                    console.log("returning sr4")
-                    return _searchResults4
-                    //return JSON.stringify(_searchResults4)
-                    //return JSON.stringify(_searchResults3);
-                }*/
+                    if(urlHistoryMode === "history")
+                    {
+                        return urlHistoryHistoryData
+                    }
+                    else if(urlHistoryMode === "bookmarks")
+                    {
+                        return urlHistoryBookMarkData
+                    }
+                }
 
             }
             model: urlModel.model
@@ -911,7 +837,7 @@ Rectangle {
                     anchors.top: sectionRect.top
 
                     Image {
-                        source: model.icon//"images/header-icon-history.png" //"images/header-icon-bookmarks.png"
+                        source: "images/header-icon-history.png" //"images/header-icon-bookmarks.png"
                         anchors.top: imgResultsRect.top
                         anchors.right: parent.right
                         height: Units.gu(3)

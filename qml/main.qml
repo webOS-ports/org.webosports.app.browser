@@ -97,7 +97,15 @@ Window {
     property string dataMode: "bookmarks"
 
     /* Without this line, we won't ever see the window... */
-    Component.onCompleted: root.visible = true
+    Component.onCompleted:
+    {
+        root.visible = true
+        //Run query so we have the bookmarks item on first load of the panel
+        root.__queryDB(
+                    "find",
+                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
+    }
 
     Connections {
         target: application // this is luna-qml-launcher C++ object instance

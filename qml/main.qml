@@ -279,6 +279,8 @@ Window {
             anchors.top: parent.top
             anchors.left: parent.left
             visible: true
+            z:3
+            
             Rectangle {
                 id: buttonRow
                 width: Screen.width < 900 ? parent.width : Units.gu(30)
@@ -288,6 +290,7 @@ Window {
                 color: "transparent"
                 anchors.verticalCenter: parent.verticalCenter
                 visible: true
+                z:3
 
                 Rectangle {
                     id: bookmarkButton
@@ -437,6 +440,7 @@ Window {
             color: "#E5E5E5"
             anchors.top: sidePanelHeader.bottom
             visible: true
+            z:2
 
             ListView {
                 anchors.top: sidePanelBody.top

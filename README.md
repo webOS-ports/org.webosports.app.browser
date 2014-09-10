@@ -29,10 +29,10 @@ Known bugs
 Known bugs:
 
 1. After closing bookmarks/history/downloads panel, tapping on URL bar doesn't bring up Virtual Keyboard.
-2. URL suggestions only looks in browser history, not in bookmarks yet.
+2. <s>URL suggestions only looks in browser history, not in bookmarks yet.</s>
 3. <s>Bookmarks panel is empty on loading.</s>
 4. <s>Search doesn't always work yet.</s>
-5. Various layout and rendering issues.
+5. <s>Various layout and rendering issues.</s>
 6. Page gets added to browser history, even when not loaded (for example when there's no network connectivity).
 7. Progress bar doesn't always behave properly.
 8. Share dialog not working yet.
@@ -43,11 +43,11 @@ To do:
 
 1. Add FocusScope to addressBar to see if that solves the VKB focus issue.
 2. Fix the creation of browsing history for only properly loaded pages.
-3. Add bookmarks in URL suggestions as well.
+3. <s>Add bookmarks in URL suggestions as well.</s>
 4. Create settings page to replicate settings from legacy.
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
 6. Add launch parameters + handling
-7. Add icons for bookmarks (investigate legacy's handling). 
+7. Add icons for bookmarks (investigate legacy's handling). <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page"
 9. Add select, copy & paste where possible
 10. Fix share dialog

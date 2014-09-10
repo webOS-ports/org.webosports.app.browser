@@ -601,6 +601,11 @@ Window {
                         }
 
                         root.__queryPutDB(bookMarkEntry)
+                        //Query right away to make sure that the UI is updated again :)
+                        root.__queryDB(
+                                    "find",
+                                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
                         addBookMark.verticalAlignment = Image.AlignBottom
                     }
                     onReleased: {

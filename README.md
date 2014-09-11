@@ -20,9 +20,10 @@ Features:
 3. Private browsing feature via Tweaks (doesn't create history).
 4. Ability to add boookmarks.
 5. Can go back and forward.
-6. URL prediction based on browser history.
+6. URL prediction based on browser history & bookmarks
 7. UI similar to legacy 3.0.x browser.
 8. Support for both tablet (landscape) and phone (portrait) layout.
+9. Custom UA strings in order to improve compatibility with websites
 
 Known bugs
 -----------
@@ -33,8 +34,8 @@ Known bugs:
 3. <s>Bookmarks panel is empty on loading.</s>
 4. <s>Search doesn't always work yet.</s>
 5. <s>Various layout and rendering issues.</s>
-6. Page gets added to browser history, even when not loaded (for example when there's no network connectivity).
-7. Progress bar doesn't always behave properly.
+6. <s>Page gets added to browser history, even when not loaded (for example when there's no network connectivity).</s>
+7. <s>Progress bar doesn't always behave properly.</s>
 8. Share dialog not working yet.
 
 To do:
@@ -42,7 +43,7 @@ To do:
 To do:
 
 1. Add FocusScope to addressBar to see if that solves the VKB focus issue.
-2. Fix the creation of browsing history for only properly loaded pages.
+2. <s>Fix the creation of browsing history for only properly loaded pages.</s>
 3. <s>Add bookmarks in URL suggestions as well.</s>
 4. Create settings page to replicate settings from legacy.
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
@@ -51,7 +52,7 @@ To do:
 8. Add "search in page"
 9. Add select, copy & paste where possible
 10. Fix share dialog
-11. Flexible User Agent implementation, see Ubuntu approach.
+11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
 
 ## Contributing
 

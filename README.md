@@ -23,13 +23,14 @@ Features:
 6. URL prediction based on browser history & bookmarks
 7. UI similar to legacy 3.0.x browser.
 8. Support for both tablet (landscape) and phone (portrait) layout.
-9. Custom UA strings in order to improve compatibility with websites
+9. Custom UA strings in order to improve compatibility with websites.
+10. Show/hide vkb using button which can be enabled in Tweaks.
 
 Known bugs
 -----------
 Known bugs:
 
-1. After closing bookmarks/history/downloads panel, tapping on URL bar doesn't bring up Virtual Keyboard.
+1. <s>After closing bookmarks/history/downloads panel, tapping on URL bar doesn't bring up Virtual Keyboard.</s>
 2. <s>URL suggestions only looks in browser history, not in bookmarks yet.</s>
 3. <s>Bookmarks panel is empty on loading.</s>
 4. <s>Search doesn't always work yet.</s>
@@ -42,14 +43,14 @@ To do:
 -----------
 To do:
 
-1. Add FocusScope to addressBar to see if that solves the VKB focus issue.
+1. <s>Add FocusScope to addressBar to see if that solves the VKB focus issue.</s>
 2. <s>Fix the creation of browsing history for only properly loaded pages.</s>
 3. <s>Add bookmarks in URL suggestions as well.</s>
 4. Create settings page to replicate settings from legacy.
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
 6. Add launch parameters + handling
 7. Add icons for bookmarks (investigate legacy's handling). <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
-8. Add "search in page"
+8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
 9. Add select, copy & paste where possible
 10. Fix share dialog
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>

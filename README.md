@@ -56,6 +56,8 @@ To do:
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
 12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
 13. Investigate search suggestions to see if those are possible from QML with our luna calls.
+14. Add possibility to edit bookmarks
+15. Add authentication dialog
 
 ## Contributing
 

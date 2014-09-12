@@ -15,6 +15,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+
 import QtQuick 2.0
 import QtQuick.Window 2.1
 import QtWebKit 3.0
@@ -23,12 +24,38 @@ import QtTest 1.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
+import "Utils"
+
 
 Window {
+
 
     id: root
     width: 800
     height: 600
+
+    UserAgent {
+        id: userAgent
+    }
+
+    Tweak {
+        id: privateByDefaultTweak
+        owner: "org.webosports.app.browser"
+        key: "privateByDefaultKey"
+        defaultValue: "false"
+        onValueChanged: updatePrivateByDefault()
+
+        function updatePrivateByDefault() {
+            if (privateByDefaultTweak.value === true) {
+                privateByDefault = true
+            } else {
+                privateByDefault = false
+            }
+            if (enableDebugOutput) {
+                console.log("privateByDefault: " + privateByDefault)
+            }
+        }
+    }
 
     /////// private //////
     LunaService {
@@ -80,11 +107,14 @@ Window {
     }
 
     function __handlePutDBError(message) {
-        console.log("Could not put DB : " + message)
+            console.log("Could not put DB : " + message)
     }
 
     function __handlePutDBSuccess(message) {
-        console.log("Put DB: " + JSON.stringify(message.payload))
+        if(enableDebugOutput)
+        {
+            console.log("Put DB: " + JSON.stringify(message.payload))
+        }
     }
 
     property bool pageIsLoading: false
@@ -95,6 +125,7 @@ Window {
     property string myDownloadsData: '{}'
     property string myHistoryData: '{}'
     property string dataMode: "bookmarks"
+    property bool privateByDefault: false
 
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
@@ -131,8 +162,27 @@ Window {
         experimental.preferences.webAudioEnabled: true
         experimental.preferences.dnsPrefetchEnabled: true
         experimental.preferences.navigatorQtObjectEnabled: true
+        experimental.userAgent: userAgent.defaultUA
         visible: true
         z: 1
+
+        onNavigationRequested: {
+            pb2.height = Units.gu(1/2)
+            request.action = WebView.AcceptRequest;
+
+            if (request.action === WebView.IgnoreRequest)
+                return;
+
+            var staticUA = undefined
+            if (staticUA === undefined) {
+                if(enableDebugOutput)
+                webViewItem.experimental.userAgent = userAgent.getUAString(request.url)
+            } else {
+                webViewItem.experimental.userAgent = staticUA
+            }
+        }
+
+
 
         //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
         Image {
@@ -149,10 +199,10 @@ Window {
 
         onLoadingChanged: {
 
-            console.log("lrerrorcode: "+loadRequest.errorCode)
             if (loadRequest.status == WebView.LoadStartedStatus)
                 pageIsLoading = true
-            console.log("Loading started...")
+                pb2.height = Units.gu(1/2)
+                console.log("Loading started...")
             if (loadRequest.status == WebView.LoadFailedStatus) {
                 console.log("Load failed! Error code: " + loadRequest.errorCode)
                 webViewItem.loadHtml("Failed to load " + loadRequest.url, "",
@@ -169,6 +219,30 @@ Window {
                 pageIsLoading = false
 
             console.log("Page loaded!")
+
+                if(webViewItem.loadProgress === 100)
+                {
+                    //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
+                    //Only create history item in case we're not using Private Browsing
+                    if (!privateByDefault){
+                    navigationBar.__queryDB("del", '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"'+webViewItem.url+'"}]}}')
+
+                     var history = {
+                        _kind: "com.palm.browserhistory:1",
+                        url: "" + webViewItem.url,
+                        title: "" + webViewItem.title,
+                        date: (new Date()).getTime()
+                     }
+
+                         //Put the URL in browser history after the page is loaded successfully :)
+                         navigationBar.__queryPutDB(history)
+                     } else {
+                         if (enableDebugOutput) {
+                            console.log("Private browsing enabled so we don't create a history entry")
+                         }
+                     }
+                }
+
         }
 
         url: ""
@@ -242,7 +316,7 @@ Window {
         z: 1
         minimumValue: 0
         maximumValue: 100
-        height: 0
+        height: pageIsLoading ? Units.gu(1/2) : 0
         visible: true
         anchors.top: navigationBar.bottom
         style: ProgressBarStyle {
@@ -271,6 +345,12 @@ Window {
         visible: false
         z: 2
 
+        onActiveFocusChanged:
+        {
+            Qt.inputMethod.show()
+        }
+
+
         Rectangle {
             id: sidePanelHeader
             height: Units.gu(5.2)
@@ -279,8 +359,7 @@ Window {
             anchors.top: parent.top
             anchors.left: parent.left
             visible: true
-            z:3
-            
+            z: 3
             Rectangle {
                 id: buttonRow
                 width: Screen.width < 900 ? parent.width : Units.gu(30)
@@ -301,14 +380,13 @@ Window {
 
                     Image {
                         id: bookmarkButtonImage
-                        source: "images/radiobuttondarkleftpressed.png" 
+                        source: "images/radiobuttondarkleftpressed.png" //"images/radiobuttondarkleft.png"
                         anchors.fill: parent
                         anchors.left: bookmarkButton.left
                         MouseArea {
                             anchors.fill: bookmarkButtonImage
                             onClicked: {
                                 dataMode = "bookmarks"
-                                //TODO, initialize these properly
                                 root.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
@@ -435,7 +513,7 @@ Window {
 
         Rectangle {
             id: sidePanelBody
-            height: parent.height
+            height: parent.height - sidePanelHeader.height - sidePanelFooter.height
             width: parent.width
             color: "#E5E5E5"
             anchors.top: sidePanelHeader.bottom
@@ -454,7 +532,6 @@ Window {
                     query: "$.results[*]"
 
                     function getJSONData() {
-                        console.log("dataMode: "+dataMode)
                         if (dataMode === "bookmarks") {
                             return myBookMarkData
                         } else if (dataMode === "downloads") {
@@ -464,7 +541,7 @@ Window {
                         }
                         else
                         {
-                            return '{}'
+                            return "'{}'"
                         }
 
                     }
@@ -506,7 +583,7 @@ Window {
                         anchors.top: dataSectionRect.top
                         anchors.topMargin: Units.gu(0.75)
                         height: dataSectionRect.height
-                        width:  dataMode === "history" ? parent.width - Units.gu(5) : parent.width - Units.gu(2)
+                        width:  dataMode === "history" ? parent.width - Units.gu(5) : parent.width - Units.gu(2)//Units.gu(30) //parent.width * 0.75
                         anchors.left: dataResultsRect.right
                         anchors.leftMargin: Units.gu(0.5)
                         clip: true
@@ -529,7 +606,7 @@ Window {
                             font.pixelSize: FontUtils.sizeToPixels("small")
                             text: model.url || ""
                             color: "#838383"
-                            elide: Text.elideRight
+                            //elide: Text.elideRight
                         }
                     }
                     Rectangle {
@@ -557,6 +634,7 @@ Window {
             color: "#343434"
             anchors.bottom: parent.bottom
             visible: true
+            z: 3
 
             Image {
                 id: dragHandle
@@ -565,9 +643,9 @@ Window {
                 MouseArea {
                     anchors.fill: dragHandle
                     onClicked: {
-                        //TODO: Need to fix VKB to show up
+                        navigationBar.setFocus(true)
                         sidePanel.visible = false
-                        sidePanel.focus = false
+
                     }
                 }
             }
@@ -587,7 +665,7 @@ Window {
                 MouseArea {
                     anchors.fill: addBookMark
                     onClicked: {
-
+                        addBookMark.verticalAlignment = Image.AlignBottom
                         var date = (new Date()).getTime()
                         var bookMarkEntry = {
                             _kind: "com.palm.browserbookmarks:1",
@@ -601,17 +679,13 @@ Window {
                         }
 
                         root.__queryPutDB(bookMarkEntry)
-                        //Query right away to make sure that the UI is updated again :)
                         root.__queryDB(
                                     "find",
                                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
 
-                        addBookMark.verticalAlignment = Image.AlignBottom
+
                     }
                     onReleased: {
-                        addBookMark.verticalAlignment = Image.AlignTop
-                    }
-                    onCanceled: {
                         addBookMark.verticalAlignment = Image.AlignTop
                     }
                     onExited: {

@@ -24,25 +24,23 @@ import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
 import "Utils"
 
+
 Rectangle {
     id: navigationBar
 
     property bool alwaysShowProgressBar: false
-    property bool privateByDefault: false
-
+    property bool showVKBButton: false
     property string searchProviderIcon: ""
     property Item webView: null
-    property bool enableDebugOutput: true
     property string defaultSearch: ""
     property string defaultSearchURL: ""
     property string defaultSearchIcon: "images/list-icon-google.png"
     property string defaultSearchDisplayName: "Google"
     property bool isSecureSite: false
     property int addressBarWidth: 0
-    property string urlHistoryMode: "history"
-    property string urlHistoryBookMarkData: '{}'
-    property string urlHistoryHistoryData: '{}'
-
+    property var searchResultsBookmarks
+    property var searchResultsHistory
+    property var searchResultsAll: ['{}']
     width: parent.width
     height: Units.gu(5.2)
     color: "#343434"
@@ -63,30 +61,32 @@ Rectangle {
             } else {
                 alwaysShowProgressBar = false
             }
-            if (enableDebugOutput) {
+            if (root.enableDebugOutput) {
                 console.log("alwaysShowProgressBar: " + alwaysShowProgressBar)
             }
         }
     }
 
     Tweak {
-        id: privateByDefaultTweak
+        id: toggleVKBTweak
         owner: "org.webosports.app.browser"
-        key: "privateByDefaultKey"
+        key: "toggleVKBKey"
         defaultValue: "false"
-        onValueChanged: updatePrivateByDefault()
+        onValueChanged: updateToggleVKBButton()
 
-        function updatePrivateByDefault() {
-            if (privateByDefaultTweak.value === true) {
-                privateByDefault = true
+        function updateToggleVKBButton() {
+
+            if (toggleVKBTweak.value === true) {
+                showVKBButton = true
             } else {
-                privateByDefault = false
+                showVKBButton = false
             }
-            if (enableDebugOutput) {
-                console.log("privateByDefault: " + privateByDefault)
+            if (root.enableDebugOutput) {
+                console.log("showVKButton: " + showVKBButton)
             }
         }
     }
+
 
     /////// private //////
     LunaService {
@@ -94,8 +94,15 @@ Rectangle {
         name: "org.webosports.app.browser"
     }
 
+    function setFocus(focusState){
+        if (root.enableDebugOutput) {
+            console.log("setFocus called with"+focusState)
+        }
+        addressBar.focus = focusState;
+    }
+
     function __launchApplication(id, params) {
-        if (enableDebugOutput) {
+        if (root.enableDebugOutput) {
             console.log("launching app " + id + " with params " + params)
         }
         luna.call("luna://com.palm.applicationManager/launch", JSON.stringify({
@@ -110,7 +117,7 @@ Rectangle {
     }
 
     function __queryDB(action, params) {
-        if (enableDebugOutput) {
+        if (root.enableDebugOutput) {
             console.log("Querying DB with action: " + action + " and params: " + params)
         }
         luna.call("luna://com.palm.db/" + action, params,
@@ -122,17 +129,58 @@ Rectangle {
     }
 
     function __handleQueryDBSuccess(message) {
-        console.log("Queried DB : " + JSON.stringify(message.payload))
-        if (urlHistoryMode === "bookmarks") {
-            urlHistoryBookMarkData = message.payload
-        } else if (urlHistoryMode === "history") {
-            urlHistoryHistoryData = message.payload
+        if (root.enableDebugOutput) {
+            console.log("Queried DB : " + JSON.stringify(message.payload))
         }
+        searchResultsBookmarks = JSON.parse(message.payload)
+                navigationBar.__queryHDB(
+                "search",
+                '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+        }
+
+
+    function __queryHDB(action, params) {
+        if (root.enableDebugOutput) {
+            console.log("Querying History DB with action: " + action + " and params: " + params)
+        }
+        luna.call("luna://com.palm.db/" + action, params,
+                  __handleQueryHDBSuccess, __handleQueryHDBError)
+    }
+
+    function __handleQueryHDBError(message) {
+        console.log("Could not query History DB : " + message)
+    }
+
+    function __handleQueryHDBSuccess(message) {
+        if (root.enableDebugOutput) {
+            console.log("Queried History DB : " + JSON.stringify(message.payload))
+        }
+
+        searchResultsHistory = JSON.parse(message.payload)
+
+        //We need to put the icon for each of the types (bookmarks/history) so we put them in a new combined array
+        var searchResults = []
+
+        for (var j = 0, t; t = searchResultsBookmarks.results[j]; j++) {
+            searchResults.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
+        }
+        if(searchResultsHistory.results.length <= 32)
+        {
+            for (var i = 0, s; s = searchResultsHistory.results[i]; i++) {
+                searchResults.push({url: s.url, title: s.title, icon:"images/header-icon-history.png"})
+            }
+        }
+
+        //Stringify them so we can use it in the JSONList
+        searchResultsAll = JSON.stringify(searchResults);
+        return searchResultsAll
 
     }
 
+
+
     function __queryPutDB(myData) {
-        if (enableDebugOutput) {
+        if (root.enableDebugOutput) {
             console.log("Putting Data to DB: JSON.stringify(myData): " + JSON.stringify(
                             myData))
         }
@@ -147,11 +195,13 @@ Rectangle {
     }
 
     function __handlePutDBSuccess(message) {
-        console.log("Put DB: " + JSON.stringify(message.payload))
+        if (root.enableDebugOutput) {
+            console.log("Put DB: " + JSON.stringify(message.payload))
+        }
     }
 
     function __getDefaultSearch() {
-        if (enableDebugOutput) {
+        if (root.enableDebugOutput) {
             console.log("Getting default search")
         }
         luna.call("luna://com.palm.universalsearch/getAllSearchPreference",
@@ -172,7 +222,6 @@ Rectangle {
 
         //Maybe not very pretty, but it works
         for (var i = 0, s; s = defbrows2.UniversalSearchList[i]; i++) {
-                    console.log("Herrie s.id: "+s.id)
             if (s.id === defaultSearch) {
                 defaultSearchURL = s.url
                 defaultSearchIcon = s.iconFilePath
@@ -266,7 +315,6 @@ Rectangle {
 
     Image {
         id: secureSite
-        anchors.verticalCenter: navigationBar.verticalCenter
         verticalAlignment: Image.AlignTop
         anchors.left: forwardImage.right
         source: "images/secure-lock.png"
@@ -276,34 +324,51 @@ Rectangle {
         visible: false
     }
 
-
-
     TextInput {
         id: addressBar
         anchors.leftMargin: Units.gu(1)
         anchors.left: secureSite.right
         anchors.verticalCenter: navigationBar.verticalCenter
         width: navigationBar.width - forwardImage.width - backImage.width
-               - shareImage.width - newCardImage.width - bookmarkImage.width - Units.gu(2.5)
+               - shareImage.width - newCardImage.width - bookmarkImage.width - vkbImage.width - Units.gu(2.5)
         clip: true
         height: Units.gu(3.5)
-        activeFocusOnPress: true
         font.family: "Prelude"
         font.pixelSize: FontUtils.sizeToPixels("medium")
         //Force the URL keyboard layout
         inputMethodHints: Qt.ImhUrlCharactersOnly
-        color: privateByDefault ? "#8B0000" : "#E5E5E5"
+        color: root.privateByDefault ? "#2E8CF7" : "#E5E5E5"
         selectedTextColor: "#000000"
         selectionColor: "#ADAD15"
         verticalAlignment: TextInput.AlignVCenter
         horizontalAlignment: TextInput.AlignLeft
+        focus: true
+        anchors.margins: Units.gu(1)
+        text: ""
 
+
+        onAccepted: updateURL()
+
+        onActiveFocusChanged:
+        {
+            Qt.inputMethod.show()
+        }
 
         onContentSizeChanged: {
             addressBarWidth = addressBar.width
-            navigationBar.__queryDB(
-            "search",
-            '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+            //We need a different query in case the lenght is 0
+            if(addressBar.text.length === 0)
+            {
+                navigationBar.__queryDB(
+                            "find",
+                            '{"query":{"from":"com.palm.browserbookmarks:1"}}')
+            }
+            else
+            {
+                navigationBar.__queryDB(
+                "search",
+                '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+            }
             optSearch.text = defaultSearchDisplayName
             imgSearch.source = defaultSearchIcon
             suggestionsBackground.height = (urlModel.count + 1) * Units.gu(6)
@@ -311,7 +376,6 @@ Rectangle {
 
             if (addressBar.text.length === 0 || addressBar.text.substring(
                         0, 4) === "http") {
-                //TODO: Finalize popup based on browsing history
                 suggestionsBackground.visible = false
             } else {
                 suggestionsBackground.visible = true
@@ -417,6 +481,8 @@ Rectangle {
                     } else {
                         if (addressBar.selectedText !== "") {
                             addressBar.deselect
+                            addressBar.focus = true
+                            Qt.inputMethod.show()
                         } else {
                             webView.stop
                             loadingIndicator.source = "images/menu-icon-refresh.png"
@@ -445,7 +511,7 @@ Rectangle {
 
                 if (addressBar.selectedText === "") {
                     loadingIndicator.source = "images/menu-icon-refresh.png"
-                    urlTimer.stop()
+                    urlTimer.stop
                 }
                 if (webView.canGoBack) {
                     backImage.opacity = 1.0
@@ -465,28 +531,8 @@ Rectangle {
             id: urlTimer2
             running: webView.loadProgress === 100 && addressBar.text !== ""
             repeat: false
-            interval: 500
+            interval: 100
             onTriggered: {
-
-                        //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
-                        navigationBar.__queryDB("del", '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"'+webViewItem.url+'"}]}}')
-
-                        var history = {
-                            _kind: "com.palm.browserhistory:1",
-                            url: "" + webViewItem.url,
-                            title: "" + webViewItem.title,
-                            date: (new Date()).getTime()
-                        }
-
-
-                //Only create history item in case we're not using Private Browsing
-                //TODO make sure no entry is added when loading failed
-                if (!privateByDefault && !webView.loading ){
-                    //Put the URL in browser history after the page is loaded successfully :)
-                    navigationBar.__queryPutDB(history)
-                } else {
-                    console.log("Private browsing enabled so we don't create a history entry")
-                }
 
                 if (!webView.loading) {
                     pb2.progressBarColor = "green"
@@ -502,15 +548,7 @@ Rectangle {
             onTriggered: {
                 addressBar.text = webViewItem.url
             }
-
-
         }
-
-
-        anchors.margins: Units.gu(1)
-        focus: true
-        text: ""
-        onAccepted: updateURL()
 
         MouseArea {
             id: selectText
@@ -519,11 +557,18 @@ Rectangle {
             anchors.left: parent.left
             onPressed: {
                 if (webViewItem.url !== "" && addressBar.text !== "") {
-                    addressBar.selectAll()
-                    loadingIndicator.source = "images/menu-icon-stop.png"
+                    addressBar.focus = true
+                    Qt.inputMethod.show()
+
+                    if(addressBar.selectedText!==addressBar.text)
+                    {
+                        addressBar.selectAll()
+                        loadingIndicator.source = "images/menu-icon-stop.png"
+                    }
                 } else {
                     addressBar.deselect
-                    //addressBar.cursorVisible = true
+                    addressBar.focus = true
+                    Qt.inputMethod.show()
                 }
             }
         }
@@ -590,15 +635,6 @@ Rectangle {
             onPressed: {
                 shareOptions.visible = true
 
-                navigationBar.__queryDB(
-                            "find",
-                            '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
-
-
-                navigationBar.__queryDB(
-                            "find",
-                            '{"query":{"from":"com.palm.browserhistory:1", "orderBy":"date", "limit":50}}')
-
                 var msg = ("Here's a website I think you'll like: <a href=\"{$src}\">{$title}</a>")
                 msg = EnyoUtils.macroize(msg, {
                                              src: webViewItem.url,
@@ -637,13 +673,17 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
+            if (root.enableDebugOutput) {
                 console.log("New Card Pressed")
+            }
                 newCardImage.verticalAlignment = Image.AlignBottom
                 navigationBar.__launchApplication("org.webosports.app.browser",
                                                   "{}")
             }
             onReleased: {
+            if (root.enableDebugOutput) {
                 console.log("New Card Released")
+            }
                 newCardImage.verticalAlignment = Image.AlignTop
             }
         }
@@ -687,7 +727,35 @@ Rectangle {
         }
     }
 
-    //TODO: Complete code so it works like legacy (search Google & brow
+    Image {
+        id: vkbImage
+        anchors.left: bookmarkImage.right
+        anchors.verticalCenter: navigationBar.verticalCenter
+        source: "images/icon-hide-keyboard.png"
+        height: showVKBButton ? Units.gu(4) : 0
+        width: showVKBButton ? Units.gu(4) : 0
+        clip: true
+        fillMode: Image.PreserveAspectCrop
+        visible: showVKBButton ? true : false
+        opacity: 1
+
+        MouseArea {
+            anchors.fill: parent
+
+            onPressed: {
+                if(Qt.inputMethod.visible)
+                {
+                    Qt.inputMethod.hide()
+                }
+                else
+                {
+                    addressBar.focus = true
+                    Qt.inputMethod.show()
+                }
+            }
+        }
+    }
+
     Rectangle {
         id: suggestionsBackground
         color: "#DADADA"
@@ -705,12 +773,12 @@ Rectangle {
             width: parent.width
             anchors.left: parent.left
             color: "transparent"
+            z: 3
 
             MouseArea {
                 anchors.fill: parent
                 onPressed: {
                     suggestionsBackground.visible = false
-                                    console.log("Herrie dsu: "+defaultSearchURL)
                     webViewItem.url = defaultSearchURL.replace("{$query}",
                                                                addressBar.text)
                     addressBar.text = defaultSearchURL.replace("{$query}",
@@ -730,11 +798,13 @@ Rectangle {
                 font.family: "Prelude"
                 color: "#494949"
                 height: Units.gu(6)
+                z: 3
             }
             Rectangle {
                 id: imgSearchRect
-                height: parent.height
+                height: urlModel.count > 0 ? parent.height : 0
                 anchors.right: parent.right
+                z: 3
                 Image {
                     id: imgSearch
                     height: Units.gu(3)
@@ -745,6 +815,7 @@ Rectangle {
                     anchors.rightMargin: Units.gu(1.5)
                     horizontalAlignment: Image.AlignRight
                     source: navigationBar.defaultSearchIcon
+                    z: 3
                 }
             }
             Rectangle {
@@ -752,31 +823,25 @@ Rectangle {
                 color: "silver"
 
                 width: parent.width
-                height: Units.gu(1 / 5)
+                height: urlModel.count > 0 ? Units.gu(1 / 5) : 0
                 anchors.top: imgSearchRect.bottom
+                z: 3
             }
         }
         ListView {
             anchors.top: searchRect.bottom
             id: suggestionList
             width: parent.width
-            height: (urlModel.count) * Units.gu(6)
+            z: 2
 
             JSONListModel {
                 id: urlModel
                 json: getURLHistory()
-                query: "$.results[*]"
+                query: "$[*]"
 
                 function getURLHistory()
                 {
-                    if(urlHistoryMode === "history")
-                    {
-                        return urlHistoryHistoryData
-                    }
-                    else if(urlHistoryMode === "bookmarks")
-                    {
-                        return urlHistoryBookMarkData
-                    }
+                    return searchResultsAll
                 }
 
             }
@@ -788,6 +853,7 @@ Rectangle {
                 width: parent.width
                 anchors.left: parent.left
                 color: "transparent"
+                z: 2
 
                 Text {
                     id: urlTitle
@@ -805,6 +871,7 @@ Rectangle {
                     textFormat: Text.RichText
                     text: EnyoUtils.applyFilterHighlight(model.title,
                                                          addressBar.text)
+                    z: 2
                     Text {
                         height: parent.height
                         clip: true
@@ -821,6 +888,7 @@ Rectangle {
                         text: EnyoUtils.applyFilterHighlight(model.url,
                                                              addressBar.text)
                         color: "#838383"
+                        z: 2
                     }
                 }
                 Rectangle {
@@ -828,6 +896,7 @@ Rectangle {
                     height: Units.gu(1 / 10)
                     width: parent.width
                     anchors.top: parent.top
+                    z: 2
                 }
 
                 Rectangle {
@@ -835,9 +904,10 @@ Rectangle {
                     height: Units.gu(6)
                     anchors.right: parent.right
                     anchors.top: sectionRect.top
+                    z:2
 
                     Image {
-                        source: "images/header-icon-history.png" //"images/header-icon-bookmarks.png"
+                        source: model.icon
                         anchors.top: imgResultsRect.top
                         anchors.right: parent.right
                         height: Units.gu(3)
@@ -845,6 +915,7 @@ Rectangle {
                         anchors.topMargin: Units.gu(1.5)
                         anchors.rightMargin: Units.gu(1)
                         horizontalAlignment: Image.AlignRight
+                        z: 2
                     }
                 }
 
@@ -856,7 +927,13 @@ Rectangle {
                         addressBar.text = model.url
                     }
                 }
+                Component.onCompleted:
+                {
+                    suggestionsBackground.height = (urlModel.count + 1) * Units.gu(6)
+                    suggestionList.height = (urlModel.count) * Units.gu(6)
+                }
             }
         }
     }
 }
+

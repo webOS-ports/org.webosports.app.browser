@@ -22,6 +22,16 @@
                 "type": "ToggleButton",
                 "value": false
             }
+			,
+			{
+                "group": "Browser Preferences",
+                "restart": "none",
+                "label": "Show toggle keyboard button",
+                "help": "Sets whether to show the toggle keyboard button",
+                "key": "toggleVKBKey",
+                "type": "ToggleButton",
+                "value": false
+            }			
         ]
     }
 ]

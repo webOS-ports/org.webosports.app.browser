@@ -13,12 +13,19 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-function applyFilterHighlight(a, b) {
-//function applyFilterHighlight(a, b, c) {
+	function applyFilterHighlight(a, b) {
+	//function applyFilterHighlight(a, b, c) {
         //return a.replace(new RegExp(b, "i"), '<span class="' + c + '">$&</span>');
     //We cannot use classes and background images so we use color and underline here instead
     //console.log("log output: "+a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>'))
-    return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
+		if(a.length>0)
+		{
+			return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
+		}
+		else
+		{
+			return "";
+		}
 	}
 
 	function parseUri (inText) {
@@ -944,11 +951,16 @@ function getProp(parts, create, context) {
 		The special _arguments_ variable is an example of an array-like object.
 	*/
 	function cloneArray(inArrayLike, inOffset, inStartWith) {
+		
 		var arr = inStartWith || [];
-		for(var i = inOffset || 0, l = inArrayLike.length; i<l; i++){
-			arr.push(inArrayLike[i]);
-		}
+		if(inArrayLike)
+		{
+			for(var i = inOffset || 0, l = inArrayLike.length; i<l; i++){
+				arr.push(inArrayLike[i]);
+			}
+		}	
 		return arr;
+			
 	};
 	//enyo._toArray = enyo.cloneArray;
 	var _toArray = cloneArray();

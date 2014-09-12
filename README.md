@@ -54,6 +54,8 @@ To do:
 9. Add select, copy & paste where possible
 10. Fix share dialog
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
+12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
+13. Investigate search suggestions to see if those are possible from QML with our luna calls.
 
 ## Contributing
 

@@ -137,7 +137,7 @@ Window {
                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
 
         var lparams = JSON.parse(application.launchParameters)
-        if (lparams.target.length > 0)
+        if (lparams.target && lparams.target.length > 0)
             webViewItem.url = lparams.target
     }
 

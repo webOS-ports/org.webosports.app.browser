@@ -166,6 +166,7 @@ Window {
         experimental.preferences.dnsPrefetchEnabled: true
         experimental.preferences.navigatorQtObjectEnabled: true
         experimental.userAgent: userAgent.defaultUA
+        experimental.authenticationDialog: AuthenticationDialog {}
         visible: true
         z: 1
 

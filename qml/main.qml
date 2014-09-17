@@ -181,6 +181,9 @@ Window {
         z: 1
 
         onNavigationRequested: {
+            //Hide VKB
+            Qt.inputMethod.hide()
+
             pb2.height = Units.gu(1/2)
             request.action = WebView.AcceptRequest;
 

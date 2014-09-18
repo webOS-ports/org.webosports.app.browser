@@ -25,6 +25,7 @@ Features:
 8. Support for both tablet (landscape) and phone (portrait) layout.
 9. Custom UA strings in order to improve compatibility with websites.
 10. Show/hide vkb using button which can be enabled in Tweaks.
+11. Launching via Just Type :)
 
 Known bugs
 -----------
@@ -46,9 +47,9 @@ To do:
 1. <s>Add FocusScope to addressBar to see if that solves the VKB focus issue.</s>
 2. <s>Fix the creation of browsing history for only properly loaded pages.</s>
 3. <s>Add bookmarks in URL suggestions as well.</s>
-4. Create settings page to replicate settings from legacy.
+4. <s>Create settings page to replicate settings from legacy.</s>
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
-6. Add launch parameters + handling
+6. <s>Add launch parameters + handling</s>
 7. Add icons for bookmarks (investigate legacy's handling). <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
 9. Add select, copy & paste where possible
@@ -57,7 +58,10 @@ To do:
 12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
 13. Investigate search suggestions to see if those are possible from QML with our luna calls.
 14. Add possibility to edit bookmarks
-15. Add authentication dialog
+15. <s>Add authentication dialog</s>
+16. Add password manager
+17. Add cookies support
+18. Look into https everywhere
 
 ## Contributing
 

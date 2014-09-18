@@ -39,6 +39,7 @@ Known bugs:
 6. <s>Page gets added to browser history, even when not loaded (for example when there's no network connectivity).</s>
 7. <s>Progress bar doesn't always behave properly.</s>
 8. Share dialog not working yet.
+9. Cannot select cursor location in URL bar
 
 To do:
 -----------

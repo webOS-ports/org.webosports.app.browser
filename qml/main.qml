@@ -176,9 +176,7 @@ Window {
     SettingsPage {
         z: 4
         id: settingsPage
-
         anchors.fill: parent
-        anchors.margins: 50
         visible: false
     }
 

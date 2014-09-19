@@ -68,6 +68,7 @@ To do:
 17. Add cookies support
 18. Look into https everywhere
 19. Confirmation dialog for Clearing Downloads
+20. Further make the preferences actually do something in the app
 
 ## Contributing
 

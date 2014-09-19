@@ -105,11 +105,11 @@ Rectangle {
     function clearItems(clearMode) {
         if (clearMode === "history") {
             dbmode = "history"
-            navigationBar.__queryDB(
+            __queryDB(
                         "del", '{"query":{"from":"com.palm.browserhistory:1"}}')
         } else if (clearMode === "bookmarks") {
             dbmode = "bookmarks"
-            navigationBar.__queryDB(
+            __queryDB(
                         "del",
                         '{"query":{"from":"com.palm.browserbookmarks:1"}}')
         }

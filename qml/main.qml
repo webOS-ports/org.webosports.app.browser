@@ -1,6 +1,7 @@
 /*
 * Copyright (C) 2014 Simon Busch <morphis@gravedo.de>
 * Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
+* Copyright (C) 2014 Christophe Chapuis <chris.chapuis@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -153,8 +154,32 @@ Window {
 
     Connections {
         target: application // this is luna-qml-launcher C++ object instance
-        onRelaunched: console.log(
-                          "The browser has been relaunched with parameters: " + parameters)
+        onRelaunched: {
+            console.log("The browser has been relaunched with parameters: " + parameters)
+            var params = JSON.parse(parameters);
+            if( params && params['palm-command'] === 'open-app-menu' ) {
+                appMenu.visible = true;
+            }
+        }
+    }
+
+    AppMenu {
+        id: appMenu
+        z: 100 // above everything in the app
+        visible: false
+        anchors.top: parent.top
+        anchors.left: parent.left
+
+        onSettingsMenuItem: settingsPage.showPage()
+    }
+
+    SettingsPage {
+        z: 4
+        id: settingsPage
+
+        anchors.fill: parent
+        anchors.margins: 50
+        visible: false
     }
 
     NavigationBar {

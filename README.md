@@ -26,6 +26,7 @@ Features:
 9. Custom UA strings in order to improve compatibility with websites.
 10. Show/hide vkb using button which can be enabled in Tweaks.
 11. Launching via Just Type :)
+12. Has settings page
 
 Known bugs
 -----------
@@ -40,6 +41,9 @@ Known bugs:
 7. <s>Progress bar doesn't always behave properly.</s>
 8. Share dialog not working yet.
 9. Cannot select cursor location in URL bar
+10. Dropdown for search engine in Settings not working yet
+11. Tapping on App Menu when visible doesn't hide it.
+12. Authentication dialog doesn't look good on N4
 
 To do:
 -----------
@@ -63,6 +67,7 @@ To do:
 16. Add password manager
 17. Add cookies support
 18. Look into https everywhere
+19. Confirmation dialog for Clearing Downloads
 
 ## Contributing
 

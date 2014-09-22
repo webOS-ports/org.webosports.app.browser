@@ -43,7 +43,7 @@ Known bugs:
 9. Cannot select cursor location in URL bar
 10. Dropdown for search engine in Settings not working yet
 11. Tapping on App Menu when visible doesn't hide it.
-12. Authentication dialog doesn't look good on N4
+12. <s>Authentication dialog doesn't look good on N4</s>
 13. Error message is not correct when no network connection is available.
 
 To do:

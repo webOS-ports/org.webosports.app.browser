@@ -1,19 +1,21 @@
+
 /*
- * Copyright (C) 2014 Morgan McMillian <gilag@monkeystew.com>
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>
- */
+* Copyright (C) 2014 Morgan McMillian <gilag@monkeystew.com>
+* Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
+*
+* This program is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program.  If not, see <http://www.gnu.org/licenses/>
+*/
 
 import QtQuick 2.0
 import QtQuick.Window 2.1
@@ -29,21 +31,98 @@ Item {
     Rectangle {
         id: dimBackground
         anchors.fill: parent
-        color: "black"
-        opacity: 0.7
+        color: "#4C4C4C"
+        opacity: 0.9
     }
 
     Rectangle {
         id: dialogWindow
-        width: Units.gu(45)
-        height: Units.gu(25)
-        color: "#efefef"
-
-        smooth: true
-        radius: 4
+        width: Units.gu(40)
+        height: messageText.height + Units.gu(22)
+        color: "transparent"
+        radius: 10
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: parent.top
-        anchors.topMargin: 10
+        anchors.verticalCenter: parent.verticalCenter
+
+        Image {
+            id: leftImageTop
+            anchors.top: parent.top
+            anchors.left: parent.left
+            source: "images/dialog-left-top.png"
+            height: 25
+            width: 25
+        }
+        Image {
+            id: leftImageMiddle
+            height: parent.height - leftImageTop.height - leftImageBottom.height
+            anchors.top: leftImageTop.bottom
+            anchors.left: parent.left
+            source: "images/dialog-left-middle.png"
+            fillMode: Image.Stretch
+            width: 25
+        }
+        Image {
+            id: leftImageBottom
+            height: 25
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            source: "images/dialog-left-bottom.png"
+
+            width: 25
+        }
+
+        Image {
+            id: centerImageTop
+            height: 25
+            anchors.left: leftImageTop.right
+            anchors.top: parent.top
+            source: "images/dialog-center-top.png"
+            width: parent.width - leftImageTop.width - rightImageTop.width
+        }
+        Image {
+            id: centerImageMiddle
+            height: parent.height - centerImageTop.height - centerImageBottom.height
+            anchors.left: leftImageMiddle.right
+            anchors.top: centerImageTop.bottom
+            source: "images/dialog-center-middle.png"
+            width: parent.width - leftImageTop.width - rightImageTop.width
+            fillMode: Image.Stretch
+        }
+        Image {
+            id: centerImageBottom
+            height: 25
+            anchors.left: leftImageBottom.right
+            anchors.bottom: parent.bottom
+            source: "images/dialog-center-bottom.png"
+            width: parent.width - leftImageBottom.width - rightImageBottom.width
+        }
+
+        Image {
+            id: rightImageTop
+            anchors.right: parent.right
+            anchors.top: parent.top
+            source: "images/dialog-right-top.png"
+            width: 25
+            height: 25
+        }
+        Image {
+            id: rightImageMiddle
+            anchors.right: parent.right
+            anchors.top: rightImageTop.bottom
+            source: "images/dialog-right-middle.png"
+            width: 25
+            height: parent.height - rightImageTop.height - rightImageBottom.height
+            fillMode: Image.Stretch
+        }
+
+        Image {
+            id: rightImageBottom
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            source: "images/dialog-right-bottom.png"
+            width: 25
+            height: 25
+        }
 
         Item {
             id: dialogHeader
@@ -52,165 +131,290 @@ Item {
             anchors.margins: 10
 
             Text {
-                id: titleText
-                width: parent.width
-                text: "Authentication Required"
-                anchors.horizontalCenter: parent.horizontalCenter
-                horizontalAlignment: Text.AlignHCenter
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-                font.weight: Font.Bold
-            }
-
-            Text {
                 id: messageText
-                width: dialogHeader.width
-                text: "A username and password are being requested by the site"
-                horizontalAlignment: Text.AlignHCenter
-                anchors.top: titleText.bottom
-                anchors.topMargin: 10
+                width: parent.width
+                text: "The server " + webViewItem.url + " requires a username and password"
+                horizontalAlignment: Text.AlignLeft
+                anchors.top: parent.top
+                anchors.topMargin: Units.gu(2)
+                anchors.left: parent.left
+                anchors.leftMargin: Units.gu(2)
                 anchors.horizontalCenter: parent.horizontalCenter
                 wrapMode: Text.WordWrap
                 font.family: "Prelude"
                 font.pixelSize: FontUtils.sizeToPixels("medium")
+                color: "#444444"
             }
 
             Rectangle {
-                id: rect1
-                width: dialogHeader.width
-                height: Units.gu(3)
+                id: usernameBG
+                width: parent.width - Units.gu(2)
+                height: Units.gu(4)
+                color: "white"
+                radius: 4
+                visible: false
                 anchors.top: messageText.bottom
-                anchors.topMargin: 10
-                anchors.horizontalCenter: parent.horizontalCenter
-                color: "#dfdfdf"
-            }
-
-            Text {
-                id: usernameHint
-                width: dialogHeader.width
-                text: "Username..."
-                anchors.verticalCenter: rect1.verticalCenter
+                anchors.topMargin: Units.gu(2)
                 anchors.left: parent.left
-                anchors.leftMargin: 5
-                anchors.horizontalCenter: parent.horizontalCenter
-                opacity: 0.7
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
-
-            TextInput {
-                id: username
-                width: dialogHeader.width
-                anchors.verticalCenter: rect1.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                clip: true
-                anchors.horizontalCenter: parent.horizontalCenter
-                focus: true
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-
-                onTextChanged: {
-                    if (username.length > 0)
-                        usernameHint.visible = false
-                    else
-                        usernameHint.visible = true
+                anchors.leftMargin: Units.gu(1)
+                Image {
+                    id: usernameBGImageLeft
+                    source: "images/input-default-focus-left.png"
+                    anchors.left: parent.left
+                    width: 12
+                    height: parent.height
+                }
+                Image {
+                    id: usernameBGImageCenter
+                    source: "images/input-default-focus-center.png"
+                    anchors.left: usernameBGImageLeft.right
+                    width: parent.width - 24
+                    height: parent.height
+                }
+                Image {
+                    id: usernameBGImageRight
+                    source: "images/input-default-focus-right.png"
+                    anchors.right: parent.right
+                    width: 12
+                    height: parent.height
                 }
             }
 
             Rectangle {
-                id: rect2
-                width: dialogHeader.width
+                id: usernameRectangle
+                width: parent.width
                 height: Units.gu(3)
-                anchors.top: username.bottom
-                anchors.topMargin: 10
-                anchors.horizontalCenter: parent.horizontalCenter
-                color: "#dfdfdf"
-            }
-
-            Text {
-                id: passwordHint
-                width: dialogHeader.width
-                text: "Password..."
                 anchors.left: parent.left
-                anchors.leftMargin: 5
-                anchors.verticalCenter: rect2.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                opacity: 0.7
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
+                anchors.leftMargin: Units.gu(3)
+                anchors.top: messageText.bottom
+                anchors.topMargin: Units.gu(3)
+                color: "transparent"
 
-            TextInput {
-                id: password
-                width: dialogHeader.width
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                echoMode: TextInput.Password
-                clip: true
-                anchors.verticalCenter: rect2.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-
-                onTextChanged: {
-                    if (password.length > 0)
-                        passwordHint.visible = false
-                    else
-                        passwordHint.visible = true
-                }
-            }
-
-            Row {
-                id: buttonRow
-                anchors.right: parent.right
-                anchors.left: parent.left
-                spacing: 5
-                anchors.top: password.bottom
-                anchors.topMargin: 15
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Rectangle {
-                    id: cancelButton
-                    width: Units.gu(21)
-                    height: Units.gu(5)
-                    color: "#cacaca"
-                    smooth: true
-                    radius: 4
-
-                    Text {
-                        color: "#2f2f2f"
-                        text: "Cancel"
-                        anchors.centerIn: parent
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: model.reject()
-                    }
+                Text {
+                    id: usernameHint
+                    width: parent.width
+                    text: "Username..."
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("large")
+                    color: "#888"
                 }
 
-                Rectangle {
-                    id: confirmButton
-                    width: Units.gu(21)
-                    height: Units.gu(5)
-                    color: "#555656"
-                    smooth: true
-                    radius: 4
-
-                    Text {
-                        color: "#f2f2f2"
-                        text: "OK"
-                        anchors.centerIn: parent
+                TextInput {
+                    id: username
+                    width: parent.width
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.left
+                    clip: true
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    focus: true
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("large")
+                    color: "black"
+                    onActiveFocusChanged: {
+                        if (username.activeFocus) {
+                            usernameBG.visible = true
+                        } else {
+                            usernameBG.visible = false
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: model.accept(username.text, password.text)
+                    onTextChanged: {
+                        if (username.length > 0)
+                            usernameHint.visible = false
+                        else
+                            usernameHint.visible = true
                     }
                 }
             }
 
+            Rectangle {
+                id: passwordBG
+                width: parent.width - Units.gu(2)
+                height: Units.gu(4)
+                color: "white"
+                radius: 4
+                visible: false
+                anchors.top: usernameRectangle.bottom
+                anchors.left: parent.left
+                anchors.leftMargin: Units.gu(1)
+                Image {
+                    id: passwordBGImageLeft
+                    source: "images/input-default-focus-left.png"
+                    anchors.left: parent.left
+                    width: 12
+                    height: parent.height
+                }
+                Image {
+                    id: passwordBGImageCenter
+                    source: "images/input-default-focus-center.png"
+                    anchors.left: passwordBGImageLeft.right
+                    width: parent.width - passwordBGImageLeft.width - passwordBGImageRight.width
+                    height: parent.height
+                }
+                Image {
+                    id: passwordBGImageRight
+                    source: "images/input-default-focus-right.png"
+                    anchors.right: parent.right
+                    width: 12
+                    height: parent.height
+                }
+            }
+
+            Rectangle {
+                id: passwordRectangle
+                width: parent.width
+                height: Units.gu(3)
+                anchors.top: usernameRectangle.bottom
+                anchors.topMargin: Units.gu(1)
+                anchors.left: parent.left
+                anchors.leftMargin: Units.gu(3)
+                color: "transparent"
+
+                Text {
+                    id: passwordHint
+                    width: parent.width
+                    text: "Password..."
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("large")
+                    color: "#888"
+                }
+
+                TextInput {
+                    id: password
+                    width: parent.width
+                    anchors.left: parent.left
+                    echoMode: TextInput.Password
+                    clip: true
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("large")
+                    color: "black"
+                    onActiveFocusChanged: {
+                        if (password.activeFocus) {
+                            passwordBG.visible = true
+                        } else {
+                            passwordBG.visible = false
+                        }
+                    }
+
+                    onTextChanged: {
+                        if (password.length > 0) {
+                            passwordHint.visible = false
+                        } else {
+                            passwordHint.visible = true
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                id: cancelRect
+                height: Units.gu(4.5)
+                anchors.top: passwordRectangle.bottom
+                anchors.topMargin: Units.gu(1)
+                anchors.left: parent.left
+                anchors.leftMargin: Units.gu(2)
+                width: (parent.width - Units.gu(5)) / 2
+                color: "transparent"
+                radius: 4
+                Image {
+                    id: cancelImageLeft
+                    source: "images/button-up-left.png"
+                    width: 19
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.left: parent.left
+                }
+                Image {
+                    id: cancelImageCenter
+                    source: "images/button-up-center.png"
+                    width: cancelRect.width - cancelImageLeft.width - cancelImageRight.width
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.left: cancelImageLeft.right
+                }
+
+                Image {
+                    id: cancelImageRight
+                    source: "images/button-up-right.png"
+                    width: 19
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.right: cancelRect.right
+                }
+
+                Text {
+                    font.family: "Prelude"
+                    text: "Cancel"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.pixelSize: FontUtils.sizeToPixels("medium")
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        model.reject()
+                    }
+                }
+            }
+
+            Rectangle {
+                id: confirmRect
+                height: Units.gu(4.5)
+                anchors.top: passwordRectangle.bottom
+                anchors.topMargin: Units.gu(1)
+                anchors.left: cancelRect.right
+                anchors.leftMargin: Units.gu(1)
+                width: (parent.width - Units.gu(5)) / 2
+                radius: 4
+                color: "#4b4b4b"
+                Image {
+                    id: confirmImageLeft
+                    source: "images/button-up-left.png"
+                    width: 19
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.left: parent.left
+                }
+                Image {
+                    id: confirmImageCenter
+                    source: "images/button-up-center.png"
+                    width: confirmRect.width - confirmImageLeft.width - confirmImageRight.width
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.left: confirmImageLeft.right
+                }
+
+                Image {
+                    id: confirmImageRight
+                    source: "images/button-up-right.png"
+                    height: parent.height
+                    fillMode: Image.Stretch
+                    anchors.right: confirmRect.right
+                }
+
+                Text {
+                    font.family: "Prelude"
+                    text: "OK"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    color: "white"
+                    font.pixelSize: FontUtils.sizeToPixels("medium")
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onPressed: {
+                        model.accept(username.text, password.text)
+                    }
+                }
+            }
         }
     }
 }

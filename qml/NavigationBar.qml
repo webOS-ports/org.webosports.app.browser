@@ -617,6 +617,7 @@ Rectangle {
                     loadingIndicator.source = "images/menu-icon-stop.png"
                 }
             } else {
+                //Just do a search with the default search engin
                 webView.url = defaultSearchURL.replace("#{searchTerms}",
                                                        addressBar.text)
             }

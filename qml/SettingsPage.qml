@@ -36,7 +36,7 @@ Rectangle {
     Rectangle {
         id: overlayRect
         color: "#4C4C4C"
-        opacity: 0.8
+        opacity: 0.9
         anchors.fill: parent
         visible: false
         z: 1
@@ -554,7 +554,7 @@ Rectangle {
         color: "transparent"
         MouseArea {
             anchors.fill: parent
-            onClicked: {
+            onPressed: {
                 overlayRect.visible = true
                 popupConfirm.visible = true
                 popupConfirm.buttonText = "Would you like to clear your bookmarks?"
@@ -607,7 +607,7 @@ Rectangle {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
+            onPressed: {
                 overlayRect.visible = true
                 popupConfirm.visible = true
                 popupConfirm.buttonText = "Would you like to clear your browser history?"
@@ -660,7 +660,7 @@ Rectangle {
         width: Units.gu(40)
         height: Units.gu(23)
         color: "transparent"
-        radius: 15
+        radius: 10
         z: 5
 
         Image {
@@ -878,7 +878,7 @@ Rectangle {
                 width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
                 height: Units.gu(5)
                 radius: 4
-                color: "#171717"
+                color: "#4b4b4b"
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.horizontalCenter: parent.horizontalCenter
                 Image {
@@ -916,7 +916,10 @@ Rectangle {
                 }
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: closePage()
+                    onPressed:
+                    {
+                        closePage()
+                    }
                 }
             }
         }

@@ -210,6 +210,9 @@ Rectangle {
     }
 
     function __handleGetDefaultSearchSuccess(message) {
+        if (root.enableDebugOutput) {
+            console.log("Got default search successfully")
+        }
         var defbrows = JSON.parse(message.payload)
         defaultSearch = defbrows.SearchPreference.defaultSearchEngine
         luna.call("luna://com.palm.universalsearch/getUniversalSearchList",
@@ -218,11 +221,15 @@ Rectangle {
     }
 
     function __handleGetSearchSuccess(message) {
+        if (root.enableDebugOutput) {
+            console.log("Got search items successfully")
+        }
+
         var defbrows2 = JSON.parse(message.payload)
 
         //Maybe not very pretty, but it works
         for (var i = 0, s; s = defbrows2.UniversalSearchList[i]; i++) {
-            if (s.id === defaultSearch) {
+           if (s.id === defaultSearch) {
                 defaultSearchURL = s.url
                 defaultSearchIcon = s.iconFilePath
                 defaultSearchDisplayName = s.displayName
@@ -610,8 +617,8 @@ Rectangle {
                     loadingIndicator.source = "images/menu-icon-stop.png"
                 }
             } else {
-                //Just do a search with the default search engine
-                webView.url = defaultSearchURL.replace("{$query}",
+                //Just do a search with the default search engin
+                webView.url = defaultSearchURL.replace("#{searchTerms}",
                                                        addressBar.text)
             }
         }
@@ -779,9 +786,9 @@ Rectangle {
                 anchors.fill: parent
                 onPressed: {
                     suggestionsBackground.visible = false
-                    webViewItem.url = defaultSearchURL.replace("{$query}",
+                    webViewItem.url = defaultSearchURL.replace("#{searchTerms}",
                                                                addressBar.text)
-                    addressBar.text = defaultSearchURL.replace("{$query}",
+                    addressBar.text = defaultSearchURL.replace("#{searchTerms}",
                                                                addressBar.text)
                 }
             }

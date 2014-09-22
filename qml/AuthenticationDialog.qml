@@ -289,7 +289,8 @@ Item {
                     id: password
                     width: parent.width
                     anchors.left: parent.left
-                    echoMode: TextInput.Password
+                    echoMode: TextInput.PasswordEchoOnEdit
+                    passwordCharacter: "•"
                     clip: true
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.horizontalCenter: parent.horizontalCenter

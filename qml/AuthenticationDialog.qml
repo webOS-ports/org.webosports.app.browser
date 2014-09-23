@@ -23,6 +23,7 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
 
+
 Item {
     id: authDialog
 
@@ -38,7 +39,7 @@ Item {
     Rectangle {
         id: dialogWindow
         width: Units.gu(40)
-        height: messageText.height + Units.gu(22)
+        height: messageText.height + savePWCheckbox.height + Units.gu(23)
         color: "transparent"
         radius: 10
         anchors.horizontalCenter: parent.horizontalCenter
@@ -315,10 +316,42 @@ Item {
                 }
             }
 
+            Image
+            {
+                property bool saveHistoryImageChecked: false
+                id: savePWCheckbox
+                source: saveHistoryImageChecked ? "images/checkbox-checked.png" : "images/checkbox-unchecked.png"
+                anchors.left: parent.left
+                anchors.leftMargin: Units.gu(2)
+                anchors.top: passwordRectangle.bottom
+                anchors.topMargin: Units.gu(1)
+
+                MouseArea
+                {
+                    anchors.fill: parent
+                    onClicked:
+                    {
+                        savePWCheckbox.saveHistoryImageChecked ? savePWCheckbox.saveHistoryImageChecked = false : savePWCheckbox.saveHistoryImageChecked = true
+                    }
+                }
+            }
+
+            Text
+            {
+                anchors.left: savePWCheckbox.right
+                anchors.leftMargin: Units.gu(1)
+                anchors.top: passwordRectangle.bottom
+                anchors.topMargin: Units.gu(1)
+                text: "Save password in password manager?"
+                font.family: "Prelude"
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                color: "#444444"
+            }
+
             Rectangle {
                 id: cancelRect
                 height: Units.gu(4.5)
-                anchors.top: passwordRectangle.bottom
+                anchors.top: savePWCheckbox.bottom
                 anchors.topMargin: Units.gu(1)
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(2)
@@ -369,7 +402,7 @@ Item {
             Rectangle {
                 id: confirmRect
                 height: Units.gu(4.5)
-                anchors.top: passwordRectangle.bottom
+                anchors.top: savePWCheckbox.bottom
                 anchors.topMargin: Units.gu(1)
                 anchors.left: cancelRect.right
                 anchors.leftMargin: Units.gu(1)
@@ -412,6 +445,11 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onPressed: {
+                        //TODO: Need to implement password manager using KeyManager where possible
+                        if(saveHistoryImageChecked)
+                        {
+                          //TODO Function to call and do the password management
+                        }
                         model.accept(username.text, password.text)
                     }
                 }

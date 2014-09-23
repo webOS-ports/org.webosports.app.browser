@@ -48,12 +48,12 @@ Window {
 
         function updatePrivateByDefault() {
             if (privateByDefaultTweak.value === true) {
-                privateByDefault = true
+                privateByDefault = true;
             } else {
-                privateByDefault = false
+                privateByDefault = false;
             }
             if (enableDebugOutput) {
-                console.log("privateByDefault: " + privateByDefault)
+                console.log("privateByDefault: " + privateByDefault);
             }
         }
     }
@@ -65,58 +65,82 @@ Window {
     }
 
     function __launchApplication(id, params) {
-        console.log("launching app " + id + " with params " + params.toString())
+        console.log("launching app " + id + " with params " + params.toString());
         luna.call("luna://com.palm.applicationManager/launch", JSON.stringify({
                                                                                   id: id,
                                                                                   params: params
                                                                               }),
-                  undefined, __handleLaunchAppError)
+                  undefined, __handleLaunchAppError);
     }
 
+
     function __handleLaunchAppError(message) {
-        console.log("Could not start application : " + message)
+        console.log("Could not start application : " + message);
     }
 
     function __queryDB(action, params) {
         luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError)
+                  __handleQueryDBSuccess, __handleQueryDBError);
     }
 
     function __handleQueryDBError(message) {
-        console.log("Could not query DB : " + message)
+        console.log("Could not query DB : " + message);
     }
 
     function __handleQueryDBSuccess(message) {
         if (dataMode === "bookmarks") {
-            myBookMarkData = message.payload
+            myBookMarkData = message.payload;
         } else if (dataMode === "downloads") {
-            myDownloadsData = '{"results":[{"url":"Downloads not implemented yet", "title":"Downloads not implemented yet"}]}'
+            myDownloadsData = '{"results":[{"url":"Downloads not implemented yet", "title":"Downloads not implemented yet"}]}';
         } else if (dataMode === "history") {
-            myHistoryData = message.payload
+            myHistoryData = message.payload;
         }
     }
 
     function __queryPutDB(myData) {
         if (enableDebugOutput) {
             console.log("Putting Data to DB: JSON.stringify(myData): " + JSON.stringify(
-                            myData))
+                            myData));
         }
         luna.call("luna://com.palm.db/put", JSON.stringify({
                                                                objects: [myData]
                                                            }),
-                  __handlePutDBSuccess, __handlePutDBError)
+                  __handlePutDBSuccess, __handlePutDBError);
     }
 
     function __handlePutDBError(message) {
-            console.log("Could not put DB : " + message)
+            console.log("Could not put DB : " + message);
     }
 
     function __handlePutDBSuccess(message) {
         if(enableDebugOutput)
         {
-            console.log("Put DB: " + JSON.stringify(message.payload))
+            console.log("Put DB: " + JSON.stringify(message.payload));
         }
     }
+
+    function __getConnectionStatus()
+    {
+        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({}),
+                                        __connectionStatusSuccess, __connectionStatusError);
+    }
+
+    function __connectionStatusSuccess(message)
+    {
+        connectionStatus = JSON.parse(message.payload);
+        internetAvailable = connectionStatus.isInternetConnectionAvailable;
+        if(enableDebugOutput)
+        {
+            console.log("Internet Available: " + internetAvailable);
+        }
+
+    }
+
+    function __connectionStatusError(message)
+    {
+        console.log("Unable to get connection status");
+    }
+
 
     property bool pageIsLoading: false
     property bool historyAvailable: false
@@ -127,11 +151,17 @@ Window {
     property string myHistoryData: '{}'
     property string dataMode: "bookmarks"
     property bool privateByDefault: false
+    property var connectionStatus
+    property bool internetAvailable: false
 
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
         root.visible = true
+
+        //Determine initial connection status
+        __getConnectionStatus()
+
         //Run query so we have the bookmarks item on first load of the panel
         root.__queryDB(
                     "find",
@@ -239,6 +269,9 @@ Window {
 
         onLoadingChanged: {
 
+            //Refresh connection status
+            __getConnectionStatus()
+
             if (loadRequest.status == WebView.LoadStartedStatus)
                 pageIsLoading = true
                 pb2.height = Units.gu(1/2)
@@ -248,12 +281,20 @@ Window {
                 webViewItem.loadHtml("Failed to load " + loadRequest.url, "",
                                      loadRequest.url)
                 pageIsLoading = false
-                if (loadRequest.errorCode === NetworkReply.OperationCanceledError)
+                if (loadRequest.errorCode === NetworkReply.OperationCanceledError && internetAvailable)
                     console.log("Load cancelled by user")
                 webViewItem.loadHtml(
                             "Loading of " + loadRequest.url + " cancelled by user",
                             "", loadRequest.url)
                 pageIsLoading = false
+
+                if (loadRequest.errorCode === NetworkReply.OperationCanceledError && !internetAvailable)
+                    console.log("No internet connection available")
+                webViewItem.loadHtml(
+                            "No internet connection available, cannot load " + loadRequest.url,
+                            "", loadRequest.url)
+                pageIsLoading = false
+
             }
             if (loadRequest.status == WebView.LoadSucceededStatus)
                 pageIsLoading = false

@@ -56,7 +56,7 @@ To do:
 4. <s>Create settings page to replicate settings from legacy.</s>
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
 6. <s>Add launch parameters + handling</s>
-7. Add icons for bookmarks (investigate legacy's handling). <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
+7. Add icons for bookmarks (investigate legacy's handling). Implemented in UI, <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
 9. Add select, copy & paste where possible
 10. Fix share dialog
@@ -71,6 +71,7 @@ To do:
 19. Confirmation dialog for Clearing Downloads
 20. Further make the preferences actually do something in the app
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
+22. Fix layout of address bar on TP. Anchoring seems off a bit sometimes.
 
 ## Contributing
 

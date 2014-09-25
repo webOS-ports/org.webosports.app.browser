@@ -287,7 +287,6 @@ Rectangle {
 
             function getSearchProviders()
             {
-                //return '[{"id":"google","displayName":"Google","iconFilePath":"/usr/palm/applications/com.palm.launcher/images/search-icon-google.png","url":"https://www.google.com/search?q=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":true},{"id":"wikipedia","displayName":"Wikipedia","iconFilePath":"/usr/palm/applications/com.palm.launcher/images/search-icon-wikipedia.png","url":"https://en.wikipedia.org/wiki/Special:Search?search=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":true},{"id":"duckduckgo","displayName":"DuckDuckGo","iconFilePath":"","url":"https://www.duckduckgo.com/?q=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":true},{"id":"cnn","displayName":"CNN","iconFilePath":"/usr/palm/applications/com.palm.launcher/images/search-icon-cnn.png","url":"http://www.cnn.com/search/?query=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":false},{"id":"amazon","displayName":"Amazon","iconFilePath":"/usr/palm/applications/com.palm.launcher/images/search-icon-amazon.png","url":"https://www.amazon.com/s/?k=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":false},{"id":"imdb","displayName":"IMDb","iconFilePath":"/usr/palm/applications/com.palm.launcher/images/search-icon-imdb.png","url":"http://www.imdb.com/find?q=#{searchTerms}","suggestURL":"","launchParam":"","type":"web","enabled":false}]'
                 return searchProvidersAll
             }
 

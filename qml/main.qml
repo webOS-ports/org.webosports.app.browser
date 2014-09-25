@@ -188,7 +188,14 @@ Window {
             console.log("The browser has been relaunched with parameters: " + parameters)
             var params = JSON.parse(parameters);
             if( params && params['palm-command'] === 'open-app-menu' ) {
-                appMenu.visible = true;
+                if(appMenu.visible)
+                {
+                    appMenu.visible = false;
+                }
+                else
+                {
+                    appMenu.visible = true;
+                }
             }
         }
     }

@@ -26,12 +26,16 @@ Rectangle {
 
     signal closePage
     signal showPage
+    property bool enableDebugOutput: true
     property bool blockPopups: true
     property bool enableJavascript: true
     property bool enablePlugins: true
     property bool rememberPasswords: true
     property var defaultBrowserPreferences
+    property var searchProviderResults
+    property var searchProvidersAll: ['{}']
     property string dbmode: ""
+    property string defaultSearchProvider: ""
 
     Rectangle {
         id: overlayRect
@@ -58,8 +62,21 @@ Rectangle {
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"enablePlugins"}]}}')
         __queryDB("merge", '{"props":{"value":' + rememberPasswords
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"rememberPasswords"}]}}')
+
+        luna.call("luna://com.palm.universalsearch/setSearchPreference", '{"key":"defaultSearchEngine", "value": "'+defaultSearchProvider+'"}', __handleSPSuccess, __handleSPError)
         root.visible = false
     }
+
+    function __handleSPError(message) {
+        console.log("Could change Default Search Engine : " + message)
+    }
+
+    function __handleSPSuccess(message) {
+        if (root.enableDebugOutput) {
+            console.log("Successfully changed Default Search Engine : " + message)
+        }
+    }
+
 
     function __queryDB(action, params) {
         if (root.enableDebugOutput) {
@@ -100,6 +117,10 @@ Rectangle {
         // get the setting values, and fill in the parameters of the dialog
         dbmode = "prefs"
         __queryDB("find", '{"query":{"from":"com.palm.browserpreferences:1"}}')
+
+        //Query Search Providers on loading
+        __querySearchProviders()
+
     }
 
     function clearItems(clearMode) {
@@ -114,6 +135,31 @@ Rectangle {
                         '{"query":{"from":"com.palm.browserbookmarks:1"}}')
         }
     }
+
+    function __querySearchProviders(action, params) {
+        if (root.enableDebugOutput) {
+            console.log("Querying SearchProviders")
+        }
+        luna.call("luna://com.palm.universalsearch/getUniversalSearchList", JSON.stringify({}),
+                  __handleQuerySearchProviderSuccess, __handleQuerySearchProviderError)
+    }
+
+    function __handleQuerySearchProviderError(message) {
+        console.log("Could not query search providers : " + message)
+    }
+
+    function __handleQuerySearchProviderSuccess(message) {
+        if (root.enableDebugOutput) {
+            console.log("Queried search providers : " + JSON.stringify(message.payload))
+        }
+
+        searchProviderResults = JSON.parse(message.payload)
+
+        //Stringify the UniversalSearchList so we can use it in the JSONList
+        searchProvidersAll = JSON.stringify(searchProviderResults.UniversalSearchList);
+        return searchProvidersAll
+    }
+
 
     Rectangle {
         id: header
@@ -180,15 +226,121 @@ Rectangle {
             height: searchPrefsOutside.height - Units.gu(3)
             color: "#D8D8D8"
             radius: 10
-            //TODO make a proper dropdown for this and use actual DB values. QML is a bit tricky and we don't have nice dropdown styling it seems
+
             Text {
+                id: searchPrefsText
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(1)
                 anchors.verticalCenter: parent.verticalCenter
-                text: "Google"
+                text: navigationBar.defaultSearchDisplayName
                 font.family: "Prelude"
                 color: "#444444"
                 font.pixelSize: FontUtils.sizeToPixels("medium")
+            }
+            Image
+            {
+                id: searchPrefsImage
+                source: "images/menu-arrow.png"
+                anchors.right: parent.right
+                anchors.rightMargin: Units.gu(1)
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            MouseArea
+            {
+                anchors.fill: parent
+                onPressed:
+                {
+                    searchProviderList.visible = true
+                }
+            }
+
+
+        }
+    }
+
+    ListView {
+        id: searchProviderList
+        anchors.top: searchPrefsOutside.bottom
+        anchors.right: searchPrefsOutside.right
+        anchors.rightMargin: Units.gu(1) + searchPrefsImage.width / 2
+        width: Units.gu(18)
+        height: Units.gu(30)
+        visible: false
+        z: 500
+
+        Rectangle
+        {
+            anchors.fill: parent
+            radius: 6
+            border.width: Units.gu(1/10)
+            border.color: "#7D7D7D"
+            color: "transparent"
+            z: 500
+        }
+
+        JSONListModel {
+            id: searchProviderModel
+            json: getSearchProviders()
+            //We only want the enabled search engines, seems there are some disabled ones too
+            query: "$[?(@.enabled == true)]"
+
+            function getSearchProviders()
+            {
+                return searchProvidersAll
+            }
+
+        }
+        model: searchProviderModel.model
+
+        delegate: Rectangle {
+            id: sectionRect
+            height: Units.gu(5)
+            width: parent.width
+            anchors.left: parent.left
+            color: "#D9D9D9"
+
+            Text {
+                id: searchProviderName
+                height: sectionRect.height
+                clip: true
+                width: sectionRect.width
+                anchors.left: sectionRect.left
+                anchors.leftMargin: Units.gu(2)
+                horizontalAlignment: Text.AlignLeft
+                verticalAlignment: Text.AlignVCenter
+                font.family: "Prelude"
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                color: "#494949"
+                text: model.displayName
+            }
+           Image {
+                id: defaultSearchProviderImage
+                anchors.right: searchProviderName.right
+                anchors.rightMargin: Units.gu(3)
+                anchors.verticalCenter: parent.verticalCenter
+                source: searchPrefsText.text === model.displayName ? "images/checkmark.png" : ""
+            }
+            Rectangle {
+                color: "silver"
+                height: Units.gu(1 / 10)
+                width: parent.width
+                anchors.top: parent.top
+                z: 2
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    searchPrefsText.text = model.displayName
+                    defaultSearchProvider = model.id
+                    searchProviderList.visible = false
+                }
+            }
+
+            Component.onCompleted:
+            {
+                searchProviderList.height = (searchProviderModel.count) * sectionRect.height
             }
         }
     }

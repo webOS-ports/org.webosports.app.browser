@@ -36,7 +36,7 @@ Item {
 
         model: ListModel {
             ListElement {
-                itemText: "Settings..."
+                itemText: "Preferences..."
                 itemAction: "settingsMenuItem"
             }
         }

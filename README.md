@@ -39,8 +39,8 @@ Known bugs:
 5. <s>Various layout and rendering issues.</s>
 6. <s>Page gets added to browser history, even when not loaded (for example when there's no network connectivity).</s>
 7. <s>Progress bar doesn't always behave properly.</s>
-8. Share dialog not working yet.
-9. Cannot select cursor location in URL bar
+8. <s>Share dialog not working yet.</s><i>In progress 26-Sep-2014</i>
+9. <s>Cannot select cursor location in URL bar</s><i>In progress 26-Sep-2014</i>
 10. <s>Dropdown for search engine in Settings not working yet</s>
 11. <s>Tapping on App Menu when visible doesn't hide it.</s>
 12. <s>Authentication dialog doesn't look good on N4</s>
@@ -59,11 +59,11 @@ To do:
 7. Add icons for bookmarks (investigate legacy's handling). Implemented in UI, <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
 9. Add select, copy & paste where possible
-10. Fix share dialog
+10. <s>Fix share dialog</s><i>In progress 26-Sep-2014</i>
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
 12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
 13. Investigate search suggestions to see if those are possible from QML with our luna calls.
-14. Add possibility to edit bookmarks
+14. <s>Add possibility to edit bookmarks</s> <i>In progress 26-Sep-2014</i>
 15. <s>Add authentication dialog</s>
 16. Add password manager
 17. Add cookies support
@@ -72,6 +72,8 @@ To do:
 20. Further make the preferences actually do something in the app
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
 22. Fix layout of address bar on TP. Anchoring seems off a bit sometimes.
+23. Add scroll bar and style it webOS-y.
+24. Clean up code and make separate QML files for components.
 
 ## Contributing
 

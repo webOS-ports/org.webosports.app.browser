@@ -74,6 +74,7 @@ To do:
 22. Fix layout of address bar on TP. Anchoring seems off a bit sometimes.
 23. Add scroll bar and style it webOS-y.
 24. Clean up code and make separate QML files for components.
+25. Add additional share options, based on check to see if certain app is installed?
 
 ## Contributing
 

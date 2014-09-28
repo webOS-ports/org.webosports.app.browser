@@ -29,6 +29,8 @@ Item {
 
     anchors.fill: parent
 
+    property bool saveHistoryImageChecked: false
+
     Rectangle {
         id: dimBackground
         anchors.fill: parent
@@ -318,7 +320,6 @@ Item {
 
             Image
             {
-                property bool saveHistoryImageChecked: false
                 id: savePWCheckbox
                 source: saveHistoryImageChecked ? "images/checkbox-checked.png" : "images/checkbox-unchecked.png"
                 anchors.left: parent.left

@@ -58,7 +58,7 @@ To do:
 6. <s>Add launch parameters + handling</s>
 7. Add icons for bookmarks (investigate legacy's handling). Implemented in UI, <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
-9. Add select, copy & paste where possible
+9. <s>Add select, copy & paste where possible</s><i>In progress for address bar, Will be included in Black Eye nightlies</i>
 10. <s>Fix share dialog</s><i>Will be included in Black Eye nightlies</i>
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
 12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
@@ -71,10 +71,10 @@ To do:
 19. Confirmation dialog for Clearing Downloads
 20. Further make the preferences actually do something in the app
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
-22. Fix layout of address bar on TP. Anchoring seems off a bit sometimes.
+22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.<i>Will be included in Black Eye nightlies</i>
 23. Add scroll bar and style it webOS-y.
 24. <s>Clean up code and make separate QML files for components.</s><i>Work in progress as of 29-Sep-2014</i>
-25. Add additional share options, based on check to see if certain app is installed?
+25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 
 ## Contributing
 

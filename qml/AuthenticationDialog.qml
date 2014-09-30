@@ -29,13 +29,9 @@ Item {
 
     anchors.fill: parent
 
-    property bool saveHistoryImageChecked: false
-    property real keyboardHeight: Qt.inputMethod.keyboardRectangle.height
-
     Rectangle {
         id: dimBackground
-        width: parent.width
-        height: Qt.inputMethod.visible ? keyboardHeight - parent.height - Units.gu(5) : parent.height
+        anchors.fill: parent
         color: "#4C4C4C"
         opacity: 0.9
     }
@@ -43,11 +39,11 @@ Item {
     Rectangle {
         id: dialogWindow
         width: Units.gu(40)
-        height: messageText.height + savePWCheckbox.height + Units.gu(26)
+        height: messageText.height + savePWCheckbox.height + Units.gu(23)
         color: "transparent"
         radius: 10
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: dimBackground.verticalCenter
+        anchors.verticalCenter: parent.verticalCenter
 
         Image {
             id: leftImageTop
@@ -154,12 +150,12 @@ Item {
             Rectangle {
                 id: usernameBG
                 width: parent.width - Units.gu(2)
-                height: Units.gu(5)
+                height: Units.gu(4)
                 color: "white"
                 radius: 4
                 visible: false
                 anchors.top: messageText.bottom
-                anchors.topMargin: Units.gu(3)
+                anchors.topMargin: Units.gu(2)
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(1)
                 Image {
@@ -192,7 +188,7 @@ Item {
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(3)
                 anchors.top: messageText.bottom
-                anchors.topMargin: Units.gu(4)
+                anchors.topMargin: Units.gu(3)
                 color: "transparent"
 
                 Text {
@@ -238,11 +234,11 @@ Item {
             Rectangle {
                 id: passwordBG
                 width: parent.width - Units.gu(2)
-                height: Units.gu(5)
+                height: Units.gu(4)
                 color: "white"
                 radius: 4
                 visible: false
-                anchors.top: usernameBG.bottom
+                anchors.top: usernameRectangle.bottom
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(1)
                 Image {
@@ -272,7 +268,7 @@ Item {
                 id: passwordRectangle
                 width: parent.width
                 height: Units.gu(3)
-                anchors.top: usernameBG.bottom
+                anchors.top: usernameRectangle.bottom
                 anchors.topMargin: Units.gu(1)
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(3)
@@ -322,11 +318,12 @@ Item {
 
             Image
             {
+                property bool saveHistoryImageChecked: false
                 id: savePWCheckbox
                 source: saveHistoryImageChecked ? "images/checkbox-checked.png" : "images/checkbox-unchecked.png"
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(2)
-                anchors.top: passwordBG.bottom
+                anchors.top: passwordRectangle.bottom
                 anchors.topMargin: Units.gu(1)
 
                 MouseArea
@@ -334,23 +331,21 @@ Item {
                     anchors.fill: parent
                     onClicked:
                     {
-                        saveHistoryImageChecked ? saveHistoryImageChecked = false : saveHistoryImageChecked = true
+                        savePWCheckbox.saveHistoryImageChecked ? savePWCheckbox.saveHistoryImageChecked = false : savePWCheckbox.saveHistoryImageChecked = true
                     }
                 }
             }
 
             Text
             {
-                width: parent.width - Units.gu(10)
                 anchors.left: savePWCheckbox.right
                 anchors.leftMargin: Units.gu(1)
-                anchors.top: passwordBG.bottom
+                anchors.top: passwordRectangle.bottom
                 anchors.topMargin: Units.gu(1)
                 text: "Save password in password manager?"
                 font.family: "Prelude"
                 font.pixelSize: FontUtils.sizeToPixels("medium")
                 color: "#444444"
-                wrapMode: Text.WordWrap
             }
 
             Rectangle {

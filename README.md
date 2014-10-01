@@ -72,8 +72,8 @@ To do:
 20. Further make the preferences actually do something in the app
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
 22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.<i>Will be included in Black Eye nightlies</i>
-23. Add scroll bar and style it webOS-y.
-24. <s>Clean up code and make separate QML files for components.</s><i>Work in progress as of 29-Sep-2014</i>
+23. Add scroll bar and style it webOS-y.<i>Scroll bar is there, styling to be done. Will be included in Black Eye nightlies</i>
+24. <s>Clean up code and make separate QML files for components.</s><i>Will be included in Black Eye nightlies</i>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 
 ## Contributing

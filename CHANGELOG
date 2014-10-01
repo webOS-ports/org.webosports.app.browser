@@ -1,0 +1,16 @@
+0.7.0
+
+Features added:
+-Search engine selection
+-Confirmation dialogs
+-Select, Cut, Copy, Paste for address bar
+-Share dialog is now working
+-Possibility to edit bookmarks
+-Added initial version of scrollbar
+
+Bugs fixed:
+-Address bar selection behavior is working better
+-App menu will now hide when visible and tapping on it
+
+Others:
+-Major code cleanup and rework into separate file

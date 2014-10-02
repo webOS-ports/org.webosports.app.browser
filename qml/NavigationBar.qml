@@ -24,7 +24,6 @@ import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
 import "Utils"
 
-
 Rectangle {
     id: navigationBar
 
@@ -40,12 +39,472 @@ Rectangle {
     property int addressBarWidth: 0
     property var searchResultsBookmarks
     property var searchResultsHistory
-    property var searchResultsAll: ['{}']
+
+    property bool initialSelection: true
     width: parent.width
     height: Units.gu(5.2)
     color: "#343434"
 
     Component.onCompleted: navigationBar.__getDefaultSearch()
+
+    SearchSuggestions {
+        id: searchSuggestions
+    }
+
+    Image {
+        id: topMarker
+        source: "images/topmarker.png"
+        visible: false
+        z: 500
+    }
+
+    Image {
+        id: bottomMarker
+        source: "images/bottommarker.png"
+        visible: false
+        z: 500
+    }
+
+    Rectangle {
+        id: cutCopyPasteRectangle
+        width: Units.gu(10)
+        color: "transparent"
+        anchors.top: navigationBar.bottom
+        x: 100
+        visible: false
+
+        Image {
+            id: cutCopyPasteRectLeft
+            source: "images/ate-left.png"
+            anchors.right: cutCopyPasteRectMiddleLeft.left
+        }
+        Image {
+            id: cutCopyPasteRectMiddleLeft
+            source: "images/ate-middle.png"
+            anchors.right: cutCopyPasteRectMiddleMiddle.left
+            width: (cutCopyPasteTextCut.width + cutCopyPasteTextCopy.width
+                    + cutCopyPasteTextPaste.width) / 2
+            fillMode: Image.Stretch
+        }
+
+        Image {
+            id: cutCopyPasteRectMiddleMiddle
+            source: "images/ate-arrow-up.png"
+            anchors.left: cutCopyPasteRectMiddleLeft.right
+            anchors.bottom: cutCopyPasteRectMiddleLeft.bottom
+            anchors.bottomMargin: 7
+            width: 33
+        }
+
+        Image {
+            id: cutCopyPasteRectMiddleRight
+            source: "images/ate-middle.png"
+            anchors.left: cutCopyPasteRectMiddleMiddle.right
+            width: (cutCopyPasteTextCut.width + cutCopyPasteTextCopy.width
+                    + cutCopyPasteTextPaste.width) / 2
+            fillMode: Image.Stretch
+        }
+
+        Image {
+            id: cutCopyPasteRectRight
+            source: "images/ate-right.png"
+            anchors.left: cutCopyPasteRectMiddleRight.right
+        }
+
+        Text {
+            id: cutCopyPasteTextCut
+            text: "Cut"
+            anchors.left: cutCopyPasteRectMiddleLeft.left
+            anchors.verticalCenter: cutCopyPasteRectMiddleLeft.verticalCenter
+            anchors.verticalCenterOffset: -6
+            anchors.leftMargin: Units.gu(1)
+            font.family: "Prelude"
+            font.weight: Font.DemiBold
+            font.pixelSize: FontUtils.sizeToPixels("medium")
+            color: "#E5E5E5"
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    addressBar.cut()
+                    addressBar.state = "selection"
+                    cutCopyPasteRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    bottomMarker.visible = false
+                    topMarker.visible = false
+                }
+            }
+        }
+
+        Image {
+            id: cutCopyPasteDividerImageLeft
+            source: "images/ate-divider.png"
+            anchors.verticalCenter: cutCopyPasteTextCut.verticalCenter
+            anchors.left: cutCopyPasteTextCut.right
+            anchors.leftMargin: Units.gu(0.75)
+        }
+
+        Text {
+            id: cutCopyPasteTextCopy
+            text: "Copy"
+            anchors.left: cutCopyPasteTextCut.right
+            anchors.leftMargin: Units.gu(2)
+            anchors.verticalCenter: cutCopyPasteRectMiddleLeft.verticalCenter
+            anchors.verticalCenterOffset: -6
+            font.family: "Prelude"
+            font.pixelSize: FontUtils.sizeToPixels("medium")
+            font.weight: Font.DemiBold
+            color: "#E5E5E5"
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    addressBar.copy()
+                    cutCopyPasteRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    addressBar.state = "selection"
+                    bottomMarker.visible = true
+                    topMarker.visible = true
+                }
+            }
+        }
+
+        Image {
+            id: cutCopyPasteDividerImageRight
+            source: "images/ate-divider.png"
+            anchors.verticalCenter: cutCopyPasteTextCopy.verticalCenter
+            anchors.left: cutCopyPasteTextCopy.right
+            anchors.leftMargin: Units.gu(0.75)
+        }
+
+        Text {
+            id: cutCopyPasteTextPaste
+            text: "Paste"
+            anchors.leftMargin: Units.gu(2)
+            anchors.left: cutCopyPasteTextCopy.right
+            anchors.verticalCenter: cutCopyPasteRectMiddleRight.verticalCenter
+            anchors.verticalCenterOffset: -6
+            font.family: "Prelude"
+            font.pixelSize: FontUtils.sizeToPixels("medium")
+            font.weight: Font.DemiBold
+            color: "#E5E5E5"
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    addressBar.paste()
+                    cutCopyPasteRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    addressBar.state = ""
+                    bottomMarker.visible = false
+                    topMarker.visible = false
+                }
+            }
+        }
+        Component.onCompleted: {
+            cutCopyPasteRectMiddleLeft.width
+                    = (cutCopyPasteTextCut.width + cutCopyPasteTextCopy.width
+                       + cutCopyPasteTextPaste.width + Units.gu(4)) / 2
+            cutCopyPasteRectMiddleRight.width
+                    = (cutCopyPasteTextCut.width + cutCopyPasteTextCopy.width
+                       + cutCopyPasteTextPaste.width + Units.gu(4)) / 2
+        }
+    }
+
+    Rectangle {
+        id: cutCopyRectangle
+        width: Units.gu(10)
+        color: "transparent"
+        anchors.top: navigationBar.bottom
+        visible: false
+        Image {
+            id: cutCopyRectLeft
+            source: "images/ate-left.png"
+            anchors.right: cutCopyRectMiddleLeft.left
+        }
+        Image {
+            id: cutCopyRectMiddleLeft
+            source: "images/ate-middle.png"
+            anchors.right: cutCopyRectArrowUp.left
+            width: cutCopyTextCut.width
+            fillMode: Image.Stretch
+
+            Text {
+                id: cutCopyTextCut
+                text: "Cut"
+                anchors.verticalCenter: cutCopyRectMiddleLeft.verticalCenter
+                anchors.verticalCenterOffset: -6
+                font.family: "Prelude"
+                font.weight: Font.DemiBold
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                color: "#E5E5E5"
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        addressBar.cut()
+                        addressBar.state = "selection"
+                        cutCopyRectangle.visible = false
+                        cutCopyPasteRectangle.visible = false
+                        pasteRectangle.visible = false
+                        selectSelectAllRectangle.visible = false
+                        bottomMarker.visible = false
+                        topMarker.visible = false
+                    }
+                }
+            }
+        }
+
+        Image {
+            id: cutCopyRectArrowUp
+            source: "images/ate-arrow-up.png"
+            anchors.bottom: cutCopyRectMiddleLeft.bottom
+            anchors.bottomMargin: 7
+            anchors.horizontalCenter: cutCopyRectangle.horizontalCenter
+        }
+
+        Image {
+            id: cutCopyDividerImageCenter
+            source: "images/ate-divider.png"
+            anchors.verticalCenter: cutCopyRectArrowUp.verticalCenter
+            anchors.horizontalCenter: cutCopyRectArrowUp.horizontalCenter
+        }
+        Image {
+            id: cutCopyRectMiddleRight
+            source: "images/ate-middle.png"
+            anchors.left: cutCopyRectArrowUp.right
+            width: cutCopyTextCopy.width
+            fillMode: Image.Stretch
+
+            Text {
+                id: cutCopyTextCopy
+                text: "Copy"
+                anchors.left: cutCopyRectMiddleRight.left
+                anchors.verticalCenter: cutCopyRectMiddleRight.verticalCenter
+                anchors.verticalCenterOffset: -6
+                font.family: "Prelude"
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                font.weight: Font.DemiBold
+                color: "#E5E5E5"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        addressBar.copy()
+                        cutCopyRectangle.visible = false
+                        cutCopyPasteRectangle.visible = false
+                        pasteRectangle.visible = false
+                        selectSelectAllRectangle.visible = false
+                        addressBar.state = "selection"
+                        bottomMarker.visible = true
+                        topMarker.visible = true
+
+                    }
+                }
+            }
+        }
+        Image {
+            id: cutCopyRectRight
+            source: "images/ate-right.png"
+            anchors.left: cutCopyRectMiddleRight.right
+        }
+    }
+
+    Rectangle {
+        id: selectSelectAllRectangle
+        width: Units.gu(10)
+        color: "transparent"
+        anchors.top: navigationBar.bottom
+        visible: false
+        Image {
+            id: selectSelectAllRectLeft
+            source: "images/ate-left.png"
+            anchors.right: selectSelectAllRectMiddleLeft.left
+        }
+        Image {
+            id: selectSelectAllRectMiddleLeft
+            source: "images/ate-middle.png"
+            anchors.right: selectSelectAllRectArrowUp.left
+            width: selectSelectAllTextSelect.width
+            fillMode: Image.Stretch
+
+            Text {
+                id: selectSelectAllTextSelect
+                text: "Select"
+                anchors.verticalCenter: selectSelectAllRectMiddleLeft.verticalCenter
+                anchors.verticalCenterOffset: -6
+                font.family: "Prelude"
+                font.weight: Font.DemiBold
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                color: "#E5E5E5"
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        addressBar.selectWord()
+                        addressBar.state = "selection"
+                        selectSelectAllRectangle.visible = false
+                        cutCopyPasteRectangle.visible = false
+                        cutCopyRectangle.visible = false
+                        pasteRectangle.visible = false
+                        topMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                    addressBar.selectionStart).x - (topMarker.width / 2)
+                        topMarker.y = addressBar.y + addressBar.positionToRectangle(
+                                    addressBar.selectionStart).y - topMarker.height
+                        bottomMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).x - (bottomMarker.width / 2)
+                        bottomMarker.y = addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).y + addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).height + (bottomMarker.height / 2)
+                        bottomMarker.visible = true
+                        topMarker.visible = true
+                    }
+                }
+            }
+        }
+
+        Image {
+            id: selectSelectAllRectArrowUp
+            source: "images/ate-arrow-up.png"
+            anchors.bottom: selectSelectAllRectMiddleLeft.bottom
+            anchors.bottomMargin: 7
+            anchors.horizontalCenter: selectSelectAllRectangle.horizontalCenter
+        }
+
+        Image {
+            id: selectSelectAllDividerImageCenter
+            source: "images/ate-divider.png"
+            anchors.verticalCenter: selectSelectAllRectArrowUp.verticalCenter
+            anchors.horizontalCenter: selectSelectAllRectArrowUp.horizontalCenter
+        }
+        Image {
+            id: selectSelectAllRectMiddleRight
+            source: "images/ate-middle.png"
+            anchors.left: selectSelectAllRectArrowUp.right
+            width: selectSelectAllTextSelectAll.width
+            fillMode: Image.Stretch
+
+            Text {
+                id: selectSelectAllTextSelectAll
+                text: "Select All"
+                anchors.left: selectSelectAllRectMiddleRight.left
+                anchors.verticalCenter: selectSelectAllRectMiddleRight.verticalCenter
+                anchors.verticalCenterOffset: -6
+                font.family: "Prelude"
+                font.pixelSize: FontUtils.sizeToPixels("medium")
+                font.weight: Font.DemiBold
+                color: "#E5E5E5"
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        addressBar.selectAll()
+                        selectSelectAllRectangle.visible = false
+                        cutCopyPasteRectangle.visible = false
+                        cutCopyRectangle.visible = false
+                        pasteRectangle.visible = false
+                        addressBar.state = "selection"
+                        bottomMarker.visible = true
+                        topMarker.visible = true
+                        topMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                    addressBar.selectionStart).x - (topMarker.width / 2)
+                        topMarker.y = addressBar.y + addressBar.positionToRectangle(
+                                    addressBar.selectionStart).y - topMarker.height
+                        bottomMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).x - (bottomMarker.width / 2)
+                        bottomMarker.y = addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).y + addressBar.positionToRectangle(
+                                    addressBar.selectionEnd).height + (bottomMarker.height / 2)
+
+                    }
+                }
+            }
+        }
+        Image {
+            id: selectSelectAllRectRight
+            source: "images/ate-right.png"
+            anchors.left: selectSelectAllRectMiddleRight.right
+        }
+    }
+
+
+
+    Rectangle {
+        id: pasteRectangle
+        width: Units.gu(10)
+        color: "transparent"
+        anchors.top: navigationBar.bottom
+        visible: false
+
+        Text {
+            id: pastePasteText
+            text: "Paste"
+            anchors.verticalCenter: pasteRectLeft.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenterOffset: -6
+            font.family: "Prelude"
+            font.weight: Font.DemiBold
+            font.pixelSize: FontUtils.sizeToPixels("medium")
+            color: "#E5E5E5"
+            z: 10
+            MouseArea {
+                anchors.fill: parent
+
+                onClicked: {
+                    addressBar.paste()
+                    addressBar.state = ""
+                    pasteRectangle.visible = false
+                    cutCopyPasteRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    bottomMarker.visible = false
+                    topMarker.visible = false
+                }
+            }
+        }
+
+        Image {
+            id: pasteRectLeft
+            source: "images/ate-left.png"
+            anchors.right: pasteRectMiddleLeft.left
+        }
+        Image {
+            id: pasteRectMiddleLeft
+            source: "images/ate-middle.png"
+            anchors.right: pasteRectArrowUp.left
+            width: 8
+        }
+
+        Image {
+            id: pasteRectArrowUp
+            source: "images/ate-arrow-up.png"
+            anchors.bottom: pasteRectMiddleLeft.bottom
+            anchors.bottomMargin: 7
+            anchors.horizontalCenter: pasteRectangle.horizontalCenter
+        }
+
+        Image {
+            id: pasteRectMiddleRight
+            source: "images/ate-middle.png"
+            anchors.left: pasteRectArrowUp.right
+            width: 8
+        }
+
+        Image {
+            id: pasteRectRight
+            source: "images/ate-right.png"
+            anchors.left: pasteRectMiddleRight.right
+        }
+        Component.onCompleted:
+        {
+            pasteRectMiddleLeft.width = pastePasteText.width / 2
+            pasteRectMiddleRight.width = pastePasteText.width / 2
+        }
+    }
 
     Tweak {
         id: progressBarTweak
@@ -87,18 +546,17 @@ Rectangle {
         }
     }
 
-
     /////// private //////
     LunaService {
         id: luna
         name: "org.webosports.app.browser"
     }
 
-    function setFocus(focusState){
+    function setFocus(focusState) {
         if (root.enableDebugOutput) {
-            console.log("setFocus called with"+focusState)
+            console.log("setFocus called with" + focusState)
         }
-        addressBar.focus = focusState;
+        addressBar.focus = focusState
     }
 
     function __launchApplication(id, params) {
@@ -133,11 +591,12 @@ Rectangle {
             console.log("Queried DB : " + JSON.stringify(message.payload))
         }
         searchResultsBookmarks = JSON.parse(message.payload)
-                navigationBar.__queryHDB(
-                "search",
-                '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
-        }
-
+        navigationBar.__queryHDB(
+                    "search",
+                    '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'
+                    + "\"" + addressBar.text + "\""
+                    + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+    }
 
     function __queryHDB(action, params) {
         if (root.enableDebugOutput) {
@@ -153,7 +612,8 @@ Rectangle {
 
     function __handleQueryHDBSuccess(message) {
         if (root.enableDebugOutput) {
-            console.log("Queried History DB : " + JSON.stringify(message.payload))
+            console.log("Queried History DB : " + JSON.stringify(
+                            message.payload))
         }
 
         searchResultsHistory = JSON.parse(message.payload)
@@ -162,22 +622,26 @@ Rectangle {
         var searchResults = []
 
         for (var j = 0, t; t = searchResultsBookmarks.results[j]; j++) {
-            searchResults.push({url:t.url, title: t.title, icon: "images/header-icon-bookmarks.png"})
+            searchResults.push({
+                                   url: t.url,
+                                   title: t.title,
+                                   icon: "images/header-icon-bookmarks.png"
+                               })
         }
-        if(searchResultsHistory.results.length <= 32)
-        {
+        if (searchResultsHistory.results.length <= 32) {
             for (var i = 0, s; s = searchResultsHistory.results[i]; i++) {
-                searchResults.push({url: s.url, title: s.title, icon:"images/header-icon-history.png"})
+                searchResults.push({
+                                       url: s.url,
+                                       title: s.title,
+                                       icon: "images/header-icon-history.png"
+                                   })
             }
         }
 
         //Stringify them so we can use it in the JSONList
-        searchResultsAll = JSON.stringify(searchResults);
-        return searchResultsAll
-
+        searchSuggestions.searchResultsAll = JSON.stringify(searchResults)
+        return searchSuggestions.searchResultsAll
     }
-
-
 
     function __queryPutDB(myData) {
         if (root.enableDebugOutput) {
@@ -229,7 +693,7 @@ Rectangle {
 
         //Maybe not very pretty, but it works
         for (var i = 0, s; s = defbrows2.UniversalSearchList[i]; i++) {
-           if (s.id === defaultSearch) {
+            if (s.id === defaultSearch) {
                 defaultSearchURL = s.url
                 defaultSearchIcon = s.iconFilePath
                 defaultSearchDisplayName = s.displayName
@@ -270,6 +734,10 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
+                }
+
                 if (webView.canGoBack) {
                     backImage.verticalAlignment = Image.AlignBottom
                     webView.goBack()
@@ -302,6 +770,10 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
+                }
+
                 if (webView.canGoForward) {
                     forwardImage.verticalAlignment = Image.AlignBottom
                     webView.goForward()
@@ -322,7 +794,7 @@ Rectangle {
 
     Image {
         id: secureSite
-        verticalAlignment: Image.AlignTop
+        anchors.verticalCenter: forwardImage.verticalCenter
         anchors.left: forwardImage.right
         source: "images/secure-lock.png"
         height: Units.gu(3.75)
@@ -336,8 +808,9 @@ Rectangle {
         anchors.leftMargin: Units.gu(1)
         anchors.left: secureSite.right
         anchors.verticalCenter: navigationBar.verticalCenter
-        width: navigationBar.width - forwardImage.width - backImage.width
-               - shareImage.width - newCardImage.width - bookmarkImage.width - vkbImage.width - Units.gu(2.5)
+        width: navigationBar.width - forwardImage.width - backImage.width - shareImage.width
+               - newCardImage.width - bookmarkImage.width - vkbImage.width - Units.gu(
+                   2.5)
         clip: true
         height: Units.gu(3.5)
         font.family: "Prelude"
@@ -353,39 +826,40 @@ Rectangle {
         anchors.margins: Units.gu(1)
         text: ""
 
-
         onAccepted: updateURL()
 
-        onActiveFocusChanged:
-        {
+        onActiveFocusChanged: {
             Qt.inputMethod.show()
         }
 
         onContentSizeChanged: {
             addressBarWidth = addressBar.width
             //We need a different query in case the lenght is 0
-            if(addressBar.text.length === 0)
-            {
+            if (addressBar.text.length === 0) {
                 navigationBar.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserbookmarks:1"}}')
-            }
-            else
-            {
-                navigationBar.__queryDB(
-                "search",
-                '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'+"\""+addressBar.text+"\""+', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
-            }
-            optSearch.text = defaultSearchDisplayName
-            imgSearch.source = defaultSearchIcon
-            suggestionsBackground.height = (urlModel.count + 1) * Units.gu(6)
-            suggestionList.height = (urlModel.count) * Units.gu(6)
-
-            if (addressBar.text.length === 0 || addressBar.text.substring(
-                        0, 4) === "http") {
-                suggestionsBackground.visible = false
             } else {
-                suggestionsBackground.visible = true
+                navigationBar.__queryDB(
+                            "search",
+                            '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'
+                            + "\"" + addressBar.text + "\""
+                            + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
+            }
+            searchSuggestions.optSearchText = defaultSearchDisplayName
+            searchSuggestions.defaultSearchIcon = defaultSearchIcon
+            searchSuggestions.height = (searchSuggestions.urlModelCount + 1) * Units.gu(
+                        6)
+            searchSuggestions.suggestionListHeight = searchSuggestions.urlModelCount * Units.gu(
+                        6)
+            if (addressBar.text.length === 0 || addressBar.text.substring(
+                        0,
+                        4) === "http" || addressBar.text.substring(0,
+                                                                   3) === "ftp"
+                    || addressBar.text.substring(0, 4) === "data") {
+                searchSuggestions.visible = false
+            } else {
+                searchSuggestions.visible = true
             }
         }
 
@@ -441,37 +915,19 @@ Rectangle {
             verticalAlignment: Image.AlignTop
             source: "images/menu-icon-refresh.png"
 
-            states: [
-                State {
-                    name: "hideProgress"
-                    when: webView.loadProgress === 100
-                    PropertyChanges {
-                        target: loadingIndicator
-                        source: "images/menu-icon-refresh.png"
-                    }
-                }
-            ]
-
-            transitions: Transition {
-                from: ""
-                to: "hideProgress"
-                PropertyAnimation {
-                    target: loadingIndicator
-                    properties: "opacity"
-                    duration: 200
-                }
-            }
-
             //Handle stop/reload
             MouseArea {
                 anchors.fill: loadingIndicator
 
                 onPressed: {
+                    if (shareOptionsList.visible) {
+                        shareOptionsList.visible = false
+                    }
                     if (webView.canGoBack) {
                         backImage.opacity = 1
                     }
                     if (webView.canGoForward) {
-                        forwardImage.opafcity = 1
+                        forwardImage.opacity = 1
                     }
 
                     //TODO: Work out a more proper way of dealing with this. It works currently but it's not pretty
@@ -480,8 +936,8 @@ Rectangle {
                     if (mySplit[mySplit.length - 1] === 'menu-icon-refresh.png') {
 
                         if (addressBar.text !== "") {
-                            pb2.height = Units.gu(1 / 2)
-                            pb2.value = 0
+                            progressBar.height = Units.gu(1 / 2)
+                            progressBar.value = 0
                         }
                         webView.reload
                         loadingIndicator.source = "images/menu-icon-stop.png"
@@ -489,14 +945,15 @@ Rectangle {
                         if (addressBar.selectedText !== "") {
                             addressBar.deselect
                             addressBar.focus = true
+                            addressBar.text = ""
                             Qt.inputMethod.show()
                         } else {
                             webView.stop
                             loadingIndicator.source = "images/menu-icon-refresh.png"
                             if (!alwaysShowProgressBar) {
-                                pb2.height = 0
+                                progressBar.height = 0
                             }
-                            pb2.value = 0
+                            progressBar.value = 0
                         }
                     }
                 }
@@ -512,7 +969,7 @@ Rectangle {
 
                 if (!webView.loading) {
                     if (!alwaysShowProgressBar) {
-                        pb2.height = 0
+                        progressBar.height = 0
                     }
                 }
 
@@ -522,6 +979,7 @@ Rectangle {
                 }
                 if (webView.canGoBack) {
                     backImage.opacity = 1.0
+                    shareImage.opacity = 1.0
                 } else {
                     backImage.opacity = 0.5
                 }
@@ -542,8 +1000,22 @@ Rectangle {
             onTriggered: {
 
                 if (!webView.loading) {
-                    pb2.progressBarColor = "green"
+                    progressBar.progressBarColor = "green"
                 }
+
+                if (webView.canGoBack) {
+                    backImage.opacity = 1.0
+                    shareImage.opacity = 1.0
+                } else {
+                    backImage.opacity = 0.5
+                }
+
+                if (webView.canGoForward) {
+                    forwardImage.opacity = 1.0
+                } else {
+                    forwardImage.opacity = 0.5
+                }
+
             }
         }
 
@@ -562,38 +1034,106 @@ Rectangle {
             width: parent.width - loadingIndicator.width
             height: parent.height
             anchors.left: parent.left
-            onPressed: {
-                if (webViewItem.url !== "" && addressBar.text !== "") {
-                    addressBar.focus = true
-                    Qt.inputMethod.show()
 
-                    if(addressBar.selectedText!==addressBar.text)
-                    {
-                        addressBar.selectAll()
-                        loadingIndicator.source = "images/menu-icon-stop.png"
-                    }
-                } else {
-                    addressBar.deselect
-                    addressBar.focus = true
-                    Qt.inputMethod.show()
+            onClicked: {
+                if (root.enableDebugOutput) {
+                    console.log("onClicked addressBar.selectedText: "+addressBar.selectedText+ " addressBar.state: "+addressBar.state+ " initial selection: "+initialSelection)
                 }
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
+                }
+                if ((!addressBar.selectedText && initialSelection) || addressBar.state === "") {
+                    initialSelection = false
+                    addressBar.focus = true
+                    addressBar.state = "selection"
+                    addressBar.selectAll()
+
+                } else if(!addressBar.selectedText && !initialSelection && addressBar.state==="selection"){
+                    cutCopyPasteRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    bottomMarker.visible = false
+                    topMarker.visible = false
+                    addressBar.focus = true
+                    initialSelection = true
+                    addressBar.cursorPosition = addressBar.positionAt(mouse.x)
+                } else if ((addressBar.selectedText && !initialSelection) || (addressBar.selectedText && initialSelection && addressBar.state === "selection")) {
+                    topMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                addressBar.selectionStart).x - (topMarker.width / 2)
+                    topMarker.y = addressBar.y + addressBar.positionToRectangle(
+                                addressBar.selectionStart).y - topMarker.height
+                    topMarker.visible = true
+                    bottomMarker.x = addressBar.x + addressBar.positionToRectangle(
+                                addressBar.selectionEnd).x - (bottomMarker.width / 2)
+                    bottomMarker.y = addressBar.positionToRectangle(
+                                addressBar.selectionEnd).y + addressBar.positionToRectangle(
+                                addressBar.selectionEnd).height + (bottomMarker.height / 2)
+                    bottomMarker.visible = true
+                    cutCopyPasteRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    cutCopyRectangle.visible = true
+                    cutCopyRectangle.x = ((topMarker.x + bottomMarker.x) / 2)
+                            - (cutCopyRectangle.width / 2)
+                } else {
+                    topMarker.visible = false
+                    bottomMarker.visible = false
+                    addressBar.cursorPosition = addressBar.positionAt(mouse.x)
+                }
+            }
+
+            onPressAndHold: {
+                if (root.enableDebugOutput) {
+                    console.log("onPressAndHold addressBar.selectedText: "+addressBar.selectedText+ " addressBar.state: "+addressBar.state+ " initial selection: "+initialSelection)
+                }
+                if (!addressBar.selectedText
+                        && addressBar.state === "selection") {
+                    cutCopyRectangle.visible = false
+                    cutCopyPasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+
+                    pasteRectangle.visible = true
+                    pasteRectangle.x = ((topMarker.x + bottomMarker.x) / 2)
+                            - (pasteRectangle.width / 2)
+                } else if (addressBar.selectedText
+                           && addressBar.state === "selection") {
+                    cutCopyRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+
+                    cutCopyPasteRectangle.visible = true
+                    cutCopyPasteRectangle.x = ((topMarker.x + bottomMarker.x) / 2)
+                            - (cutCopyPasteRectangle.width / 2)
+                }
+                else if (!addressBar.selectedText
+                                           && addressBar.state === "") {
+                    addressBar.cursorPosition = addressBar.positionAt(mouse.x)
+
+                    cutCopyRectangle.visible = false
+                    pasteRectangle.visible = false
+                    cutCopyPasteRectangle.visible = false
+
+                    selectSelectAllRectangle.visible = true
+                                    selectSelectAllRectangle.x = addressBar.x
+                                }
             }
         }
 
         //TODO Dirty function for prefixing with http:// for now. Would be good if we can detect if site can do https and use that or else http
         function updateURL() {
-            suggestionsBackground.visible = false
+            searchSuggestions.visible = false
             var uri = EnyoUtils.parseUri(addressBar.text)
             if ((EnyoUtils.isValidScheme(uri) && EnyoUtils.isUri(
                      addressBar.text,
-                     uri)) /*|| (enyo.windowParams.allowAllSchemes && uri.scheme) */) {
+                     uri))) {
                 if (text.substring(0, 7) === "http://" || text.substring(
                             0,
                             8) === "https://" || text.substring(0,
                                                                 6) === "ftp://"
                         || text.substring(0, 7) === "data://") {
                     webView.url = addressBar.text
-                    pb2.height = Units.gu(1 / 2)
+                    progressBar.height = Units.gu(1 / 2)
                     loadingIndicator.source = "images/menu-icon-stop.png"
                     //Show the lock in case of https
                     if (text.substring(0, 8) === "https://") {
@@ -613,7 +1153,7 @@ Rectangle {
                 } else {
                     webView.url = "http://" + addressBar.text
                     addressBar.text = "http://" + addressBar.text
-                    pb2.height = Units.gu(1 / 2)
+                    progressBar.height = Units.gu(1 / 2)
                     loadingIndicator.source = "images/menu-icon-stop.png"
                 }
             } else {
@@ -622,6 +1162,12 @@ Rectangle {
                                                        addressBar.text)
             }
         }
+
+        states: [
+            State {
+                name: "selection"
+            }
+        ]
     }
 
     Image {
@@ -634,32 +1180,21 @@ Rectangle {
         clip: true
         fillMode: Image.PreserveAspectCrop
         verticalAlignment: Image.AlignTop
-        opacity: 1
+        opacity: 0.5
 
         MouseArea {
             anchors.fill: parent
 
             onPressed: {
-                shareOptions.visible = true
-
-                var msg = ("Here's a website I think you'll like: <a href=\"{$src}\">{$title}</a>")
-                msg = EnyoUtils.macroize(msg, {
-                                             src: webViewItem.url,
-                                             title: webViewItem.title
-                                                    || webViewItem.url
-                                         })
-                var params = {
-                    summary: ("Check out this web page..."),
-                    text: msg
+                if (webView.canGoBack) {
+                    shareOptionsList.visible = !shareOptionsList.visible
                 }
-                navigationBar.__launchApplication({
-                                                      id: "com.palm.app.email",
-                                                      params: params
-                                                  })
             }
             onReleased: {
-                shareImage.verticalAlignment = Image.AlignTop
-                shareImage.opacity = 1
+                if (webView.canGoBack) {
+                    shareImage.verticalAlignment = Image.AlignTop
+                    shareImage.opacity = 1
+                }
             }
         }
     }
@@ -680,17 +1215,21 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
-            if (root.enableDebugOutput) {
-                console.log("New Card Pressed")
-            }
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
+                }
+
+                if (root.enableDebugOutput) {
+                    console.log("New Card Pressed")
+                }
                 newCardImage.verticalAlignment = Image.AlignBottom
                 navigationBar.__launchApplication("org.webosports.app.browser",
                                                   "{}")
             }
             onReleased: {
-            if (root.enableDebugOutput) {
-                console.log("New Card Released")
-            }
+                if (root.enableDebugOutput) {
+                    console.log("New Card Released")
+                }
                 newCardImage.verticalAlignment = Image.AlignTop
             }
         }
@@ -712,6 +1251,10 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
+                }
+
                 root.dataMode = "bookmarks"
                 navigationBar.__queryDB(
                             "find",
@@ -720,7 +1263,6 @@ Rectangle {
                 navigationBar.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
-
 
                 bookmarkImage.verticalAlignment = Image.AlignBottom
                 bookmarkImage.opacity = 1.0
@@ -750,197 +1292,17 @@ Rectangle {
             anchors.fill: parent
 
             onPressed: {
-                if(Qt.inputMethod.visible)
-                {
-                    Qt.inputMethod.hide()
+                if (shareOptionsList.visible) {
+                    shareOptionsList.visible = false
                 }
-                else
-                {
+
+                if (Qt.inputMethod.visible) {
+                    Qt.inputMethod.hide()
+                } else {
                     addressBar.focus = true
                     Qt.inputMethod.show()
                 }
             }
         }
     }
-
-    Rectangle {
-        id: suggestionsBackground
-        color: "#DADADA"
-        anchors.left: parent.left
-        anchors.top: parent.bottom
-        anchors.leftMargin: Screen.width < 900 ? 0 : isSecureSite ? Units.gu(12.75) : Units.gu (9)
-        width: Screen.width < 900 ? navigationBar.width : addressBarWidth
-        radius: 4
-        visible: false
-        height: (urlModel.count + 1) * Units.gu(6)
-
-        Rectangle {
-            id: searchRect
-            height: Units.gu(6)
-            width: parent.width
-            anchors.left: parent.left
-            color: "transparent"
-            z: 3
-
-            MouseArea {
-                anchors.fill: parent
-                onPressed: {
-                    suggestionsBackground.visible = false
-                    webViewItem.url = defaultSearchURL.replace("#{searchTerms}",
-                                                               addressBar.text)
-                    addressBar.text = defaultSearchURL.replace("#{searchTerms}",
-                                                               addressBar.text)
-                }
-            }
-
-            Text {
-                id: optSearch
-                text: navigationBar.defaultSearchDisplayName + " \"" + addressBar.text + "\""
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.leftMargin: Units.gu(2)
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignLeft
-                font.pixelSize: FontUtils.sizeToPixels("large")
-                font.family: "Prelude"
-                color: "#494949"
-                height: Units.gu(6)
-                z: 3
-            }
-            Rectangle {
-                id: imgSearchRect
-                height: urlModel.count > 0 ? parent.height : 0
-                anchors.right: parent.right
-                z: 3
-                Image {
-                    id: imgSearch
-                    height: Units.gu(3)
-                    width: Units.gu(3)
-                    anchors.top: imgSearchRect.top
-                    anchors.topMargin: Units.gu(1.5)
-                    anchors.right: parent.right
-                    anchors.rightMargin: Units.gu(1.5)
-                    horizontalAlignment: Image.AlignRight
-                    source: navigationBar.defaultSearchIcon
-                    z: 3
-                }
-            }
-            Rectangle {
-                id: searchDivider
-                color: "silver"
-
-                width: parent.width
-                height: urlModel.count > 0 ? Units.gu(1 / 5) : 0
-                anchors.top: imgSearchRect.bottom
-                z: 3
-            }
-        }
-        ListView {
-            anchors.top: searchRect.bottom
-            id: suggestionList
-            width: parent.width
-            z: 2
-
-            JSONListModel {
-                id: urlModel
-                json: getURLHistory()
-                query: "$[*]"
-
-                function getURLHistory()
-                {
-                    return searchResultsAll
-                }
-
-            }
-            model: urlModel.model
-
-            delegate: Rectangle {
-                id: sectionRect
-                height: Units.gu(6)
-                width: parent.width
-                anchors.left: parent.left
-                color: "transparent"
-                z: 2
-
-                Text {
-                    id: urlTitle
-                    anchors.top: sectionRect.top
-                    anchors.topMargin: Units.gu(0.75)
-                    height: sectionRect.height
-                    clip: true
-                    width: sectionRect.width - Units.gu(7)
-                    anchors.left: sectionRect.left
-                    anchors.leftMargin: Units.gu(2)
-                    horizontalAlignment: Text.AlignLeft
-                    font.family: "Prelude"
-                    font.pixelSize: FontUtils.sizeToPixels("large")
-                    color: "#494949"
-                    textFormat: Text.RichText
-                    text: EnyoUtils.applyFilterHighlight(model.title,
-                                                         addressBar.text)
-                    z: 2
-                    Text {
-                        height: parent.height
-                        clip: true
-                        id: url
-                        width: parent.width
-                        anchors.top: urlTitle.top
-                        anchors.topMargin: Units.gu(0.75)
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.left: parent.left
-                        horizontalAlignment: Text.AlignLeft
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("small")
-                        textFormat: Text.RichText
-                        text: EnyoUtils.applyFilterHighlight(model.url,
-                                                             addressBar.text)
-                        color: "#838383"
-                        z: 2
-                    }
-                }
-                Rectangle {
-                    color: "silver"
-                    height: Units.gu(1 / 10)
-                    width: parent.width
-                    anchors.top: parent.top
-                    z: 2
-                }
-
-                Rectangle {
-                    id: imgResultsRect
-                    height: Units.gu(6)
-                    anchors.right: parent.right
-                    anchors.top: sectionRect.top
-                    z:2
-
-                    Image {
-                        source: model.icon
-                        anchors.top: imgResultsRect.top
-                        anchors.right: parent.right
-                        height: Units.gu(3)
-                        width: Units.gu(3)
-                        anchors.topMargin: Units.gu(1.5)
-                        anchors.rightMargin: Units.gu(1)
-                        horizontalAlignment: Image.AlignRight
-                        z: 2
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        suggestionsBackground.visible = false
-                        webViewItem.url = model.url
-                        addressBar.text = model.url
-                    }
-                }
-                Component.onCompleted:
-                {
-                    suggestionsBackground.height = (urlModel.count + 1) * Units.gu(6)
-                    suggestionList.height = (urlModel.count) * Units.gu(6)
-                }
-            }
-        }
-    }
 }
-

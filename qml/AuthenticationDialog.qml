@@ -16,17 +16,15 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
-
 import QtQuick 2.0
 import QtQuick.Window 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
 
-
 Item {
+    property bool saveHistoryImageChecked: false
     id: authDialog
-
     anchors.fill: parent
 
     Rectangle {
@@ -42,16 +40,16 @@ Item {
         height: messageText.height + savePWCheckbox.height + Units.gu(23)
         color: "transparent"
         radius: 10
+        anchors.top: progressBar.top
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
 
         Image {
             id: leftImageTop
             anchors.top: parent.top
             anchors.left: parent.left
             source: "images/dialog-left-top.png"
-            height: 25
-            width: 25
+            height: Units.gu(2.5)
+            width: Units.gu(2.5)
         }
         Image {
             id: leftImageMiddle
@@ -60,21 +58,21 @@ Item {
             anchors.left: parent.left
             source: "images/dialog-left-middle.png"
             fillMode: Image.Stretch
-            width: 25
+            width: Units.gu(2.5)
         }
         Image {
             id: leftImageBottom
-            height: 25
+            height: Units.gu(2.5)
             anchors.bottom: parent.bottom
             anchors.left: parent.left
             source: "images/dialog-left-bottom.png"
 
-            width: 25
+            width: Units.gu(2.5)
         }
 
         Image {
             id: centerImageTop
-            height: 25
+            height: Units.gu(2.5)
             anchors.left: leftImageTop.right
             anchors.top: parent.top
             source: "images/dialog-center-top.png"
@@ -91,7 +89,7 @@ Item {
         }
         Image {
             id: centerImageBottom
-            height: 25
+            height: Units.gu(2.5)
             anchors.left: leftImageBottom.right
             anchors.bottom: parent.bottom
             source: "images/dialog-center-bottom.png"
@@ -103,15 +101,15 @@ Item {
             anchors.right: parent.right
             anchors.top: parent.top
             source: "images/dialog-right-top.png"
-            width: 25
-            height: 25
+            width: Units.gu(2.5)
+            height: Units.gu(2.5)
         }
         Image {
             id: rightImageMiddle
             anchors.right: parent.right
             anchors.top: rightImageTop.bottom
             source: "images/dialog-right-middle.png"
-            width: 25
+            width: Units.gu(2.5)
             height: parent.height - rightImageTop.height - rightImageBottom.height
             fillMode: Image.Stretch
         }
@@ -121,15 +119,15 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             source: "images/dialog-right-bottom.png"
-            width: 25
-            height: 25
+            width: Units.gu(2.5)
+            height: Units.gu(2.5)
         }
 
         Item {
             id: dialogHeader
             anchors.centerIn: parent
             anchors.fill: parent
-            anchors.margins: 10
+            anchors.margins: Units.gu(1)
 
             Text {
                 id: messageText
@@ -162,21 +160,21 @@ Item {
                     id: usernameBGImageLeft
                     source: "images/input-default-focus-left.png"
                     anchors.left: parent.left
-                    width: 12
+                    width: Units.gu(1.2)
                     height: parent.height
                 }
                 Image {
                     id: usernameBGImageCenter
                     source: "images/input-default-focus-center.png"
                     anchors.left: usernameBGImageLeft.right
-                    width: parent.width - 24
+                    width: parent.width - Units.gu(2.4)
                     height: parent.height
                 }
                 Image {
                     id: usernameBGImageRight
                     source: "images/input-default-focus-right.png"
                     anchors.right: parent.right
-                    width: 12
+                    width: Units.gu(1.2)
                     height: parent.height
                 }
             }
@@ -245,7 +243,7 @@ Item {
                     id: passwordBGImageLeft
                     source: "images/input-default-focus-left.png"
                     anchors.left: parent.left
-                    width: 12
+                    width: Units.gu(1.2)
                     height: parent.height
                 }
                 Image {
@@ -259,7 +257,7 @@ Item {
                     id: passwordBGImageRight
                     source: "images/input-default-focus-right.png"
                     anchors.right: parent.right
-                    width: 12
+                    width: Units.gu(1.2)
                     height: parent.height
                 }
             }
@@ -316,9 +314,7 @@ Item {
                 }
             }
 
-            Image
-            {
-                property bool saveHistoryImageChecked: false
+            Image {
                 id: savePWCheckbox
                 source: saveHistoryImageChecked ? "images/checkbox-checked.png" : "images/checkbox-unchecked.png"
                 anchors.left: parent.left
@@ -326,18 +322,15 @@ Item {
                 anchors.top: passwordRectangle.bottom
                 anchors.topMargin: Units.gu(1)
 
-                MouseArea
-                {
+                MouseArea {
                     anchors.fill: parent
-                    onClicked:
-                    {
+                    onClicked: {
                         savePWCheckbox.saveHistoryImageChecked ? savePWCheckbox.saveHistoryImageChecked = false : savePWCheckbox.saveHistoryImageChecked = true
                     }
                 }
             }
 
-            Text
-            {
+            Text {
                 anchors.left: savePWCheckbox.right
                 anchors.leftMargin: Units.gu(1)
                 anchors.top: passwordRectangle.bottom
@@ -361,7 +354,7 @@ Item {
                 Image {
                     id: cancelImageLeft
                     source: "images/button-up-left.png"
-                    width: 19
+                    width: Units.gu(1.9)
                     height: parent.height
                     fillMode: Image.Stretch
                     anchors.left: parent.left
@@ -378,7 +371,7 @@ Item {
                 Image {
                     id: cancelImageRight
                     source: "images/button-up-right.png"
-                    width: 19
+                    width: Units.gu(1.9)
                     height: parent.height
                     fillMode: Image.Stretch
                     anchors.right: cancelRect.right
@@ -412,7 +405,7 @@ Item {
                 Image {
                     id: confirmImageLeft
                     source: "images/button-up-left.png"
-                    width: 19
+                    width: Units.gu(1.9)
                     height: parent.height
                     fillMode: Image.Stretch
                     anchors.left: parent.left
@@ -446,9 +439,9 @@ Item {
                     anchors.fill: parent
                     onPressed: {
                         //TODO: Need to implement password manager using KeyManager where possible
-                        if(saveHistoryImageChecked)
-                        {
-                          //TODO Function to call and do the password management
+                        if (saveHistoryImageChecked) {
+
+                            //TODO Function to call and do the password management
                         }
                         model.accept(username.text, password.text)
                     }

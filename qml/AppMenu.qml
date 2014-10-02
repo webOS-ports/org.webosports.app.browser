@@ -57,7 +57,10 @@ Item {
             }
             MouseArea {
                 anchors.fill: parent
-                onClicked: menuRoot[itemAction]()
+                onClicked:
+                {
+                    menuRoot[itemAction]()
+                }
             }
         }
     }

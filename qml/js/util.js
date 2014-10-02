@@ -1098,3 +1098,97 @@ function getProp(parts, create, context) {
 		//return obj;
 	};
 	
+    function shareLinkViaMessaging (url)
+    {
+            var params = {
+                compose: {
+                    messageText: $L("Check out this web page: ") + url
+                }
+            };
+            navigationBar.__launchApplication("com.palm.app.messaging", params);
+    };
+
+    function shareLinkViaEmail(inUrl, inTitle)
+    {
+    var msg = ("Here's a website I think you'll like: <a href=\"{$src}\">{$title}</a>")
+
+    msg = macroize(msg, {
+                                                 src: inUrl,
+                                                 title: inTitle
+                                                        || inUrl
+                                             })
+
+    var params = {
+        summary: ("Check out this web page..."),
+        text: msg
+        }
+        navigationBar.__launchApplication("com.palm.app.email", params)
+    };
+
+    function shareLinkViaMessaging (inUrl, inTitle) {
+           var params = {
+               compose: {
+                   messageText: "Check out this web page: " + inUrl
+               }
+           };
+        navigationBar.__launchApplication("org.webosports.messaging", params)
+       };
+
+    function editBookmark (inTitle, inUrl, inIcons, inId) {
+            var date = (new Date()).getTime();
+            var b = {
+                _kind: "com.palm.browserbookmarks:1",
+                _id: inId,
+                title: inTitle,
+                url: inUrl,
+                date: date,
+            };
+            mixin(b, inIcons);
+            root.__queryDB("merge", JSON.stringify({objects: [b]}));
+        };
+
+    function addBookmark(inTitle, inUrl, inIcons) {
+        var date = (new Date()).getTime();
+        var b = {
+            _kind: "com.palm.browserbookmarks:1",
+            title: inTitle,
+            url: inUrl,
+            date: date,
+            lastVisited: date,
+            defaultEntry: false,
+            visitCount: 0,
+            idx: null
+        };
+        mixin(b, inIcons);
+         root.__queryPutDB(b)
+        //this.$.bookmarksService.call({objects: [b]}, {method: "put"});
+
+    };
+
+    function addToLauncher(inTitle, inUrl, inIcons) {
+        var appParams = {
+                    "url": inUrl
+                };
+
+        var callParams = {
+            "id": "org.webosports.app.browser",
+            "icon": inIcons,
+            "title": inTitle,
+            "params": appParams
+        };
+
+        console.log("callparams: "+callParams)
+        console.log("JSON.stringify(callParams): "+JSON.stringify({parameters: callParams}))
+
+        luna.call("luna://com.palm.applicationManager/addLaunchPoint", JSON.stringify(callParams),
+                  __handleAddLaunchPointSuccess, __handleAddLaunchPointError);
+    };
+
+    function __handleAddLaunchPointSuccess(message) {
+        console.log("Successfully added App Launchpoint : " + message.payload);
+    };
+
+    function __handleAddLaunchPointError(message) {
+        console.log("Could not start application : " + message.payload);
+    };
+

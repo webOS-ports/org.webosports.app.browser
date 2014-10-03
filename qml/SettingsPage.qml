@@ -36,6 +36,9 @@ Rectangle {
     property var searchProvidersAll: ['{}']
     property string dbmode: ""
     property string defaultSearchProvider: ""
+    property string defaultSearchProviderURL: ""
+    property string defaultSearchProviderIcon: ""
+    property string defaultSearchProviderDisplayName: ""
 
     Rectangle {
         id: overlayRect
@@ -64,6 +67,12 @@ Rectangle {
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"rememberPasswords"}]}}')
 
         luna.call("luna://com.palm.universalsearch/setSearchPreference", '{"key":"defaultSearchEngine", "value": "'+defaultSearchProvider+'"}', __handleSPSuccess, __handleSPError)
+
+        //Make sure we update the search engine as well
+        navigationBar.defaultSearchURL = defaultSearchProviderURL
+        navigationBar.defaultSearchIcon = defaultSearchProviderIcon
+        navigationBar.defaultSearchDisplayName = defaultSearchProviderDisplayName
+
         root.visible = false
     }
 
@@ -334,6 +343,9 @@ Rectangle {
                 onClicked: {
                     searchPrefsText.text = model.displayName
                     defaultSearchProvider = model.id
+                    defaultSearchProviderURL = model.url
+                    defaultSearchProviderIcon = model.iconFilePath
+                    defaultSearchProviderDisplayName = model.displayName
                     searchProviderList.visible = false
                 }
             }

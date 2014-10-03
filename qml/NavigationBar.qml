@@ -827,12 +827,23 @@ Rectangle {
         text: ""
 
         onAccepted: updateURL()
+        onFocusChanged: {
+            searchSuggestions.visible = false
+        }
 
         onActiveFocusChanged: {
             Qt.inputMethod.show()
         }
 
         onContentSizeChanged: {
+            //We need to hide any copy/paste selection bits when we change length
+            cutCopyPasteRectangle.visible = false
+            pasteRectangle.visible = false
+            selectSelectAllRectangle.visible = false
+            cutCopyRectangle.visible = false
+            bottomMarker.visible = false
+            topMarker.visible = false
+
             addressBarWidth = addressBar.width
             //We need a different query in case the lenght is 0
             if (addressBar.text.length === 0) {
@@ -1048,6 +1059,14 @@ Rectangle {
                     addressBar.state = "selection"
                     addressBar.selectAll()
 
+                } else if (topMarker.visible && bottomMarker.visible && addressBar.selectedText && addressBar.state === "selection" && !initialSelection){
+                    topMarker.visible = false
+                    bottomMarker.visible = false
+                    cutCopyPasteRectangle.visible = false
+                    pasteRectangle.visible = false
+                    selectSelectAllRectangle.visible = false
+                    cutCopyRectangle.visible = false
+                    addressBar.cursorPosition = addressBar.positionAt(mouse.x)
                 } else if(!addressBar.selectedText && !initialSelection && addressBar.state==="selection"){
                     cutCopyPasteRectangle.visible = false
                     pasteRectangle.visible = false

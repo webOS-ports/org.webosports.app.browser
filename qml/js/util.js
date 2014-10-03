@@ -18,14 +18,22 @@
         //return a.replace(new RegExp(b, "i"), '<span class="' + c + '">$&</span>');
     //We cannot use classes and background images so we use color and underline here instead
     //console.log("log output: "+a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>'))
-		if(a.length>0)
-		{
-			return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
-		}
-		else
-		{
-			return "";
-		}
+        if(a)
+        {
+            if(a.length>0)
+            {
+                return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
+            }
+            else
+            {
+                return "";
+            }
+        }
+        else
+        {
+            return "";
+        }
+
 	}
 
 	function parseUri (inText) {

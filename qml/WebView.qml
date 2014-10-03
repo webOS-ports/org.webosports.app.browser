@@ -20,8 +20,12 @@
 import QtWebKit 3.0
 import QtWebKit.experimental 1.0
 import QtQuick 2.0
+import LunaNext.Common 0.1
+import "Utils"
 
 WebView {
+    property string webViewBackgroundSource: "images/background-startpage.png"
+    property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
     anchors.top: progressBar.bottom
     anchors.bottom: parent.bottom
@@ -62,14 +66,14 @@ WebView {
     //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
     Image {
         id: webViewBackground
-        source: "images/background-startpage.png"
+        source: webViewBackgroundSource
         anchors.fill: parent
         Image {
             id: webViewPlaceholder
             y: Units.gu(3)
             anchors.horizontalCenter: parent.horizontalCenter
             //anchors.verticalCenter: parent.verticalCenter
-            source: "images/startpage-placeholder.png"
+            source: webViewPlaceholderSource
         }
     }
 

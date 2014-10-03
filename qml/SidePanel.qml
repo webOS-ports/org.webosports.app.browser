@@ -436,8 +436,8 @@ Rectangle {
                 //disable the background, otherwise it won't show the page
                 if (pageIsLoading) {
                     progressBar.progressBarColor = "#2E8CF7"
-                    webViewBackground.source = ""
-                    webViewPlaceholder.source = ""
+                    webViewItem.webViewBackgroundSource = ""
+                    webViewItem.webViewPlaceholderSource = ""
                 }
                 //Update ProgressBar (this one is more accurate compared to legacy :))
                 progressBar.value = webViewItem.loadProgress

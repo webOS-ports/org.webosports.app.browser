@@ -75,6 +75,7 @@ To do:
 23. Add scroll bar and style it webOS-y.<i>Scroll bar is there, styling to be done. Will be included in Black Eye nightlies</i>
 24. <s>Clean up code and make separate QML files for components.</s><i>Will be included in Black Eye nightlies</i>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
+26. Add divider for History items (as per legacy)
 
 ## Contributing
 

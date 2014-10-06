@@ -1,3 +1,11 @@
+0.7.1
+
+Bugs fixed:
+-Changing of default search provider wouldn't have immediate effect while searching
+-Fixed various conditions for selecting text and hiding cursor
+-Split WebView into a separate QML as well
+-Removed the ScrollView since it didn't offer much benefit for now
+
 0.7.0
 
 Features added:

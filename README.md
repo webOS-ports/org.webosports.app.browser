@@ -45,6 +45,9 @@ Known bugs:
 11. <s>Tapping on App Menu when visible doesn't hide it.</s><i>Will be included in Black Eye nightlies</i>
 12. <s>Authentication dialog doesn't look good on N4</s>
 13. <s>Error message is not correct when no network connection is available.</s>
+14. Selection markers are not displayed at the correct location for long URL's. 
+15. Long URL's running behind stop/reload icon on address bar
+16. Text in addressbar needs some spacing
 
 To do:
 -----------
@@ -58,12 +61,12 @@ To do:
 6. <s>Add launch parameters + handling</s>
 7. Add icons for bookmarks (investigate legacy's handling). Implemented in UI, <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
-9. <s>Add select, copy & paste where possible</s><i>In progress for address bar, Will be included in Black Eye nightlies</i>
-10. <s>Fix share dialog</s><i>Will be included in Black Eye nightlies</i>
+9. <s>Add select, copy & paste where possible</s><i>Completed for address bar, available in nightlies</i>
+10. <s>Fix share dialog</s><i>Available in nightlies</i>
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
 12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
 13. Investigate search suggestions to see if those are possible from QML with our luna calls.
-14. <s>Add possibility to edit bookmarks</s><i>Will be included in Black Eye nightlies</i>
+14. <s>Add possibility to edit bookmarks</s><i>available in nightlies</i>
 15. <s>Add authentication dialog</s>
 16. Add password manager
 17. Add cookies support
@@ -71,9 +74,9 @@ To do:
 19. Confirmation dialog for Clearing Downloads
 20. Further make the preferences actually do something in the app
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
-22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.<i>Will be included in Black Eye nightlies</i>
-23. Add scroll bar and style it webOS-y.<i>Scroll bar is there, styling to be done. Will be included in Black Eye nightlies</i>
-24. <s>Clean up code and make separate QML files for components.</s><i>Will be included in Black Eye nightlies</i>
+22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.<i>Available in nightlies</i>
+23. Add scroll bar and style it webOS-y.
+24. <s>Clean up code and make separate QML files for components.</s><i>Available in nightlies</i>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 26. Add divider for History items (as per legacy)
 27. Add "Input"->"File" support

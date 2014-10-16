@@ -33,7 +33,7 @@ Rectangle {
     property bool rememberPasswords: true
     property var defaultBrowserPreferences
     property var searchProviderResults
-    property var searchProvidersAll: ['{}']
+    property string searchProvidersAll: "{}"
     property string dbmode: ""
     property string defaultSearchProvider: ""
     property string defaultSearchProviderURL: ""

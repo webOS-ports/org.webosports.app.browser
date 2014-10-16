@@ -25,7 +25,7 @@ import "js/util.js" as EnyoUtils
 import "Utils"
 
 Rectangle {
-    property var searchResultsAll: ['{}']
+    property string searchResultsAll: "{}"
     property string optSearchText: ""
     property string defaultSearchIcon: ""
     property int urlModelCount: 0
@@ -227,6 +227,13 @@ Rectangle {
                 searchSuggestions.height = (urlModel.count + 1) * Units.gu(
                             6)
                 suggestionList.height = (urlModel.count) * Units.gu(6)
+            }
+            Component.onDestruction: {
+                urlModelCount = urlModel.count
+                searchSuggestions.height = (urlModel.count + 1) * Units.gu(
+                            6)
+                suggestionList.height = (urlModel.count) * Units.gu(6)
+
             }
         }
     }

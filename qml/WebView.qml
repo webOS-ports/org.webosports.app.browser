@@ -37,6 +37,7 @@ WebView {
     experimental.preferences.webAudioEnabled: true
     experimental.preferences.dnsPrefetchEnabled: true
     experimental.preferences.navigatorQtObjectEnabled: true
+    experimental.preferences.standardFontFamily: "Prelude"
     experimental.userAgent: userAgent.defaultUA
     experimental.authenticationDialog: AuthenticationDialog {
     }

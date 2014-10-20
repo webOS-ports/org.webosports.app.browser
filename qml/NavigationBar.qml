@@ -352,7 +352,7 @@ Rectangle {
                         cutCopyPasteRectangle.visible = false
                         cutCopyRectangle.visible = false
                         pasteRectangle.visible = false
-                         = addressBar.positionToRectangle(
+                        topMarker.x = addressBar.positionToRectangle(
                                     addressBar.selectionStart).x
                                 < 0 ? addressBar.x - (topMarker.width / 2) : addressBar.x
                                       + addressBar.positionToRectangle(
@@ -1122,7 +1122,7 @@ Rectangle {
                     selectSelectAllRectangle.visible = false
 
                     pasteRectangle.visible = true
-                    pasteRectangle.x = (( + bottomMarker.x) / 2)
+                    pasteRectangle.x = ((topMarker.x + bottomMarker.x) / 2)
                             - (pasteRectangle.width / 2)
                 } else if (addressBar.selectedText
                            && addressBar.state === "selection") {
@@ -1131,7 +1131,7 @@ Rectangle {
                     selectSelectAllRectangle.visible = false
 
                     cutCopyPasteRectangle.visible = true
-                    cutCopyPasteRectangle.x = (( + bottomMarker.x) / 2)
+                    cutCopyPasteRectangle.x = ((topMarker.x + bottomMarker.x) / 2)
                             - (cutCopyPasteRectangle.width / 2)
                 }
                 else if (!addressBar.selectedText

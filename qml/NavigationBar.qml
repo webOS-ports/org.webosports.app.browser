@@ -352,8 +352,11 @@ Rectangle {
                         cutCopyPasteRectangle.visible = false
                         cutCopyRectangle.visible = false
                         pasteRectangle.visible = false
-                        topMarker.x = addressBar.x + addressBar.positionToRectangle(
-                                    addressBar.selectionStart).x - (topMarker.width / 2)
+                        topMarker.x = addressBar.positionToRectangle(
+                                    addressBar.selectionStart).x
+                                < 0 ? addressBar.x - (topMarker.width / 2) : addressBar.x
+                                      + addressBar.positionToRectangle(
+                                          addressBar.selectionStart).x - (topMarker.width / 2)
                         topMarker.y = addressBar.y + addressBar.positionToRectangle(
                                     addressBar.selectionStart).y - topMarker.height
                         bottomMarker.x = addressBar.x + addressBar.positionToRectangle(
@@ -410,8 +413,11 @@ Rectangle {
                         addressBar.state = "selection"
                         bottomMarker.visible = true
                         topMarker.visible = true
-                        topMarker.x = addressBar.x + addressBar.positionToRectangle(
-                                    addressBar.selectionStart).x - (topMarker.width / 2)
+                        topMarker.x = addressBar.positionToRectangle(
+                                    addressBar.selectionStart).x
+                                < 0 ? addressBar.x - (topMarker.width / 2) : addressBar.x
+                                      + addressBar.positionToRectangle(
+                                          addressBar.selectionStart).x - (topMarker.width / 2)
                         topMarker.y = addressBar.y + addressBar.positionToRectangle(
                                     addressBar.selectionStart).y - topMarker.height
                         bottomMarker.x = addressBar.x + addressBar.positionToRectangle(
@@ -1078,8 +1084,11 @@ Rectangle {
                     initialSelection = true
                     addressBar.cursorPosition = addressBar.positionAt(mouse.x)
                 } else if ((addressBar.selectedText && !initialSelection) || (addressBar.selectedText && initialSelection && addressBar.state === "selection")) {
-                    topMarker.x = addressBar.x + addressBar.positionToRectangle(
-                                addressBar.selectionStart).x - (topMarker.width / 2)
+                    topMarker.x = addressBar.positionToRectangle(
+                                    addressBar.selectionStart).x
+                                < 0 ? addressBar.x - (topMarker.width / 2) : addressBar.x
+                                      + addressBar.positionToRectangle(
+                                          addressBar.selectionStart).x - (topMarker.width / 2)
                     topMarker.y = addressBar.y + addressBar.positionToRectangle(
                                 addressBar.selectionStart).y - topMarker.height
                     topMarker.visible = true

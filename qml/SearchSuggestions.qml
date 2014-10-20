@@ -74,6 +74,7 @@ Rectangle {
         Text {
             id: optSearch
             text: searchSuggestions.optSearchText + " \"" + addressBar.text + "\""
+            width: searchRect.width - Units.gu(7)
             anchors.top: parent.top
             anchors.left: parent.left
             anchors.leftMargin: Units.gu(2)
@@ -83,6 +84,7 @@ Rectangle {
             font.family: "Prelude"
             color: "#494949"
             height: Units.gu(6)
+            elide: Text.ElideRight
             z: 3
         }
         Rectangle {

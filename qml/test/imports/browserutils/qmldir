@@ -1,0 +1,4 @@
+module browserutils
+BrowserUtils 0.1 BrowserUtilsStub.qml
+
+typeinfo browserutils.qmltypes

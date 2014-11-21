@@ -45,7 +45,7 @@ Known bugs:
 11. <s>Tapping on App Menu when visible doesn't hide it.</s><i>Will be included in Black Eye nightlies</i>
 12. <s>Authentication dialog doesn't look good on N4</s>
 13. <s>Error message is not correct when no network connection is available.</s>
-14. Selection markers are not displayed at the correct location for long URL's. 
+14. <s>Selection markers are not displayed at the correct location for long URL's. </s>
 15. Long URL's running behind stop/reload icon on address bar
 16. Text in addressbar needs some spacing
 

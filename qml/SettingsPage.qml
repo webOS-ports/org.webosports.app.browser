@@ -40,6 +40,10 @@ Rectangle {
     property string defaultSearchProviderIcon: ""
     property string defaultSearchProviderDisplayName: ""
 
+    MouseArea {
+        anchors.fill: parent
+    }
+
     Rectangle {
         id: overlayRect
         color: "#4C4C4C"

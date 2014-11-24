@@ -8,6 +8,8 @@ qml/images/background-startpage.png
 qml/images/input-tool-center.png
 qml/images/input-tool-left.png
 qml/images/input-tool-right.png
+qml/images/launcher-bookmark-alpha.png
+qml/images/launcher-bookmark-overlay.png
 qml/images/menu-icon-back.png
 qml/images/menu-icon-bookmark.png
 qml/images/menu-icon-forward.png

@@ -39,10 +39,10 @@ Known bugs:
 5. <s>Various layout and rendering issues.</s>
 6. <s>Page gets added to browser history, even when not loaded (for example when there's no network connectivity).</s>
 7. <s>Progress bar doesn't always behave properly.</s>
-8. <s>Share dialog not working yet.</s><i>Will be included in Black Eye nightlies</i>
-9. <s>Cannot select cursor location in URL bar</s><i>Will be included in Black Eye nightlies</i>
-10. <s>Dropdown for search engine in Settings not working yet</s><i>Will be included in Black Eye nightlies</i>
-11. <s>Tapping on App Menu when visible doesn't hide it.</s><i>Will be included in Black Eye nightlies</i>
+8. <s>Share dialog not working yet.</s>
+9. <s>Cannot select cursor location in URL bar</s>
+10. <s>Dropdown for search engine in Settings not working yet</s>
+11. <s>Tapping on App Menu when visible doesn't hide it.</s>
 12. <s>Authentication dialog doesn't look good on N4</s>
 13. <s>Error message is not correct when no network connection is available.</s>
 14. <s>Selection markers are not displayed at the correct location for long URL's. </s>

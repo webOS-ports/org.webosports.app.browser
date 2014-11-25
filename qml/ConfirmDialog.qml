@@ -19,7 +19,6 @@
 */
 import QtQuick 2.0
 import LunaNext.Common 0.1
-//import "js/util.js" as EnyoUtils
 
 
     //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's

@@ -631,6 +631,7 @@ Rectangle {
             searchResults.push({
                                    url: t.url,
                                    title: t.title,
+                                   icon64: t.icon64,
                                    icon: "images/header-icon-bookmarks.png"
                                })
         }
@@ -639,6 +640,7 @@ Rectangle {
                 searchResults.push({
                                        url: s.url,
                                        title: s.title,
+                                       icon64: t.icon64,
                                        icon: "images/header-icon-history.png"
                                    })
             }
@@ -651,7 +653,7 @@ Rectangle {
 
     function __queryPutDB(myData) {
         if (root.enableDebugOutput) {
-            console.log("Putting Data to DB: JSON.stringify(myData): " + JSON.stringify(
+            console.log("Putting Data to DB (NavigationBar): JSON.stringify(myData): " + JSON.stringify(
                             myData))
         }
         luna.call("luna://com.palm.db/put", JSON.stringify({
@@ -1208,13 +1210,13 @@ Rectangle {
         clip: true
         fillMode: Image.PreserveAspectCrop
         verticalAlignment: Image.AlignTop
-        opacity: 0.5
+        opacity: webViewItem.loadProgress === 100 ? 1.0 : 0.5;
 
         MouseArea {
             anchors.fill: parent
 
             onPressed: {
-                if (webView.canGoBack) {
+                if (webView.canGoBack || webViewItem.loadProgress === 100) {
                     shareOptionsList.visible = !shareOptionsList.visible
                 }
             }

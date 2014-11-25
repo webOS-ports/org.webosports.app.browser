@@ -250,7 +250,7 @@ Rectangle {
 
                                       Image {
                                           id: dataResultsImage
-                                          source: dataMode === "history" ? "images/header-icon-history.png" : dataMode === "bookmarks" ? "images/bookmark-icon-frame.png" : ""
+                                          source: dataMode === "history" ? "images/header-icon-history.png" : dataMode === "bookmarks" ? model.icon64 : ""
                                           anchors.top: dataResultsRect.top
                                           anchors.left: dataResultsRect.left
                                           height: dataMode === "history" ? Units.gu(3) : Units.gu(5)
@@ -316,7 +316,7 @@ Rectangle {
                                               bookmarkDialog.action = "editBookmark"
                                               bookmarkDialog.myURL = model.url
                                               bookmarkDialog.myTitle = model.title
-                                              bookmarkDialog.myBookMarkIcon = "images/bookmark-icon-default.png"
+                                              bookmarkDialog.myBookMarkIcon = model.icon64 ? model.icon64 : model.icon
                                               bookmarkDialog.myBookMarkId = model._id
                                               bookmarkDialog.visible = true
                                               bookmarkDialog.myButtonText = "Save"
@@ -381,7 +381,6 @@ Rectangle {
                         bookmarkDialog.action = "addBookmark"
                         bookmarkDialog.myURL = "" + webViewItem.url
                         bookmarkDialog.myTitle = webViewItem.title
-                        bookmarkDialog.myBookMarkIcon = "images/bookmark-icon-default.png"
                         bookmarkDialog.myButtonText = "Add Bookmark"
                         bookmarkDialog.visible = true
                     }

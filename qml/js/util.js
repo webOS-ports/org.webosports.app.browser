@@ -1150,8 +1150,9 @@ function getProp(parts, create, context) {
                 title: inTitle,
                 url: inUrl,
                 date: date,
+                icon64: inIcons
             };
-            mixin(b, inIcons);
+            //mixin(b, inIcons);
             root.__queryDB("merge", JSON.stringify({objects: [b]}));
         };
 
@@ -1165,9 +1166,10 @@ function getProp(parts, create, context) {
             lastVisited: date,
             defaultEntry: false,
             visitCount: 0,
+            icon64: inIcons,
             idx: null
         };
-        mixin(b, inIcons);
+        //mixin(b, inIcons);
          root.__queryPutDB(b)
         //this.$.bookmarksService.call({objects: [b]}, {method: "put"});
 

@@ -184,7 +184,7 @@ Rectangle {
             anchors.left: titleRectangle.left
             selectedTextColor: "#000000"
             selectionColor: "#FDFD65"
-            text: bookmarkDialog.myTitle ? bookmarkDialog.myTitle : "Nieuws | Altijd op de hoogte van het laatste nieuws"
+            text: bookmarkDialog.myTitle ? bookmarkDialog.myTitle : bookmarkDialog.myURL
             clip: true
             horizontalAlignment: TextInput.AlignLeft
             focus: true
@@ -259,7 +259,7 @@ Rectangle {
             color: "black"
             selectedTextColor: "#000000"
             selectionColor: "#FDFD65"
-            text: bookmarkDialog.myURL ? bookmarkDialog.myURL : "http://www.telegraaf.nl/testarticle/verylong"
+            text: bookmarkDialog.myURL
             inputMethodHints: Qt.ImhUrlCharactersOnly
 
             onActiveFocusChanged: {

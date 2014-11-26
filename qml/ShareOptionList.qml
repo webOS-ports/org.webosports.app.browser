@@ -107,7 +107,6 @@ ListView {
                     bookmarkDialog.action = "addToLauncher"
                     bookmarkDialog.myURL = "" + webViewItem.url
                     bookmarkDialog.myTitle = webViewItem.title
-                    bookmarkDialog.myBookMarkIcon = "images/header-icon-prefs.png"
                     bookmarkDialog.myButtonText = "Add to Launcher"
                     bookmarkDialog.visible = true
                 } else if (actionName === "addBookmark") {
@@ -115,7 +114,6 @@ ListView {
                     bookmarkDialog.action = "addBookmark"
                     bookmarkDialog.myURL = "" + webViewItem.url
                     bookmarkDialog.myTitle = webViewItem.title
-                    bookmarkDialog.myBookMarkIcon = "images/bookmark-icon-default.png" //model.icon
                     bookmarkDialog.myButtonText = "Add Bookmark"
                     bookmarkDialog.visible = true
                 }

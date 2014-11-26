@@ -23,7 +23,6 @@ import QtQuick.Controls.Styles 1.1
 import QtQuick.Controls 1.1
 
 	ProgressBar {
-        //id: progressBar
         property int minimum: 0
         property int maximum: 100
         property int value: 0

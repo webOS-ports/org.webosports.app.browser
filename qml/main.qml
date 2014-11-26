@@ -103,7 +103,7 @@ Window {
 
     function __queryPutDB(myData) {
         if (enableDebugOutput) {
-            console.log("Putting Data to DB: JSON.stringify(myData): " + JSON.stringify(
+            console.log("Putting Data to DB (main.qml): JSON.stringify(myData): " + JSON.stringify(
                             myData));
         }
         luna.call("luna://com.palm.db/put", JSON.stringify({

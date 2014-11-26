@@ -193,7 +193,7 @@ Rectangle {
                 z: 2
 
                 Image {
-                    source: model.icon
+                    source: model.icon64 ? model.icon64: model.icon
                     anchors.top: imgResultsRect.top
                     anchors.right: parent.right
                     height: Units.gu(3)

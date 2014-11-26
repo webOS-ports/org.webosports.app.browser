@@ -22,6 +22,7 @@ import QtWebKit.experimental 1.0
 import QtQuick 2.0
 import LunaNext.Common 0.1
 import "Utils"
+import browserutils 0.1
 
 WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
@@ -43,6 +44,29 @@ WebView {
     }
     visible: true
     z: 1
+
+    property bool viewImageCreated: false;
+    property string t: "" ;
+    property int w: 90;
+    property int h: 120;
+    property string p: "" ;
+    property string thumbnail: "" ;
+    property string icon64: "";
+
+
+    function createViewImage() {
+        t = (new Date()).getTime();
+        p = "/var/luna/data/browser/icons/";
+        thumbnail = p + "thumbnail-" + t + ".png";
+        icon64 = p + "icon64-" + t + ".png";
+        utils.saveViewToFile(thumbnail,Qt.size(w,h));
+        viewImageCreated = true;
+    }
+
+    BrowserUtils {
+        id: utils
+        webview: webViewItem
+    }
 
     onNavigationRequested: {
         //Hide VKB
@@ -116,7 +140,12 @@ WebView {
         if (webViewItem.loadProgress === 100) {
             //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
             //Only create history item in case we're not using Private Browsing
+
             if (!privateByDefault) {
+
+                //Create the icon/images for the page
+                createViewImage();
+               
                 navigationBar.__queryDB(
                             "del",
                             '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"' + webViewItem.url + '"}]}}')
@@ -137,5 +166,18 @@ WebView {
             }
         }
     }
+
+    function createIconImages() {
+        utils.generateIconFromFile(thumbnail, icon64, Qt.size(w,h));
+        viewImageCreated = false;
+        bookmarkDialog.myBookMarkIcon = icon64;
+    }
+
+    //Nasty but works, we need a delay of 1000+ ms in order to be able to create the icons, because the viewImage has a delay of 1000ms
+    Timer  {
+        interval: 1500; running: viewImageCreated && webViewItem.loadProgress === 100; repeat: true
+        onTriggered: createIconImages();
+    }
+
     url: ""
 }

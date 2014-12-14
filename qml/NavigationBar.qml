@@ -823,8 +823,7 @@ Rectangle {
         height: Units.gu(3.5)
         font.family: "Prelude"
         font.pixelSize: FontUtils.sizeToPixels("medium")
-        //Force the URL keyboard layout
-        inputMethodHints: Qt.ImhUrlCharactersOnly
+        inputMethodHints: Qt.ImhNoAutoUppercase
         color: root.privateByDefault ? "#2E8CF7" : "#E5E5E5"
         selectedTextColor: "#000000"
         selectionColor: "#ADAD15"

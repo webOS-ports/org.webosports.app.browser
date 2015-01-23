@@ -19,7 +19,6 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.1
-import QtTest 1.0
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
@@ -27,237 +26,39 @@ import "Utils"
 import "js/util.js" as EnyoUtils
 
 
-Window {
+Item {
+    id: rootItem
 
-
-    id: root
-    width: 800
-    height: 600
-
-    UserAgent {
-        id: userAgent
+    WindowManager {
+        id: windowManager
     }
 
-    Tweak {
-        id: privateByDefaultTweak
-        owner: "org.webosports.app.browser"
-        key: "privateByDefaultKey"
-        defaultValue: "false"
-        onValueChanged: updatePrivateByDefault()
-
-        function updatePrivateByDefault() {
-            if (privateByDefaultTweak.value === true) {
-                privateByDefault = true;
-            } else {
-                privateByDefault = false;
-            }
-            if (enableDebugOutput) {
-                console.log("privateByDefault: " + privateByDefault);
-            }
-        }
-    }
-
-    /////// private //////
-    LunaService {
-        id: luna
-        name: "org.webosports.app.browser"
-    }
-
-    function __launchApplication(id, params) {
-        console.log("launching app " + id + " with params " + params.toString());
-        luna.call("luna://com.palm.applicationManager/launch", JSON.stringify({
-                                                                                  id: id,
-                                                                                  params: params
-                                                                              }),
-                  undefined, __handleLaunchAppError);
-    }
-
-
-    function __handleLaunchAppError(message) {
-        console.log("Could not start application : " + message);
-    }
-
-    function __queryDB(action, params) {
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError);
-    }
-
-    function __handleQueryDBError(message) {
-        console.log("Could not query DB : " + message);
-    }
-
-    function __handleQueryDBSuccess(message) {
-        console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        if (dataMode === "bookmarks") {
-            myBookMarkData = message.payload;
-        } else if (dataMode === "downloads") {
-            myDownloadsData = '{"results":[{"url":"Downloads not implemented yet", "title":"Downloads not implemented yet"}]}';
-        } else if (dataMode === "history") {
-            myHistoryData = message.payload;
-        }
-        else
-        {
-            console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        }
-    }
-
-    function __queryPutDB(myData) {
-        if (enableDebugOutput) {
-            console.log("Putting Data to DB (main.qml): JSON.stringify(myData): " + JSON.stringify(
-                            myData));
-        }
-        luna.call("luna://com.palm.db/put", JSON.stringify({
-                                                               objects: [myData]
-                                                           }),
-                  __handlePutDBSuccess, __handlePutDBError);
-    }
-
-    function __handlePutDBError(message) {
-            console.log("Could not put DB : " + message);
-    }
-
-    function __handlePutDBSuccess(message) {
-        if(enableDebugOutput)
-        {
-            console.log("Put DB: " + JSON.stringify(message.payload));
-        }
-    }
-
-    function __getConnectionStatus()
-    {
-        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({}),
-                                        __connectionStatusSuccess, __connectionStatusError);
-    }
-
-    function __connectionStatusSuccess(message)
-    {
-        connectionStatus = JSON.parse(message.payload);
-        internetAvailable = connectionStatus.isInternetConnectionAvailable;
-        if(enableDebugOutput)
-        {
-            console.log("Internet Available: " + internetAvailable);
-        }
-
-    }
-
-    function __connectionStatusError(message)
-    {
-        console.log("Unable to get connection status");
-    }
-
-    property real keyboardHeight: Qt.inputMethod.keyboardRectangle.height
-    property bool pageIsLoading: false
-    property bool historyAvailable: false
-    property bool forwardAvailable: false
-    property bool enableDebugOutput: true
-    property string myBookMarkData: '{}'
-    property string myDownloadsData: '{}'
-    property string myHistoryData: '{}'
-    property string dataMode: "bookmarks"
-    property bool privateByDefault: false
-    property var connectionStatus
-    property bool internetAvailable: false
-
-    /* Without this line, we won't ever see the window... */
-    Component.onCompleted:
-    {
-        root.visible = true
-
-        //Determine initial connection status
-        __getConnectionStatus()
-
-        //Run query so we have the bookmarks item on first load of the panel
-        root.__queryDB(
-                    "find",
-                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
-
-        var lparams = JSON.parse(application.launchParameters)
-        if (lparams.target && lparams.target.length > 0)
-        {
-            if (lparams.target.substring(0,7)==="http://" || lparams.target.substring(0,8)==="https://" || lparams.target.substring(0,6)==="ftp://" || lparams.target.substring(0,7)==="data://" || lparams.target.substring(0,6)==="about:")
-            {
-                webViewItem.url = lparams.target
-            }
-            else
-            {
-                //We require http(s) for the URLs to load, so add http for now when it's not available
-                webViewItem.url = "http://"+lparams.target
-            }
-        }
+    Component.onCompleted: {
+        windowManager.create("");
     }
 
     Connections {
-        target: application // this is luna-qml-launcher C++ object instance
+        target: application
         onRelaunched: {
             console.log("The browser has been relaunched with parameters: " + parameters);
             var params = JSON.parse(parameters);
-            if( params && params['palm-command'] === 'open-app-menu' ) {
-                appMenu.visible = !appMenu.visible
+
+            if (params && params['palm-command'] === 'open-app-menu') {
+                var window = windowManager.findActiveWindow();
+                console.log("Current active window " + window);
+                if (window !== null)
+                    window.activateAppMenu();
+
+                return;
             }
+
+            var targetUrl = "";
+
+            if (params && typeof params.target !== 'undefined')
+                targetUrl = params.target;
+
+            console.log("Creating new window with target " + targetUrl);
+            windowManager.create(targetUrl);
         }
     }
-
-    AppMenu {
-        id: appMenu
-        z: 100 // above everything in the app
-        visible: false
-        anchors.top: parent.top
-        anchors.left: parent.left
-
-        onSettingsMenuItem:
-        {
-            settingsPage.showPage()
-        }
-    }
-
-    SettingsPage {
-        z: 4
-        id: settingsPage
-        anchors.fill: parent
-        visible: false
-
-
-    }
-
-    NavigationBar {
-        id: navigationBar
-        webView: webViewItem
-        z: 2
-
-    }
-
-    WebView
-    {
-        id: webViewItem
-    }
-
-    ShareOptionList
-    {
-        id: shareOptionsList
-    }
-
-    MyProgressBar
-    {
-        id: progressBar
-    }
-
-    BookmarkDialog {
-        id: bookmarkDialog
-    }
-
-    Rectangle {
-           id: dimBackground
-           width: parent.width
-           height: parent.height
-           color: "#4C4C4C"
-           visible: false
-           opacity: 0.9
-           z:3
-       }
-
-    SidePanel
-    {
-        id: sidePanel
-    }
-
-    }
+}

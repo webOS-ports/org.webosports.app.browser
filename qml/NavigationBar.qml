@@ -526,7 +526,7 @@ Rectangle {
             } else {
                 alwaysShowProgressBar = false
             }
-            if (root.enableDebugOutput) {
+            if (window.enableDebugOutput) {
                 console.log("alwaysShowProgressBar: " + alwaysShowProgressBar)
             }
         }
@@ -546,7 +546,7 @@ Rectangle {
             } else {
                 showVKBButton = false
             }
-            if (root.enableDebugOutput) {
+            if (window.enableDebugOutput) {
                 console.log("showVKButton: " + showVKBButton)
             }
         }
@@ -559,14 +559,14 @@ Rectangle {
     }
 
     function setFocus(focusState) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("setFocus called with" + focusState)
         }
         addressBar.focus = focusState
     }
 
     function __launchApplication(id, params) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("launching app " + id + " with params " + params)
         }
         luna.call("luna://com.palm.applicationManager/launch", JSON.stringify({
@@ -581,7 +581,7 @@ Rectangle {
     }
 
     function __queryDB(action, params) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Querying DB with action: " + action + " and params: " + params)
         }
         luna.call("luna://com.palm.db/" + action, params,
@@ -593,7 +593,7 @@ Rectangle {
     }
 
     function __handleQueryDBSuccess(message) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Queried DB : " + JSON.stringify(message.payload))
         }
         searchResultsBookmarks = JSON.parse(message.payload)
@@ -605,7 +605,7 @@ Rectangle {
     }
 
     function __queryHDB(action, params) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Querying History DB with action: " + action + " and params: " + params)
         }
         luna.call("luna://com.palm.db/" + action, params,
@@ -617,7 +617,7 @@ Rectangle {
     }
 
     function __handleQueryHDBSuccess(message) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Queried History DB : " + JSON.stringify(
                             message.payload))
         }
@@ -652,7 +652,7 @@ Rectangle {
     }
 
     function __queryPutDB(myData) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Putting Data to DB (NavigationBar): JSON.stringify(myData): " + JSON.stringify(
                             myData))
         }
@@ -667,13 +667,13 @@ Rectangle {
     }
 
     function __handlePutDBSuccess(message) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Put DB: " + JSON.stringify(message.payload))
         }
     }
 
     function __getDefaultSearch() {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Getting default search")
         }
         luna.call("luna://com.palm.universalsearch/getAllSearchPreference",
@@ -682,7 +682,7 @@ Rectangle {
     }
 
     function __handleGetDefaultSearchSuccess(message) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Got default search successfully")
         }
         var defbrows = JSON.parse(message.payload)
@@ -693,7 +693,7 @@ Rectangle {
     }
 
     function __handleGetSearchSuccess(message) {
-        if (root.enableDebugOutput) {
+        if (window.enableDebugOutput) {
             console.log("Got search items successfully")
         }
 
@@ -824,7 +824,7 @@ Rectangle {
         font.family: "Prelude"
         font.pixelSize: FontUtils.sizeToPixels("medium")
         inputMethodHints: Qt.ImhNoAutoUppercase
-        color: root.privateByDefault ? "#2E8CF7" : "#E5E5E5"
+        color: window.privateByDefault ? "#2E8CF7" : "#E5E5E5"
         selectedTextColor: "#000000"
         selectionColor: "#ADAD15"
         verticalAlignment: TextInput.AlignVCenter
@@ -1054,7 +1054,7 @@ Rectangle {
             anchors.left: parent.left
 
             onClicked: {
-                if (root.enableDebugOutput) {
+                if (window.enableDebugOutput) {
                     console.log("onClicked addressBar.selectedText: "+addressBar.selectedText+ " addressBar.state: "+addressBar.state+ " initial selection: "+initialSelection)
                 }
                 if (shareOptionsList.visible) {
@@ -1113,7 +1113,7 @@ Rectangle {
             }
 
             onPressAndHold: {
-                if (root.enableDebugOutput) {
+                if (window.enableDebugOutput) {
                     console.log("onPressAndHold addressBar.selectedText: "+addressBar.selectedText+ " addressBar.state: "+addressBar.state+ " initial selection: "+initialSelection)
                 }
                 if (!addressBar.selectedText
@@ -1248,7 +1248,7 @@ Rectangle {
                     shareOptionsList.visible = false
                 }
 
-                if (root.enableDebugOutput) {
+                if (window.enableDebugOutput) {
                     console.log("New Card Pressed")
                 }
                 newCardImage.verticalAlignment = Image.AlignBottom
@@ -1256,7 +1256,7 @@ Rectangle {
                                                   "{}")
             }
             onReleased: {
-                if (root.enableDebugOutput) {
+                if (window.enableDebugOutput) {
                     console.log("New Card Released")
                 }
                 newCardImage.verticalAlignment = Image.AlignTop
@@ -1284,7 +1284,7 @@ Rectangle {
                     shareOptionsList.visible = false
                 }
 
-                root.dataMode = "bookmarks"
+                window.dataMode = "bookmarks"
                 navigationBar.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')

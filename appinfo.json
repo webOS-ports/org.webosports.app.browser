@@ -6,6 +6,7 @@
 	"vendor_url": "http://wiki.webos-ports.org/wiki/Application:Universe",
 	"type": "qml",
 	"main": "qml/main.qml",
+	"noWindow": true,
 	"icon": "icon.png",
 	"splashicon": "icon-256x256.png",
 	"uiRevision": "2",

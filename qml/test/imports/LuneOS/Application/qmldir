@@ -1,0 +1,2 @@
+module luneosapplication
+ApplicationWindow 1.0 ApplicationWindow.qml

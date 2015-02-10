@@ -23,8 +23,20 @@ QtObject {
     property string name
     property string method
     property bool usePrivateBus: false
+    property string service
 
+    property var lockStatusSubscriber
+    property string currentLockStatus: "locked"
+
+    property var deviceLockModeSubscriber
+    property string deviceLockMode: "none"
+    property string polcyState: "none"
+    property int retriesLeft: 3
+    property string configuredPasscode: "4242"
+
+    signal response
     signal initialized
+    signal error
 
     Component.onCompleted: {
         initialized();
@@ -42,16 +54,38 @@ QtObject {
         else if( serviceURI === "palm://com.palm.applicationManager/getAppInfo" ) {
             giveFakeAppInfo_call(args, returnFct, handleError);
         }
+        else if (serviceURI === "luna://com.palm.display/control/setLockStatus") {
+            setLockStatus_call(args, returnFct, handleError);
+        }
+        else if (serviceURI === "luna://com.palm.systemmanager/getDeviceLockMode") {
+            getDeviceLockMode_call(args, returnFct, handleError);
+        }
+        else if (serviceURI === "luna://com.palm.systemmanager/matchDevicePasscode") {
+            matchDevicePasscode_call(args, returnFct, handleError);
+        }
+        else if (serviceURI === "luna://com.palm.power/com/palm/power/batteryStatusQuery") {
+            getBatteryStatusQuery_call(args, returnFct, handleError);
+        }
         else {
             // Embed the jsonArgs into a payload message
             var message = { applicationId: "org.webosports.tests.dummyWindow", payload: jsonArgs };
             if( !(LSRegisteredMethods.executeMethod(serviceURI, message)) ) {
-                handleError("unrecognized call: " + serviceURI);
+                if (handleError)
+                    handleError("unrecognized call: " + serviceURI);
             }
         }
     }
 
     function subscribe(serviceURI, jsonArgs, returnFct, handleError) {
+        if( arguments.length === 1 ) {
+            // handle the short form of subscribe
+            return subscribe(service+"/"+method, arguments[0], onResponse, onError);
+        }
+        else if(arguments.length === 3 ) {
+            // handle the intermediate form of subscribe
+            return subscribe(service+"/"+method, arguments[0], arguments[1], arguments[2]);
+        }
+
         var args = JSON.parse(jsonArgs);
         if( serviceURI === "palm://com.palm.bus/signal/registerServerStatus" ||
             serviceURI === "luna://com.palm.bus/signal/registerServerStatus" )
@@ -76,6 +110,14 @@ QtObject {
         else if (serviceURI === "luna://org.webosports.audio/getStatus")
         {
             returnFct({"payload": JSON.stringify({"volume":54,"mute":false})});
+        }
+        else if (serviceURI === "luna://com.palm.display/control/lockStatus") {
+            lockStatusSubscriber =  {func: returnFct};
+            returnFct({payload: "{\"lockState\":\"" + currentLockStatus + "\"}"});
+        }
+        else if (serviceURI === "luna://com.palm.systemmanager/getDeviceLockMode") {
+            deviceLockModeSubscriber = {func: returnFct};
+            getDeviceLockMode_call(jsonArgs, returnFct, handleError);
         }
         else if (serviceURI === "palm://com.palm.bus/signal/addmatch" )
         {
@@ -126,7 +168,7 @@ QtObject {
 
     function launchApp_call(jsonArgs, returnFct, handleError) {
         // The JSON params can contain "id" (string) and "params" (object)
-        if( jsonArgs.id === "org.webosports.tests.dummyWindow" ) {
+        if( jsonArgs.id === "org.webosports.tests.dummyWindow" || jsonArgs.id === "org.webosports.tests.dummyWindow2" ) {
             // start a DummyWindow
             // Simulate the attachement of a new window to the stub Wayland compositor
             compositor.createFakeWindow("DummyWindow", jsonArgs);
@@ -161,5 +203,57 @@ QtObject {
         else {
             handleError("Error: parameter 'id' not specified");
         }
+    }
+
+
+    function setLockStatus_call(args, returnFct, handleError) {
+        console.log("setLockStatus_call: arg.status = " + args.status + " currentLockStatus = " + currentLockStatus);
+        if (args.status === "unlock" && currentLockStatus === "locked") {
+            currentLockStatus = "unlocked";
+            lockStatusSubscriber.func({payload: "{\"lockState\":\"" + currentLockStatus + "\"}"});
+        }
+    }
+
+    function getDeviceLockMode_call(args, returnFct, handleError) {
+        var message = {
+            "returnValue": true,
+            "lockMode": deviceLockMode,
+            "policyState": polcyState,
+            "retriesLeft": retriesLeft
+        };
+
+        returnFct({payload: JSON.stringify(message)});
+    }
+
+    function getBatteryStatusQuery_call(args, returnFct, handleError) {
+        var message = {
+            "returnValue": true,
+            "percent_ui": 10
+        };
+
+        returnFct({payload: JSON.stringify(message)});
+    }
+
+    function matchDevicePasscode_call(args, returnFct, handleError) {
+        var success = (args.passCode === configuredPasscode);
+
+        if (retriesLeft == 0)
+            success = false;
+
+        if (!success) {
+            if (retriesLeft == 0) {
+                /* FIXME */
+            }
+            else
+                retriesLeft = retriesLeft - 1;
+        }
+
+        var message = {
+            returnValue: success,
+            retriesLeft: retriesLeft,
+            lockedOut: false
+        };
+
+        returnFct({payload: JSON.stringify(message)});
     }
 }

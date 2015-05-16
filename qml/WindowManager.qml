@@ -46,9 +46,27 @@ Item {
     }
 
     function create(url) {
+        var realCreate = function() {
+            var window = windowComponent.createObject(windowManager, {url: url, windowManager: windowManager});
+            windowModel.append({window: window });
+            window.closed.connect(handleWindowClose)
+        }
+
         var windowComponent = Qt.createComponent("BrowserWindow.qml");
-        var window = windowComponent.createObject(windowManager, {url: url, windowManager: windowManager});
-        windowModel.append({window: window });
-        window.closed.connect(handleWindowClose)
+        if (windowComponent.status === Component.Ready)
+            realCreate();
+        else if (windowComponent.status === Component.Loading) {
+            windowComponent.statusChanged.connect(function() {
+                if (windowComponent.status === Component.Error) {
+                    console.log("Error loading component: ", windowComponent.errorString());
+                    return;
+                }
+
+                realCreate();
+            });
+        }
+        else {
+            console.log("Error loading component: ", windowComponent.errorString());
+        }
     }
 }

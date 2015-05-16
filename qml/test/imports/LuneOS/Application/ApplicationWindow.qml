@@ -6,4 +6,6 @@ Item {
 
     property int type: 0
     property int parentWindowId: 0
+
+    signal closed
 }

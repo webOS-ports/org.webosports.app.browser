@@ -71,7 +71,7 @@ Rectangle {
                             anchors.fill: bookmarkButtonImage
                             onClicked: {
                                 dataMode = "bookmarks"
-                                root.__queryDB(
+                                window.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleftpressed.png"
@@ -116,7 +116,7 @@ Rectangle {
                             anchors.fill: historyButtonImage
                             onClicked: {
                                 dataMode = "history"
-                                root.__queryDB(
+                                window.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleft.png"

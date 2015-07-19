@@ -812,6 +812,17 @@ Rectangle {
         visible: false
     }
 
+    Text {
+        anchors.fill: addressBar
+        font.family: "Prelude"
+        font.pixelSize: addressBar.font.pixelSize
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
+        color: addressBar.color
+        text: "Enter URL or search terms"
+        visible: addressBar.visible && !addressBar.activeFocus && addressBar.text === ""
+    }
+
     TextInput {
         id: addressBar
         anchors.leftMargin: Units.gu(1)
@@ -841,6 +852,9 @@ Rectangle {
 
         onActiveFocusChanged: {
             Qt.inputMethod.show()
+            if (addressBar.text === "" && webViewItem.url !="") {
+                addressBar.text = webViewItem.url
+            }
         }
 
         onContentSizeChanged: {

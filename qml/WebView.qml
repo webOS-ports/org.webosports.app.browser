@@ -28,7 +28,7 @@ WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
-    anchors.top: progressBar.bottom
+    anchors.top: navigationBar.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -95,9 +95,9 @@ WebView {
         anchors.fill: parent
         Image {
             id: webViewPlaceholder
-            y: Units.gu(3)
             anchors.horizontalCenter: parent.horizontalCenter
-            //anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset : -window.keyboardHeight/2.
             source: webViewPlaceholderSource
         }
     }

@@ -855,9 +855,9 @@ Rectangle {
             addressBarWidth = addressBar.width
             //We need a different query in case the lenght is 0
             if (addressBar.text.length === 0) {
-                navigationBar.__queryDB(
-                            "find",
-                            '{"query":{"from":"com.palm.browserbookmarks:1"}}')
+            //    navigationBar.__queryDB(
+            //                "find",
+            //                '{"query":{"from":"com.palm.browserbookmarks:1"}}')
             } else {
                 navigationBar.__queryDB(
                             "search",
@@ -1285,7 +1285,6 @@ Rectangle {
                     shareOptionsList.visible = false
                 }
 
-                window.dataMode = "bookmarks"
                 navigationBar.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')

@@ -249,6 +249,8 @@ LuneOS.ApplicationWindow {
            visible: false
            opacity: 0.9
            z:3
+
+           MouseArea { anchors.fill: parent; }
        }
 
     SidePanel

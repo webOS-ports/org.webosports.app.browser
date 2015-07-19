@@ -33,10 +33,11 @@ Rectangle {
     property string myButtonText: ""
 
     visible: false
-    anchors.top: progressBar.top
     anchors.horizontalCenter: parent.horizontalCenter
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset : -window.keyboardHeight/2.
     width: Units.gu(40)
-    height: Units.gu(32)
+    height: Units.gu(36)
     color: "transparent"
     radius: 10
     z: 5
@@ -126,11 +127,16 @@ Rectangle {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: Units.gu(3)
+        height: Units.gu(5.2*4/3.)
+        width: Units.gu(5.2*4/3.)
         Image {
             id: bookMarkImage
             source: bookmarkDialog.myBookMarkIcon ? bookmarkDialog.myBookMarkIcon : "images/bookmark-icon-default.png"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset : -Units.gu(0.1)
+            height: Units.gu(6.4)
+            width: Units.gu(6.4)
         }
     }
 

@@ -168,6 +168,7 @@ LuneOS.ApplicationWindow {
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
+        window.show()
         window.visible = true
 
         //Determine initial connection status

@@ -1270,6 +1270,12 @@ Rectangle {
                 navigationBar.__launchApplication("org.webosports.app.browser",
                                                   "{}")
             }
+            onCanceled: {
+                if (window.enableDebugOutput) {
+                    console.log("New Card Released")
+                }
+                newCardImage.verticalAlignment = Image.AlignTop
+            }
             onReleased: {
                 if (window.enableDebugOutput) {
                     console.log("New Card Released")

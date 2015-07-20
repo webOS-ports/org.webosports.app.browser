@@ -198,8 +198,7 @@ LuneOS.ApplicationWindow {
         id: appMenu
         z: 100 // above everything in the app
         visible: false
-        anchors.top: parent.top
-        anchors.left: parent.left
+        anchors.fill: parent
 
         onSettingsMenuItem:
         {

@@ -39,6 +39,7 @@ Item {
         height: Units.gu(4) * menuListView.count
         anchors.top: parent.top
         anchors.left: parent.left
+        interactive: false
 
         model: ListModel {
             ListElement {

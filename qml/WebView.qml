@@ -28,7 +28,7 @@ WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
-    anchors.top: navigationBar.bottom
+    anchors.top: navigationBar.alwaysShowProgressBar?progressBar.bottom:navigationBar.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right

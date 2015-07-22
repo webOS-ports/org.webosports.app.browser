@@ -21,8 +21,6 @@ import LunaNext.Common 0.1
 
 Item {
     id: menuRoot
-    width: Units.gu(23)
-    height: Units.gu(4) * menuListView.count
 
     signal settingsMenuItem
     onSettingsMenuItem: {
@@ -30,9 +28,18 @@ Item {
         Qt.inputMethod.hide()
     }
 
+    MouseArea {
+        anchors.fill: parent
+        onClicked: menuRoot.visible = false
+    }
+
     ListView {
         id: menuListView
-        anchors.fill: parent
+        width: Units.gu(23)
+        height: Units.gu(4) * menuListView.count
+        anchors.top: parent.top
+        anchors.left: parent.left
+        interactive: false
 
         model: ListModel {
             ListElement {
@@ -42,7 +49,7 @@ Item {
         }
         delegate: Rectangle {
             color: "#313131"
-            width: menuRoot.width
+            width: parent.width
             height: Units.gu(4)
             radius: 4
 

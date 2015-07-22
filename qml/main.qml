@@ -41,7 +41,7 @@ Item {
         target: application
         onRelaunched: {
             console.log("The browser has been relaunched with parameters: " + parameters);
-            var params = JSON.parse(parameters);
+            var params = parameters?JSON.parse(parameters):"";
 
             if (params && params['palm-command'] === 'open-app-menu') {
                 var window = windowManager.findActiveWindow();

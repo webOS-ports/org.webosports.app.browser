@@ -812,6 +812,17 @@ Rectangle {
         visible: false
     }
 
+    Text {
+        anchors.fill: addressBar
+        font.family: "Prelude"
+        font.pixelSize: addressBar.font.pixelSize
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignLeft
+        color: addressBar.color
+        text: "Enter URL or search terms"
+        visible: addressBar.visible && !addressBar.activeFocus && addressBar.text === ""
+    }
+
     TextInput {
         id: addressBar
         anchors.leftMargin: Units.gu(1)
@@ -841,6 +852,9 @@ Rectangle {
 
         onActiveFocusChanged: {
             Qt.inputMethod.show()
+            if (addressBar.text === "" && webViewItem.url !="") {
+                addressBar.text = webViewItem.url
+            }
         }
 
         onContentSizeChanged: {
@@ -855,9 +869,9 @@ Rectangle {
             addressBarWidth = addressBar.width
             //We need a different query in case the lenght is 0
             if (addressBar.text.length === 0) {
-                navigationBar.__queryDB(
-                            "find",
-                            '{"query":{"from":"com.palm.browserbookmarks:1"}}')
+            //    navigationBar.__queryDB(
+            //                "find",
+            //                '{"query":{"from":"com.palm.browserbookmarks:1"}}')
             } else {
                 navigationBar.__queryDB(
                             "search",
@@ -1256,6 +1270,12 @@ Rectangle {
                 navigationBar.__launchApplication("org.webosports.app.browser",
                                                   "{}")
             }
+            onCanceled: {
+                if (window.enableDebugOutput) {
+                    console.log("New Card Released")
+                }
+                newCardImage.verticalAlignment = Image.AlignTop
+            }
             onReleased: {
                 if (window.enableDebugOutput) {
                     console.log("New Card Released")
@@ -1285,7 +1305,6 @@ Rectangle {
                     shareOptionsList.visible = false
                 }
 
-                window.dataMode = "bookmarks"
                 navigationBar.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')

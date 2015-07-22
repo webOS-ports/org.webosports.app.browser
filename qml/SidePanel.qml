@@ -21,19 +21,31 @@ import QtQuick 2.0
 import QtQuick.Window 2.1
 import LunaNext.Common 0.1
 
-Rectangle {
+Item {
+    anchors.fill: parent
+    z: 2
+    visible: false
+    enabled: visible
+
+    MouseArea {
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: _sidePanel.left
+        onPressed: {
+            sidePanel.visible = false
+            mouse.accepted = false
+        }
+    }
+
+    Rectangle {
+        id: _sidePanel
         height: parent.height
         width: Screen.width < 900 ? Screen.width : Units.gu(32)
         anchors.right: parent.right
         color: "#E5E5E5"
-        visible: false
-        z: 2
 
-        onActiveFocusChanged:
-        {
-            Qt.inputMethod.show()
-        }
-
+        MouseArea { anchors.fill: parent; }
 
         Rectangle {
             id: sidePanelHeader
@@ -71,7 +83,7 @@ Rectangle {
                             anchors.fill: bookmarkButtonImage
                             onClicked: {
                                 dataMode = "bookmarks"
-                                root.__queryDB(
+                                window.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleftpressed.png"
@@ -116,7 +128,7 @@ Rectangle {
                             anchors.fill: historyButtonImage
                             onClicked: {
                                 dataMode = "history"
-                                root.__queryDB(
+                                window.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleft.png"
@@ -206,6 +218,7 @@ Rectangle {
 
             ListView {
                 anchors.top: sidePanelBody.top
+                clip: true
                 id: dataList
                 width: parent.width
                 height: parent.height
@@ -352,7 +365,6 @@ Rectangle {
                 MouseArea {
                     anchors.fill: dragHandle
                     onClicked: {
-                        navigationBar.setFocus(true)
                         sidePanel.visible = false
 
                     }
@@ -377,12 +389,15 @@ Rectangle {
                         addBookMark.verticalAlignment = Image.AlignBottom
 
 
-                        dimBackground.visible = true
-                        bookmarkDialog.action = "addBookmark"
-                        bookmarkDialog.myURL = "" + webViewItem.url
-                        bookmarkDialog.myTitle = webViewItem.title
-                        bookmarkDialog.myButtonText = "Add Bookmark"
-                        bookmarkDialog.visible = true
+                        if (webViewItem.url != "") {
+                            dimBackground.visible = true
+                            bookmarkDialog.action = "addBookmark"
+                            bookmarkDialog.myURL = "" + webViewItem.url
+                            bookmarkDialog.myTitle = webViewItem.title
+                            bookmarkDialog.myButtonText = "Add Bookmark"
+                            bookmarkDialog.visible = true
+                            sidePanel.visible = false
+                        }
                     }
                     onReleased: {
                         addBookMark.verticalAlignment = Image.AlignTop
@@ -443,3 +458,4 @@ Rectangle {
             }
         }
     }
+}

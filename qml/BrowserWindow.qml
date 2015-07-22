@@ -168,6 +168,7 @@ LuneOS.ApplicationWindow {
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
+        window.show()
         window.visible = true
 
         //Determine initial connection status
@@ -197,8 +198,7 @@ LuneOS.ApplicationWindow {
         id: appMenu
         z: 100 // above everything in the app
         visible: false
-        anchors.top: parent.top
-        anchors.left: parent.left
+        anchors.fill: parent
 
         onSettingsMenuItem:
         {
@@ -249,6 +249,8 @@ LuneOS.ApplicationWindow {
            visible: false
            opacity: 0.9
            z:3
+
+           MouseArea { anchors.fill: parent; }
        }
 
     SidePanel

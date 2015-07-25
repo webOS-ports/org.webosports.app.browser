@@ -165,6 +165,17 @@ LuneOS.ApplicationWindow {
         appMenu.visible = !appMenu.visible;
     }
 
+    function openNewCard(url) {
+        window.__launchApplication( "org.webosports.app.browser",
+                                    JSON.stringify({"target": url})  );
+    }
+
+    function setClipboard(url) {
+        __hackClipboard.text = url
+        __hackClipboard.selectAll()
+        __hackClipboard.cut()
+    }
+
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
@@ -192,6 +203,11 @@ LuneOS.ApplicationWindow {
                 webViewItem.url = "http://"+lparams.target
             }
         }
+    }
+
+    TextInput {
+        id: __hackClipboard
+        visible: false
     }
 
     AppMenu {
@@ -256,6 +272,12 @@ LuneOS.ApplicationWindow {
     SidePanel
     {
         id: sidePanel
+    }
+
+    ContextMenu
+    {
+        id: contextMenu
+        z: 3
     }
 
     }

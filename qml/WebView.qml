@@ -53,6 +53,33 @@ WebView {
     property string thumbnail: "" ;
     property string icon64: "";
 
+    experimental.userScripts: [
+        Qt.resolvedUrl("js/userscript.js")
+    ]
+
+    experimental.onMessageReceived: {
+        var data = null
+        try {
+            data = JSON.parse(message.data)
+        } catch (error) {
+            console.log('onMessageReceived: ' + message.data );
+            return
+        }
+        switch (data.type) {
+            case 'link': {
+                //console.debug("Link clicked with target" + data.target);
+                if (data.target === '_blank') { // open link in new tab
+                    window.openNewCard(data.href);
+                }
+                else if (data.target && data.target != "_parent") window.openNewCard(data.href);
+                break;
+            }
+            case 'longpress': {
+                if (data.href && data.href != "CANT FIND LINK")
+                    contextMenu.show(data)
+            }
+        }
+    }
 
     function createViewImage() {
         t = (new Date()).getTime();

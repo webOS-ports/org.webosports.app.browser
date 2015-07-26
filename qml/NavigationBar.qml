@@ -857,6 +857,12 @@ Rectangle {
             }
         }
 
+        Component.onCompleted: {
+            if (webViewItem.url != "") {
+                addressBar.focus = false
+            }
+        }
+
         onContentSizeChanged: {
             //We need to hide any copy/paste selection bits when we change length
             cutCopyPasteRectangle.visible = false

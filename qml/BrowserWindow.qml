@@ -189,20 +189,6 @@ LuneOS.ApplicationWindow {
         window.__queryDB(
                     "find",
                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
-
-        var lparams = JSON.parse(application.launchParameters)
-        if (lparams.target && lparams.target.length > 0)
-        {
-            if (lparams.target.substring(0,7)==="http://" || lparams.target.substring(0,8)==="https://" || lparams.target.substring(0,6)==="ftp://" || lparams.target.substring(0,7)==="data://" || lparams.target.substring(0,6)==="about:")
-            {
-                webViewItem.url = lparams.target
-            }
-            else
-            {
-                //We require http(s) for the URLs to load, so add http for now when it's not available
-                webViewItem.url = "http://"+lparams.target
-            }
-        }
     }
 
     TextInput {

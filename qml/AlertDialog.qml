@@ -23,24 +23,16 @@ import LunaNext.Common 0.1
 
 Dialog {
     message: model.message
-    dialogHeight: Units.gu(14)
+    dialogHeight: Units.gu(10)
     dialogWidth: Units.gu(30)
 
-    Row {
+    Row
+    {
         DialogButton {
             text: "OK"
-            onClicked: model.accept()
             color: "#4B4B4B"
             fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
-    Row {
-        DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
+            onClicked: model.dismiss()
             buttonWidth: Units.gu(26.0)
         }
     }

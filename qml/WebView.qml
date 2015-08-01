@@ -34,14 +34,24 @@ WebView {
     anchors.right: parent.right
     //experimental.preferences.fullScreenEnabled: true
     experimental.preferences.developerExtrasEnabled: true
+    experimental.preferences.fileAccessFromFileURLsAllowed: true
+    experimental.preferences.javascriptEnabled: true
+    experimental.preferences.localStorageEnabled: true
     experimental.preferences.webGLEnabled: true
     experimental.preferences.webAudioEnabled: true
     experimental.preferences.dnsPrefetchEnabled: true
     experimental.preferences.navigatorQtObjectEnabled: true
     experimental.preferences.standardFontFamily: "Prelude"
     experimental.userAgent: userAgent.defaultUA
-    experimental.authenticationDialog: AuthenticationDialog {
-    }
+    experimental.authenticationDialog: AuthenticationDialog {}
+    experimental.certificateVerificationDialog: CertDialog {}
+    experimental.proxyAuthenticationDialog: ProxyAuthenticationDialog {}
+    experimental.alertDialog: AlertDialog {}
+    experimental.confirmDialog: ConfirmDialog {}
+    experimental.promptDialog: PromptDialog {}
+    experimental.filePicker: FilePicker {}
+    experimental.itemSelector: ItemSelector {}
+
     visible: true
     z: 1
 
@@ -154,6 +164,7 @@ WebView {
             if (loadRequest.errorCode === NetworkReply.OperationCanceledError
                     && !internetAvailable)
                 console.log("No internet connection available")
+            console.log("loadRequest.status: "+loadRequest.status+" loadRequest.errorCode: "+loadRequest.errorCode+" loadRequest.errorString: "+loadRequest.errorString)
             webViewItem.loadHtml(
                         "No internet connection available, cannot load " + loadRequest.url,
                         "", loadRequest.url)

@@ -19,29 +19,10 @@
  */
 
 import QtQuick 2.0
-import LunaNext.Common 0.1
 
-Dialog {
-    message: model.message
-    dialogHeight: Units.gu(14)
-    dialogWidth: Units.gu(30)
+AuthenticationDialog {
+    id: dialog
 
-    Row {
-        DialogButton {
-            text: "OK"
-            onClicked: model.accept()
-            color: "#4B4B4B"
-            fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
-    Row {
-        DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
+    title: "Proxy authentication required."
+    message: model.hostname + ":" + model.port + " requires authentication."
 }

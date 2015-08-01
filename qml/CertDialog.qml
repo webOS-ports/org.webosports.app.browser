@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies)
  * Copyright (C) 2015 Herman van Hazendonk <github.com@herrie.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,26 +21,45 @@ import QtQuick 2.0
 import LunaNext.Common 0.1
 
 Dialog {
-    message: model.message
-    dialogHeight: Units.gu(14)
-    dialogWidth: Units.gu(30)
+    message: "Do you want to accept the security certificate?"
+    dialogHeight: Units.gu(11)
+    dialogWidth: parent.width - Units.gu(10)
 
     Row {
+        spacing: Units.gu(0.5)
         DialogButton {
-            text: "OK"
+            text: "View Certificate"
+            onClicked: {} //todo
+            color: "#4B4B4B"
+            fontcolor: "white"
+            buttonWidth: Units.gu(21)
+        }
+
+        DialogButton {
+            text: "Trust Always"
+            onClicked: {} //todo
+            color: "#4B4B4B"
+            fontcolor: "white"
+            buttonWidth: Units.gu(21)
+        }
+
+        DialogButton {
+            text: "Trust Once"
             onClicked: model.accept()
             color: "#4B4B4B"
             fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
+            buttonWidth: Units.gu(21)
         }
-    }
-    Row {
         DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
-            buttonWidth: Units.gu(26.0)
+            text: "Don't Trust"
+            onClicked:
+            {
+                model.reject()
+                webview.stop()
+            }
+            color: "#4B4B4B"
+            fontcolor: "white"
+            buttonWidth: Units.gu(21)
         }
     }
 }

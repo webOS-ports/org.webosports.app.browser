@@ -1,15 +1,15 @@
-Universe Navigator
+LuneOS Web Browser
 ==================
 
-Next generation Universe web browser.
+Next generation web browser.
 
 Summary
 -------
-The Universe web navigator, which will be the default web browser for the webOS ports project.
+The LuneOS web browser, which will be the default web browser for the WebOS Ports LuneOS project. 
 
 Description
 -----------
-The Universe web navigator is built completely in QML on top of Qt WebKit and enables the user to browse the web.
+The LuneOS web browser is built completely in QML on top of Qt WebKit and enables the user to browse the web.
 
 Features
 -----------
@@ -18,7 +18,7 @@ Features:
 1. Loads pages.
 2. Creates browser history.
 3. Private browsing feature via Tweaks (doesn't create history).
-4. Ability to add boookmarks.
+4. Ability to add bookmarks.
 5. Can go back and forward.
 6. URL prediction based on browser history & bookmarks
 7. UI similar to legacy 3.0.x browser.
@@ -26,7 +26,8 @@ Features:
 9. Custom UA strings in order to improve compatibility with websites.
 10. Show/hide vkb using button which can be enabled in Tweaks.
 11. Launching via Just Type :)
-12. Has settings page
+12. Has a settings page
+13. Multiple tabs
 
 Known bugs
 -----------
@@ -48,6 +49,7 @@ Known bugs:
 14. <s>Selection markers are not displayed at the correct location for long URL's. </s>
 15. Long URL's running behind stop/reload icon on address bar
 16. Text in addressbar needs some spacing
+17. Opening URL's 1 and 2 via luna-send will open URL 1 twice.
 
 To do:
 -----------
@@ -79,7 +81,7 @@ To do:
 24. <s>Clean up code and make separate QML files for components.</s><i>Available in nightlies</i>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 26. Add divider for History items (as per legacy)
-27. Add "Input"->"File" support
+27. <s>Add "Input"->"File" support
 
 ## Contributing
 

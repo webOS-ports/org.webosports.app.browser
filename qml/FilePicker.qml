@@ -19,7 +19,7 @@
  */
 
 import QtQuick 2.0
-import Qt.labs.folderlistmodel 1.0
+import Qt.labs.folderlistmodel 2.1
 import "js/MultiSelect.js" as MultiSelect
 import LunaNext.Common 0.1
 
@@ -33,8 +33,8 @@ Rectangle {
     color: "#CCCCCC"
     opacity: 1
 
-    width: Units.gu(43)
-    height: Units.gu(62)
+    width: Units.gu(35)
+    height: Units.gu(52)
 
     smooth: true
     radius: 10
@@ -44,7 +44,8 @@ Rectangle {
 
     Text {
         anchors.top: parent.top
-        anchors.topMargin: Units.gu(1.5)
+        //anchors.topMargin: Units.gu(1.5)
+        anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: Units.gu(1.5)
         height: Units.gu(5)
@@ -62,7 +63,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
         width: parent.width - Units.gu(3)
-        height: parent.height - Units.gu(15)
+        height: parent.height - Units.gu(12)
         radius: 10
         color: "#EEEEEE"
         border.color: "#919191"
@@ -76,7 +77,7 @@ Rectangle {
             anchors.leftMargin: Units.gu(1.5)
             id: fileLocation
             width: parent.width - Units.gu(3)
-            height: Units.gu(7.4)
+            height: Units.gu(5)
             color: "#EEEEEE"
             visible: folders.parentFolder != ""
 
@@ -123,11 +124,12 @@ Rectangle {
             anchors.top: dividerRectangleBottom1.bottom
             anchors.horizontalCenter: parent.horizontalCenter
             width: parent.width - Units.gu(0.2)
-            height: Units.gu(37)
+            height: Units.gu(34)
             clip: true
 
             FolderListModel {
                 id: folders
+                rootFolder: "/media/internal/"
             }
 
             Component {
@@ -159,7 +161,7 @@ Rectangle {
                         }
                     }
 
-                    height: Units.gu(7.4)
+                    height: Units.gu(5)
                     width: parent.width
                     color: "#EEEEEE"
 
@@ -173,7 +175,7 @@ Rectangle {
 
                         Image {
                             source: folders.isFolder(
-                                        index) ? "images/icon-folder1.png" : "images/icon-file.png"
+                                        index) ? "images/icon-folder.png" : "images/icon-file.png"
                             smooth: true
                             width: Units.gu(3.2)
                             height: Units.gu(3.2)
@@ -237,13 +239,13 @@ Rectangle {
         spacing: Units.gu(0.5)
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: overlay.bottom
-        anchors.topMargin: Units.gu(4)
+        anchors.topMargin: Units.gu(3)
 
         DialogButton {
             id: cancel
-            text: "Back"
+            text: "Cancel"
             onClicked: fileModel.reject()
-            buttonWidth: Units.gu(19.5)
+            buttonWidth: Units.gu(15.5)
             color: "white"
             fontcolor: "#444444"
             border.color: "#B8B8B8"
@@ -253,7 +255,7 @@ Rectangle {
         DialogButton {
             id: accept
             text: "OK"
-            buttonWidth: Units.gu(19.5)
+            buttonWidth: Units.gu(15.5)
             color: "#9FC094"
             fontcolor: "white"
             onClicked: {

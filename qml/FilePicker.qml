@@ -88,7 +88,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
 
                 Image {
-                    source: "images/icon-folder1.png"
+                    source: "images/icon-folder.png"
                     smooth: true
                     width: Units.gu(3.2)
                     height: Units.gu(3.2)

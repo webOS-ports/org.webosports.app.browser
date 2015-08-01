@@ -18,30 +18,31 @@
  *
  */
 
-import QtQuick 2.0
-import LunaNext.Common 0.1
+var values = []
 
-Dialog {
-    message: model.message
-    dialogHeight: Units.gu(14)
-    dialogWidth: Units.gu(30)
+function selectedValues() {
+    return values
+}
 
-    Row {
-        DialogButton {
-            text: "OK"
-            onClicked: model.accept()
-            color: "#4B4B4B"
-            fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
-    Row {
-        DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
+function countValues() {
+    return values.length
+
+}
+
+function isSelected(value) {
+    return (values.indexOf(value) != -1)
+}
+
+function addValue(value) {
+    if (values.indexOf(value) != -1)
+        return
+    values.push(value)
+}
+
+function removeValue(value) {
+    var index = values.indexOf(value)
+
+    if (index == -1)
+        return
+    values.splice(index, 1)
 }

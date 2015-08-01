@@ -16,6 +16,7 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+
 import QtQuick 2.0
 import QtQuick.Window 2.1
 import QtQuick.Controls 1.1
@@ -24,6 +25,8 @@ import LunaNext.Common 0.1
 
 Item {
     property bool saveHistoryImageChecked: false
+	property string title: "The server " + webViewItem.url + " requires a username and password"
+    property string message: model.hostname + " requires authentication."
     id: authDialog
     anchors.fill: parent
 
@@ -40,8 +43,9 @@ Item {
         height: messageText.height + savePWCheckbox.height + Units.gu(23)
         color: "transparent"
         radius: 10
-        anchors.top: progressBar.top
+        anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenterOffset: -window.keyboardHeight/2
 
         Image {
             id: leftImageTop
@@ -132,7 +136,7 @@ Item {
             Text {
                 id: messageText
                 width: parent.width
-                text: "The server " + webViewItem.url + " requires a username and password"
+                text: title //? authDialog.title : "The server " + webViewItem.url + " requires a username and password"
                 horizontalAlignment: Text.AlignLeft
                 anchors.top: parent.top
                 anchors.topMargin: Units.gu(2)
@@ -325,7 +329,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        savePWCheckbox.saveHistoryImageChecked ? savePWCheckbox.saveHistoryImageChecked = false : savePWCheckbox.saveHistoryImageChecked = true
+                        saveHistoryImageChecked ? saveHistoryImageChecked = false : saveHistoryImageChecked = true
                     }
                 }
             }

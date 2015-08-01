@@ -895,7 +895,9 @@ Rectangle {
                         0,
                         4) === "http" || addressBar.text.substring(0,
                                                                    3) === "ftp"
-                    || addressBar.text.substring(0, 4) === "data") {
+                    || addressBar.text.substring(0, 4) === "data" || addressBar.text.substring(
+                        0,
+                        4) === "file") {
                 searchSuggestions.visible = false
             } else {
                 searchSuggestions.visible = true
@@ -939,8 +941,11 @@ Rectangle {
 
         Image {
             id: faviconImage
-            anchors.right: addressBar.right
+            anchors.right: loadingIndicator.left
+            anchors.verticalCenter: loadingIndicator.verticalCenter
             source: webView.icon
+			width: Units.gu(3.2)
+			height: Units.gu(3.2)
         }
         Image {
             id: loadingIndicator
@@ -1181,7 +1186,7 @@ Rectangle {
                             0,
                             8) === "https://" || text.substring(0,
                                                                 6) === "ftp://"
-                        || text.substring(0, 7) === "data://") {
+                        || text.substring(0, 7) === "data://" || text.substring(0, 7) === "file://") {
                     webView.url = addressBar.text
                     progressBar.height = Units.gu(1 / 2)
                     loadingIndicator.source = "images/menu-icon-stop.png"

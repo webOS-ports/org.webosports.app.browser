@@ -26,7 +26,7 @@ Rectangle {
 
     signal closePage
     signal showPage
-    property bool enableDebugOutput: true
+    property bool enableDebugOutput: false
     property bool blockPopups: true
     property bool enableJavascript: true
     property bool enablePlugins: true
@@ -137,11 +137,11 @@ Rectangle {
     }
 
     function clearItems(clearMode) {
-        if (clearMode === "history") {
+        if (clearMode === "History") {
             dbmode = "history"
             __queryDB(
                         "del", '{"query":{"from":"com.palm.browserhistory:1"}}')
-        } else if (clearMode === "bookmarks") {
+        } else if (clearMode === "Bookmarks") {
             dbmode = "bookmarks"
             __queryDB(
                         "del",
@@ -726,7 +726,7 @@ Rectangle {
                 overlayRect.visible = true
                 popupConfirm.visible = true
                 popupConfirm.buttonText = "Would you like to clear your bookmarks?"
-                popupConfirm.clearMode = "bookmarks"
+                popupConfirm.clearMode = "Bookmarks"
             }
         }
 
@@ -779,7 +779,7 @@ Rectangle {
                 overlayRect.visible = true
                 popupConfirm.visible = true
                 popupConfirm.buttonText = "Would you like to clear your browser history?"
-                popupConfirm.clearMode = "history"
+                popupConfirm.clearMode = "History"
             }
         }
 
@@ -816,7 +816,7 @@ Rectangle {
         }
     }
 
-    ConfirmDialog
+    ConfirmDialogCustom
     {
         id: popupConfirm
     }

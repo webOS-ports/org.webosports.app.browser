@@ -21,27 +21,16 @@
 import QtQuick 2.0
 import LunaNext.Common 0.1
 
-Dialog {
-    message: model.message
-    dialogHeight: Units.gu(14)
-    dialogWidth: Units.gu(30)
+Item {
+    id: checkbox
+    width: Units.gu(4)
+    height: parent.height
+    property bool checked
 
-    Row {
-        DialogButton {
-            text: "OK"
-            onClicked: model.accept()
-            color: "#4B4B4B"
-            fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
-        }
-    }
-    Row {
-        DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
-            buttonWidth: Units.gu(26.0)
-        }
+    Image {
+        width: Units.gu(2.4)
+        height: Units.gu(2.4)
+        source: parent.checked ? 'images/checkbox-checked.png' : 'images/checkbox-unchecked.png'
+        anchors.verticalCenter: parent.verticalCenter
     }
 }

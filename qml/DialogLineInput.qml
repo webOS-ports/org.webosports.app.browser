@@ -19,29 +19,41 @@
  */
 
 import QtQuick 2.0
+import QtQuick.Window 2.1
+import QtQuick.Controls 1.1
+import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
 
-Dialog {
-    message: model.message
-    dialogHeight: Units.gu(14)
-    dialogWidth: Units.gu(30)
+Rectangle {
+    id: dialogLineInput
+    width: Units.gu(26)
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.verticalCenterOffset: Units.gu(-2)
+    property alias text: input.text
+    property alias echoMode: input.echoMode
+    signal accepted()
+    height: Units.gu(3)
+    color: "#fefefe"
 
-    Row {
-        DialogButton {
-            text: "OK"
-            onClicked: model.accept()
-            color: "#4B4B4B"
-            fontcolor: "white"
-            buttonWidth: Units.gu(26.0)
-        }
+    border {
+        width: 1
+        color: "#aeaeae"
     }
-    Row {
-        DialogButton {
-            text: "Cancel"
-            onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
-            buttonWidth: Units.gu(26.0)
-        }
+
+    smooth: true
+    radius: 3
+    clip: true
+
+    TextInput {
+        id: input
+        width: parent.width
+        anchors.left: parent.left
+        clip: true
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        font.family: "Prelude"
+        font.pixelSize: FontUtils.sizeToPixels("large")
+        color: "#444444"
+        onAccepted: dialogLineInput.accepted()
     }
 }

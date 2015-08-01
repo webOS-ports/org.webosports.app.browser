@@ -22,25 +22,41 @@ import QtQuick 2.0
 import LunaNext.Common 0.1
 
 Dialog {
+    id: dialog
+
     message: model.message
-    dialogHeight: Units.gu(14)
+    dialogHeight: Units.gu(18)
     dialogWidth: Units.gu(30)
 
+
+
     Row {
+        spacing: Units.gu(0.5)
+        DialogLineInput {
+            id: input
+            text: model.defaultValue
+
+            onAccepted: model.accept(input.text)
+        }
+    }
+    Row
+    {
         DialogButton {
+            id: okButton
             text: "OK"
-            onClicked: model.accept()
-            color: "#4B4B4B"
+            onClicked: model.accept(input.text)
+            color: "#171717"
             fontcolor: "white"
             buttonWidth: Units.gu(26.0)
+
         }
     }
     Row {
         DialogButton {
             text: "Cancel"
             onClicked: model.reject()
-            color: "white"
-            fontcolor: "#292929"
+            color: "transparent"
+            fontcolor: "#444444"
             buttonWidth: Units.gu(26.0)
         }
     }

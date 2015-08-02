@@ -6,4 +6,10 @@ Item {
 
     property int type: 0
     property int parentWindowId: 0
+
+    function show() {
+        window.visible = true;
+    }
+
+    signal closed();
 }

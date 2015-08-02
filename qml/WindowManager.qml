@@ -49,8 +49,14 @@ Item {
         var parentWindow = findActiveWindow();
         var parentWindowId = (parentWindow !== null)?parentWindow.windowId:0;
         var windowComponent = Qt.createComponent("BrowserWindow.qml");
-        var window = windowComponent.createObject(windowManager, {url: url, windowManager: windowManager, parentWindowId: parentWindowId});
-        windowModel.append({window: window });
-        window.closed.connect(handleWindowClose)
+        if(windowComponent.status===Component.Ready) {
+            var window = windowComponent.createObject(windowManager, {url: url, windowManager: windowManager, parentWindowId: parentWindowId});
+            windowModel.append({window: window });
+            window.closed.connect(handleWindowClose)
+        }
+        else {
+            console.error("Error during instantiation of BrowserWindow.qml!");
+            console.error(windowComponent.errorString());
+        }
     }
 }

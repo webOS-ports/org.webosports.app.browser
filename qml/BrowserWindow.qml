@@ -23,14 +23,14 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 import LunaNext.Common 0.1
 import LuneOS.Service 1.0
-import LuneOS.Application 1.0 as LuneOS
+import LuneOS.Application 1.0
 import "Utils"
 import "js/util.js" as EnyoUtils
 
-LuneOS.ApplicationWindow {
+ApplicationWindow {
     id: window
 
-    type: LuneOS.ApplicationWindow.Card
+    type: WindowType.Card
 
     width: 800
     height: 600

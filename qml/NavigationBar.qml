@@ -156,7 +156,7 @@ Rectangle {
             anchors.verticalCenterOffset: -6
             font.family: "Prelude"
             font.pixelSize: FontUtils.sizeToPixels("medium")
-            font.weight: Font.DemiBold
+            font.weight: Font.DemiBoldi
             color: "#E5E5E5"
             MouseArea {
                 anchors.fill: parent
@@ -835,7 +835,7 @@ Rectangle {
         height: Units.gu(3.5)
         font.family: "Prelude"
         font.pixelSize: FontUtils.sizeToPixels("medium")
-        inputMethodHints: Qt.ImhNoAutoUppercase
+        inputMethodHints: Qt.ImhUrlCharactersOnly
         color: window.privateByDefault ? "#2E8CF7" : "#E5E5E5"
         selectedTextColor: "#000000"
         selectionColor: "#ADAD15"

@@ -34,7 +34,27 @@ Item {
     }
 
     Component.onCompleted: {
-        windowManager.create("");
+        var lparams = JSON.parse(application.launchParameters);
+        windowManager.create(parseInputUrl(lparams.target));
+    }
+
+    function parseInputUrl(url) {
+        var parsedUrl = "";
+        if (url && url.length > 0)
+        {
+            if (url.substring(0,7)==="http://" || url.substring(0,8)==="https://" ||
+                url.substring(0,6)==="ftp://" || url.substring(0,7)==="data://" ||
+                url.substring(0,6)==="about:" || url.substring(0,7)==="file://")
+            {
+                parsedUrl = url;
+            }
+            else
+            {
+                //We require http(s) for the URLs to load, so add http for now when it's not available
+                parsedUrl = "http://" + url;
+            }
+        }
+        return parsedUrl;
     }
 
     Connections {
@@ -56,6 +76,7 @@ Item {
 
             if (params && typeof params.target !== 'undefined')
                 targetUrl = params.target;
+            targetUrl = parseInputUrl(targetUrl);
 
             console.log("Creating new window with target " + targetUrl);
             windowManager.create(targetUrl);

@@ -21,35 +21,68 @@ import QtQuick 2.0
 import LunaNext.Common 0.1
 
 Dialog {
-    message: "Do you want to accept the security certificate?"
-    dialogHeight: Units.gu(11)
-    dialogWidth: parent.width - Units.gu(10)
+    id: certDialog
+    message: "Do you want to accept the security \ncertificate?"
+    dialogHeight: Units.gu(25)
+    dialogWidth: Units.gu(30)
+
+    Item
+    {
+        anchors.top: parent.top
+        anchors.topMargin: Units.gu(4.2)
+        anchors.horizontalCenter: parent.horizontalCenter
+        z:100
+        id: notImplemented
+        visible: false
+            AlertDialog
+            {
+                dialogHeight: Units.gu(25)
+                dialogWidth: Units.gu(30)
+                message: "Not yet implemented"
+            }
+    }
 
     Row {
         spacing: Units.gu(0.5)
         DialogButton {
             text: "View Certificate"
-            onClicked: {} //todo
-            color: "#4B4B4B"
+            onClicked:
+            {
+                notImplemented.visible = true
+            }
+            color: "#6E6E6E"
             fontcolor: "white"
-            buttonWidth: Units.gu(21)
+            buttonWidth: Units.gu(26)
         }
-
+    }
+    Row
+    {
+        spacing: Units.gu(0.5)
         DialogButton {
             text: "Trust Always"
-            onClicked: {} //todo
-            color: "#4B4B4B"
+            onClicked:
+            {
+                notImplemented.visible = true
+            }
+            color: "#6E6E6E"
             fontcolor: "white"
-            buttonWidth: Units.gu(21)
+            buttonWidth: Units.gu(26)
         }
-
+    }
+    Row
+    {
+        spacing: Units.gu(0.5)
         DialogButton {
             text: "Trust Once"
             onClicked: model.accept()
-            color: "#4B4B4B"
+            color: "#6E6E6E"
             fontcolor: "white"
-            buttonWidth: Units.gu(21)
+            buttonWidth: Units.gu(26)
         }
+    }
+    Row
+    {
+        spacing: Units.gu(0.5)
         DialogButton {
             text: "Don't Trust"
             onClicked:
@@ -57,9 +90,9 @@ Dialog {
                 model.reject()
                 webview.stop()
             }
-            color: "#4B4B4B"
+            color: "#6E6E6E"
             fontcolor: "white"
-            buttonWidth: Units.gu(21)
+            buttonWidth: Units.gu(26)
         }
     }
 }

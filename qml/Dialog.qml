@@ -167,7 +167,6 @@ Item {
                 font.family: "Prelude"
                 color: "#292929"
                 font.pixelSize: FontUtils.sizeToPixels("12pt")
-
             }
 
             Column {

@@ -156,7 +156,7 @@ Rectangle {
             anchors.verticalCenterOffset: -6
             font.family: "Prelude"
             font.pixelSize: FontUtils.sizeToPixels("medium")
-            font.weight: Font.DemiBoldi
+            font.weight: Font.DemiBold
             color: "#E5E5E5"
             MouseArea {
                 anchors.fill: parent
@@ -1182,16 +1182,16 @@ Rectangle {
             if ((EnyoUtils.isValidScheme(uri) && EnyoUtils.isUri(
                      addressBar.text,
                      uri))) {
-                if (text.substring(0, 7) === "http://" || text.substring(
+                if (text.substring(0, 7).toLowerCase() === "http://" || text.substring(
                             0,
-                            8) === "https://" || text.substring(0,
-                                                                6) === "ftp://"
-                        || text.substring(0, 7) === "data://" || text.substring(0, 7) === "file://") {
+                            8).toLowerCase() === "https://" || text.substring(0,
+                                                                6).toLowerCase() === "ftp://"
+                        || text.substring(0, 7).toLowerCase() === "data://" || text.substring(0, 7).toLowerCase() === "file://") {
                     webView.url = addressBar.text
                     progressBar.height = Units.gu(1 / 2)
                     loadingIndicator.source = "images/menu-icon-stop.png"
                     //Show the lock in case of https
-                    if (text.substring(0, 8) === "https://") {
+                    if (text.substring(0, 8).toLowerCase() === "https://") {
                         isSecureSite = true
                         secureSite.visible = true
                         secureSite.width = Units.gu(3.75)

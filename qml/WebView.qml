@@ -21,8 +21,10 @@ import QtWebKit 3.0
 import QtWebKit.experimental 1.0
 import QtQuick 2.0
 import LunaNext.Common 0.1
-import "Utils"
+import LuneOS.Components 1.0
 import browserutils 0.1
+
+import "Utils"
 
 WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
@@ -43,14 +45,60 @@ WebView {
     experimental.preferences.navigatorQtObjectEnabled: true
     experimental.preferences.standardFontFamily: "Prelude"
     experimental.userAgent: userAgent.defaultUA
-    experimental.authenticationDialog: AuthenticationDialog {}
-    experimental.certificateVerificationDialog: CertDialog {}
-    experimental.proxyAuthenticationDialog: ProxyAuthenticationDialog {}
-    experimental.alertDialog: AlertDialog {}
-    experimental.confirmDialog: ConfirmDialog {}
-    experimental.promptDialog: PromptDialog {}
-    experimental.filePicker: FilePicker {}
-    experimental.itemSelector: ItemSelector {}
+    experimental.authenticationDialog: AuthenticationDialog {
+        serverURL: webViewItem.url
+        hostname: model.hostname
+        onAccepted: {
+            //TODO: Need to implement password manager using KeyManager where possible
+            if (savePwd) {
+                //TODO Function to call and do the password management
+            }
+            model.accept(username, pass);
+        }
+    }
+    experimental.certificateVerificationDialog: CertDialog {
+        onViewCertificate: { /*TODO*/ }
+        onTrust: {
+            model.accept();
+            if(always) { /*TODO*/ }
+        }
+        onReject: {
+            model.reject();
+            webview.stop();
+        }
+    }
+    experimental.proxyAuthenticationDialog: ProxyAuthenticationDialog {
+        hostname: model.hostname
+        port: model.port
+        onAccepted: {
+            //TODO: Need to implement password manager using KeyManager where possible
+            if (savePwd) {
+                //TODO Function to call and do the password management
+            }
+            model.accept(username, pass);
+        }
+    }
+    experimental.alertDialog: AlertDialog {
+        message: model.message
+        onAccepted: model.dismiss();
+    }
+    experimental.confirmDialog: ConfirmDialog {
+        message: model.message
+        onAccepted: model.accept();
+        onRejected: model.reject();
+    }
+    experimental.promptDialog: PromptDialog {
+        message: model.message
+        defaultValue: model.defaultValue
+        onAccepted: model.accept(input.text);
+        onRejected: model.reject();
+    }
+    experimental.filePicker: FilePicker {
+        fileModel: model
+    }
+    experimental.itemSelector: ItemSelector {
+        selectorModel: model;
+    }
 
     visible: true
     z: 1

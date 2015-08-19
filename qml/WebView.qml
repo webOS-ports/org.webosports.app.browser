@@ -1,4 +1,3 @@
-
 /*
 * Copyright (C) 2014 Simon Busch <morphis@gravedo.de>
 * Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
@@ -31,8 +30,7 @@ WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
-    anchors.top: navigationBar.alwaysShowProgressBar?
-    progressBar.bottom:navigationBar.bottom
+    anchors.top: navigationBar.alwaysShowProgressBar ? progressBar.bottom : navigationBar.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -53,21 +51,26 @@ WebView {
         onAccepted: {
             //TODO: Need to implement password manager using KeyManager where possible
             if (savePwd) {
+
                 //TODO Function to call and do the password management
             }
-            model.accept(username, pass);
+            model.accept(username, pass)
         }
     }
 
     experimental.certificateVerificationDialog: CertDialog {
-        onViewCertificate: { /*TODO*/ }
+        onViewCertificate: {
+
+            /*TODO*/ }
         onTrust: {
-            model.accept();
-            if(always) { /*TODO*/ }
+            model.accept()
+            if (always) {
+
+                /*TODO*/ }
         }
         onReject: {
-            model.reject();
-            webview.stop();
+            model.reject()
+            webview.stop()
         }
     }
     experimental.proxyAuthenticationDialog: ProxyAuthenticationDialog {
@@ -76,54 +79,53 @@ WebView {
         onAccepted: {
             //TODO: Need to implement password manager using KeyManager where possible
             if (savePwd) {
+
                 //TODO Function to call and do the password management
             }
-            model.accept(username, pass);
+            model.accept(username, pass)
         }
     }
     experimental.alertDialog: AlertDialog {
         message: model.message
-        onAccepted: model.dismiss();
+        onAccepted: model.dismiss()
     }
     experimental.confirmDialog: ConfirmDialog {
         message: model.message
-        onAccepted: model.accept();
-        onRejected: model.reject();
+        onAccepted: model.accept()
+        onRejected: model.reject()
     }
     experimental.promptDialog: PromptDialog {
         message: model.message
         defaultValue: model.defaultValue
-        onAccepted: model.accept(input.text);
-        onRejected: model.reject();
+        onAccepted: model.accept(input.text)
+        onRejected: model.reject()
     }
     experimental.filePicker: FilePicker {
         fileModel: model
     }
     experimental.itemSelector: ItemSelector {
-        selectorModel: model;
+        selectorModel: model
     }
 
     visible: true
     z: 1
 
-    property bool viewImageCreated: false;
-    property string t: "" ;
-    property int w: 90;
-    property int h: 120;
-    property string p: "" ;
-    property string thumbnail: "" ;
-    property string icon64: "";
+    property bool viewImageCreated: false
+    property string t: ""
+    property int w: 90
+    property int h: 120
+    property string p: ""
+    property string thumbnail: ""
+    property string icon64: ""
 
-    experimental.userScripts: [
-        Qt.resolvedUrl("js/userscript.js")
-    ]
+    experimental.userScripts: [Qt.resolvedUrl("js/userscript.js")]
 
     experimental.onMessageReceived: {
         var data = null
         try {
             data = JSON.parse(message.data)
         } catch (error) {
-            console.log('onMessageReceived: ' + message.data );
+            console.log('onMessageReceived: ' + message.data)
             return
         }
         switch (data.type) {
@@ -154,12 +156,12 @@ WebView {
     }
 
     function createViewImage() {
-        t = (new Date()).getTime();
-        p = "/var/luna/data/browser/icons/";
-        thumbnail = p + "thumbnail-" + t + ".png";
-        icon64 = p + "icon64-" + t + ".png";
-        utils.saveViewToFile(thumbnail,Qt.size(w,h));
-        viewImageCreated = true;
+        t = (new Date()).getTime()
+        p = "/var/luna/data/browser/icons/"
+        thumbnail = p + "thumbnail-" + t + ".png"
+        icon64 = p + "icon64-" + t + ".png"
+        utils.saveViewToFile(thumbnail, Qt.size(w, h))
+        viewImageCreated = true
     }
 
     BrowserUtils {
@@ -196,7 +198,7 @@ WebView {
             id: webViewPlaceholder
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset : -window.keyboardHeight/2.
+            anchors.verticalCenterOffset: -window.keyboardHeight / 2.
             source: webViewPlaceholderSource
         }
     }
@@ -226,7 +228,9 @@ WebView {
             if (loadRequest.errorCode === NetworkReply.OperationCanceledError
                     && !internetAvailable)
                 console.log("No internet connection available")
-            console.log("loadRequest.status: "+loadRequest.status+" loadRequest.errorCode: "+loadRequest.errorCode+" loadRequest.errorString: "+loadRequest.errorString)
+            console.log("loadRequest.status: " + loadRequest.status
+                        + " loadRequest.errorCode: " + loadRequest.errorCode
+                        + " loadRequest.errorString: " + loadRequest.errorString)
             webViewItem.loadHtml(
                         "No internet connection available, cannot load " + loadRequest.url,
                         "", loadRequest.url)
@@ -238,13 +242,13 @@ WebView {
         console.log("Page loaded!")
 
         if (webViewItem.loadProgress === 100) {
+
             //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
             //Only create history item in case we're not using Private Browsing
-
             if (!privateByDefault) {
 
                 //Create the icon/images for the page
-                createViewImage();
+                createViewImage()
 
                 navigationBar.__queryDB(
                             "del",
@@ -268,16 +272,17 @@ WebView {
     }
 
     function createIconImages() {
-        utils.generateIconFromFile(thumbnail, icon64, Qt.size(w,h));
-        viewImageCreated = false;
-        bookmarkDialog.myBookMarkIcon = icon64;
+        utils.generateIconFromFile(thumbnail, icon64, Qt.size(w, h))
+        viewImageCreated = false
+        bookmarkDialog.myBookMarkIcon = icon64
     }
 
     //Nasty but works, we need a delay of 1000+ ms in order to be able to create the icons, because the viewImage has a delay of 1000ms
-    Timer  {
-        interval: 1500; running: viewImageCreated && webViewItem.loadProgress === 100;
+    Timer {
+        interval: 1500
+        running: viewImageCreated && webViewItem.loadProgress === 100
         repeat: true
-        onTriggered: createIconImages();
+        onTriggered: createIconImages()
     }
 
     url: ""

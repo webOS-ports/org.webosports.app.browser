@@ -944,8 +944,8 @@ Rectangle {
             anchors.right: loadingIndicator.left
             anchors.verticalCenter: loadingIndicator.verticalCenter
             source: webView.icon
-			width: Units.gu(3.2)
-			height: Units.gu(3.2)
+            width: Units.gu(2.4)
+            height: Units.gu(2.4)
         }
         Image {
             id: loadingIndicator

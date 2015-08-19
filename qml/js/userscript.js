@@ -139,7 +139,11 @@ document.documentElement.addEventListener('click', (function(e) {
     }
 }), true);
 
-window.onload = function() {
+//FIXME
+//Disabled window.onload for now because we don't use it and it seems to break some websites like
+//https://www.abnamro.nl/portalserver/nl/prive/index.html?l
+
+/*window.onload = function() {
     var inputs = document.getElementsByTagName('INPUT');
     var textareas = document.getElementsByTagName('TEXTAREA');
 
@@ -171,6 +175,7 @@ window.onload = function() {
         }
     }
 }
+*/
 
 navigator.qt.onmessage = function(ev) {
     //console.debug("[userscript.js] message received")

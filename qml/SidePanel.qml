@@ -285,7 +285,7 @@ Item {
                                       clip: true
                                       horizontalAlignment: Text.AlignLeft
                                       font.family: "Prelude"
-                                      font.pixelSize: FontUtils.sizeToPixels("large")
+                                      font.pixelSize: FontUtils.sizeToPixels("16pt")
                                       color: "#494949"
                                       elide: Text.ElideRight
                                       text: model.title || ""

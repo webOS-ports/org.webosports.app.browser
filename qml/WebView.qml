@@ -23,6 +23,7 @@ import QtQuick 2.0
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import browserutils 0.1
+import "js/util.js" as EnyoUtils
 
 import "Utils"
 
@@ -30,7 +31,8 @@ WebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
-    anchors.top: navigationBar.alwaysShowProgressBar?progressBar.bottom:navigationBar.bottom
+    anchors.top: navigationBar.alwaysShowProgressBar?
+    progressBar.bottom:navigationBar.bottom
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -56,6 +58,7 @@ WebView {
             model.accept(username, pass);
         }
     }
+
     experimental.certificateVerificationDialog: CertDialog {
         onViewCertificate: { /*TODO*/ }
         onTrust: {
@@ -124,18 +127,29 @@ WebView {
             return
         }
         switch (data.type) {
-            case 'link': {
-                //console.debug("Link clicked with target" + data.target);
-                if (data.target === '_blank') { // open link in new tab
-                    window.openNewCard(data.href);
+        case 'link':
+        {
+            //In case we're having a relative URL we need to prefix it with the proper baseURL.
+            if (data.href.indexOf("://") === -1) {
+                data.href = EnyoUtils.get_host(webViewItem.url) + data.href
+            }
+
+            if (data.target === '_blank') {
+                // open link in new tab
+                window.openNewCard(data.href)
+            } else if (data.target && data.target !== "_parent") {
+                //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
+                if (data.href.slice(-1) !== "#") {
+                    window.openNewCard(data.href)
                 }
-                else if (data.target && data.target != "_parent") window.openNewCard(data.href);
-                break;
             }
-            case 'longpress': {
-                if (data.href && data.href != "CANT FIND LINK")
-                    contextMenu.show(data)
-            }
+            break
+        }
+        case 'longpress':
+        {
+            if (data.href && data.href !== "CANT FIND LINK")
+                contextMenu.show(data)
+        }
         }
     }
 
@@ -231,7 +245,7 @@ WebView {
 
                 //Create the icon/images for the page
                 createViewImage();
-               
+
                 navigationBar.__queryDB(
                             "del",
                             '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"' + webViewItem.url + '"}]}}')
@@ -261,7 +275,8 @@ WebView {
 
     //Nasty but works, we need a delay of 1000+ ms in order to be able to create the icons, because the viewImage has a delay of 1000ms
     Timer  {
-        interval: 1500; running: viewImageCreated && webViewItem.loadProgress === 100; repeat: true
+        interval: 1500; running: viewImageCreated && webViewItem.loadProgress === 100;
+        repeat: true
         onTriggered: createIconImages();
     }
 

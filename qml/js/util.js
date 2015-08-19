@@ -13,6 +13,10 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
+    function get_host(url){
+        return String(url).replace(/^((\w+:)?\/\/[^\/]+\/?).*$/,'$1');
+    }
+
 	function applyFilterHighlight(a, b) {
 	//function applyFilterHighlight(a, b, c) {
         //return a.replace(new RegExp(b, "i"), '<span class="' + c + '">$&</span>');

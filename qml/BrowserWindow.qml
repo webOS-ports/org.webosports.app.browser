@@ -224,7 +224,7 @@ ApplicationWindow {
 
     }
 
-    WebView
+    BrowserWebView
     {
         id: webViewItem
     }

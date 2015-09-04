@@ -26,7 +26,7 @@ import "js/util.js" as EnyoUtils
 
 import "Utils"
 
-WebView {
+LunaWebView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
@@ -35,77 +35,7 @@ WebView {
     anchors.left: parent.left
     anchors.right: parent.right
     //experimental.preferences.fullScreenEnabled: true
-    experimental.preferences.developerExtrasEnabled: true
-    experimental.preferences.fileAccessFromFileURLsAllowed: true
-    experimental.preferences.javascriptEnabled: true
-    experimental.preferences.localStorageEnabled: true
-    experimental.preferences.webGLEnabled: true
-    experimental.preferences.webAudioEnabled: true
-    experimental.preferences.dnsPrefetchEnabled: true
-    experimental.preferences.navigatorQtObjectEnabled: true
-    experimental.preferences.standardFontFamily: "Prelude"
     experimental.userAgent: userAgent.defaultUA
-    experimental.authenticationDialog: AuthenticationDialog {
-        serverURL: webViewItem.url
-        hostname: model.hostname
-        onAccepted: {
-            //TODO: Need to implement password manager using KeyManager where possible
-            if (savePwd) {
-
-                //TODO Function to call and do the password management
-            }
-            model.accept(username, pass)
-        }
-    }
-
-    experimental.certificateVerificationDialog: CertDialog {
-        onViewCertificate: {
-
-            /*TODO*/ }
-        onTrust: {
-            model.accept()
-            if (always) {
-
-                /*TODO*/ }
-        }
-        onReject: {
-            model.reject()
-            webview.stop()
-        }
-    }
-    experimental.proxyAuthenticationDialog: ProxyAuthenticationDialog {
-        hostname: model.hostname
-        port: model.port
-        onAccepted: {
-            //TODO: Need to implement password manager using KeyManager where possible
-            if (savePwd) {
-
-                //TODO Function to call and do the password management
-            }
-            model.accept(username, pass)
-        }
-    }
-    experimental.alertDialog: AlertDialog {
-        message: model.message
-        onAccepted: model.dismiss()
-    }
-    experimental.confirmDialog: ConfirmDialog {
-        message: model.message
-        onAccepted: model.accept()
-        onRejected: model.reject()
-    }
-    experimental.promptDialog: PromptDialog {
-        message: model.message
-        defaultValue: model.defaultValue
-        onAccepted: model.accept(input.text)
-        onRejected: model.reject()
-    }
-    experimental.filePicker: FilePicker {
-        fileModel: model
-    }
-    experimental.itemSelector: ItemSelector {
-        selectorModel: model
-    }
 
     visible: true
     z: 1

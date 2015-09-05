@@ -229,6 +229,11 @@ ApplicationWindow {
         id: webViewItem
     }
 
+    ScrollIndicator {
+        flickableItem: webViewItem
+        z: (webViewItem.z + navigationBar.z)/2
+    }
+
     ShareOptionList
     {
         id: shareOptionsList

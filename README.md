@@ -86,7 +86,7 @@ To do:
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 26. Add divider for History items (as per legacy)
 27. <s>Add "Input"->"File" support</s>
-28. Add further experimental support
+28. Add further experimental support (minimal fontsize, viewport, device pixel ratio etc)
 
 ## Contributing
 

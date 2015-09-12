@@ -34,8 +34,18 @@ LunaWebView {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    //experimental.preferences.fullScreenEnabled: true
+    experimental.preferences.fullScreenEnabled: true
     experimental.userAgent: userAgent.defaultUA
+
+
+    experimental.onEnterFullScreenRequested: {
+        navigationBar.visible = false;
+        //Window.showFullScreen();
+    }
+    experimental.onExitFullScreenRequested: {
+        //Window.showNormal();
+        navigationBar.visible = true;
+    }
 
     visible: true
     z: 1

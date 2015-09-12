@@ -60,7 +60,7 @@ var overrides = {
     "google.com.au": [/Mobile\) WebKit\/[.0-9]*/, "Android 4.3) AppleWebKit Mobile Safari"],
     "google.pl": [/Mobile\) WebKit\/[.0-9]*/, "Android 4.3) AppleWebKit Mobile Safari"],
 
-    "youtube.com": [/Mobile\) WebKit\/([.0-9]*)/, "Linux) WebKit/$1 (like Android 4.3) LuneOS Mobile"],
+    //"youtube.com": [/Mobile\) WebKit\/([.0-9]*)/, "Linux) WebKit/$1 (like Android 4.3) LuneOS Mobile"],
 
     "twitter.com": ["Mobile)", "Mobile) Firefox"],
 
@@ -115,4 +115,6 @@ var overrides = {
 
     // http://pad.lv/1223937
     "huffpost.com": ["Mobile)", "Mobile) Firefox"],
+	
+    "web.whatsapp.com": "Mozilla/5.0 (LuneOS; Desktop) AppleWebKit/538.1 (KHTML, like Gecko) Chrome/41.0.2227.0 Safari/538.1"
 };

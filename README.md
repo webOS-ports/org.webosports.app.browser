@@ -11,6 +11,10 @@ Description
 -----------
 The LuneOS web browser is built completely in QML on top of Qt WebKit and enables the user to browse the web.
 
+Prerequisites
+-----------
+The LuneOS web browser uses luneos-components, make sure to have these available, you can get them at http://github.com/webos-ports/luneos-components
+
 Features
 -----------
 Features:
@@ -49,7 +53,7 @@ Known bugs:
 14. <s>Selection markers are not displayed at the correct location for long URL's. </s>
 15. Long URL's running behind stop/reload icon on address bar
 16. Text in addressbar needs some spacing
-17. Opening URL's 1 and 2 via luna-send will open URL 1 twice.
+17. <s>Opening URL's 1 and 2 via luna-send will open URL 1 twice.</s>
 
 To do:
 -----------
@@ -61,27 +65,28 @@ To do:
 4. <s>Create settings page to replicate settings from legacy.</s>
 5. Add additional browser Tweaks (look at legacy to see what's interesting). 
 6. <s>Add launch parameters + handling</s>
-7. Add icons for bookmarks (investigate legacy's handling). Implemented in UI, <i>Pending backend solution, see http://issues.webos-ports.org/issues/597</i>
+7. <s>Add icons for bookmarks (investigate legacy's handling).</s>
 8. Add "search in page" See http://developer.blackberry.com/native/documentation/cascades/ui/webview/loadingwebcontent.html
 9. <s>Add select, copy & paste where possible</s><i>Completed for address bar, available in nightlies</i>
 10. <s>Fix share dialog</s><i>Available in nightlies</i>
 11. <s>Flexible User Agent implementation, see Ubuntu approach.</s>
-12. Add possibility to delete indidual bookmarks/history/download items (swipable or otherwise).
+12. Add possibility to delete individual bookmarks/history/download items (swipable or otherwise).
 13. Investigate search suggestions to see if those are possible from QML with our luna calls.
-14. <s>Add possibility to edit bookmarks</s><i>available in nightlies</i>
-15. <s>Add authentication dialog</s>
-16. Add password manager
-17. Add cookies support
-18. Look into https everywhere
-19. Confirmation dialog for Clearing Downloads
-20. Further make the preferences actually do something in the app
+14. <s>Add possibility to edit bookmarks.</s>
+15. <s>Add authentication dialog.</s>
+16. Add password manager.
+17. Add cookies support.
+18. Look into https everywhere.
+19. Confirmation dialog for Clearing Downloads.
+20. Further make the preferences actually do something in the app.
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
-22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.<i>Available in nightlies</i>
+22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.
 23. Add scroll bar and style it webOS-y.
-24. <s>Clean up code and make separate QML files for components.</s><i>Available in nightlies</i>
+24. <s>Clean up code and make separate QML files for components.</s>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 26. Add divider for History items (as per legacy)
-27. <s>Add "Input"->"File" support
+27. <s>Add "Input"->"File" support</s>
+28. Add further experimental support
 
 ## Contributing
 

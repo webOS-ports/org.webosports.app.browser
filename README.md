@@ -76,7 +76,7 @@ To do:
 15. <s>Add authentication dialog.</s>
 16. Add password manager.
 17. Add cookies support.
-18. Look into https everywhere.
+18. Look into https everywhere (probably need to use sqlite DB created by https://github.com/EFForg/https-everywhere/tree/master/utils because to use 16000 XML files is a no-go).
 19. Confirmation dialog for Clearing Downloads.
 20. Further make the preferences actually do something in the app.
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.

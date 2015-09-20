@@ -35,7 +35,7 @@ LunaWebEngineView {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    experimental.preferences.fullScreenEnabled: true
+    //experimental.preferences.fullScreenEnabled: true
     profile.httpUserAgent: userAgent.defaultUA
 
    /*

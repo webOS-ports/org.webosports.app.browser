@@ -16,8 +16,9 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
-import QtWebKit 3.0
-import QtWebKit.experimental 1.0
+import QtWebEngine 1.1
+import QtWebEngine.experimental 1.0
+import Qt.labs.settings 1.0
 import QtQuick 2.0
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
@@ -26,7 +27,7 @@ import "js/util.js" as EnyoUtils
 
 import "Utils"
 
-LunaWebView {
+LunaWebEngineView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
@@ -35,9 +36,9 @@ LunaWebView {
     anchors.left: parent.left
     anchors.right: parent.right
     experimental.preferences.fullScreenEnabled: true
-    experimental.userAgent: userAgent.defaultUA
+    profile.httpUserAgent: userAgent.defaultUA
 
-
+   /*
     experimental.onEnterFullScreenRequested: {
         navigationBar.visible = false;
         //Window.showFullScreen();
@@ -46,6 +47,7 @@ LunaWebView {
         //Window.showNormal();
         navigationBar.visible = true;
     }
+    */
 
     visible: true
     z: 1
@@ -58,8 +60,8 @@ LunaWebView {
     property string thumbnail: ""
     property string icon64: ""
 
-    experimental.userScripts: [Qt.resolvedUrl("js/userscript.js")]
-
+    userScripts: [ WebEngineScript { name: "userScript"; sourceUrl: Qt.resolvedUrl("js/userscript.js") } ]
+/*
     experimental.onMessageReceived: {
         var data = null
         try {
@@ -94,7 +96,7 @@ LunaWebView {
         }
         }
     }
-
+*/
     function createViewImage() {
         t = (new Date()).getTime()
         p = "/var/luna/data/browser/icons/"
@@ -108,7 +110,7 @@ LunaWebView {
         id: utils
         webview: webViewItem
     }
-
+/*
     onNavigationRequested: {
         //Hide VKB
         Qt.inputMethod.hide()
@@ -128,7 +130,7 @@ LunaWebView {
             webViewItem.experimental.userAgent = staticUA
         }
     }
-
+*/
     //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
     Image {
         id: webViewBackground
@@ -148,11 +150,11 @@ LunaWebView {
         //Refresh connection status
         __getConnectionStatus()
 
-        if (loadRequest.status == WebView.LoadStartedStatus)
+        if (loadRequest.status == WebEngineView.LoadStartedStatus)
             pageIsLoading = true
         progressBar.height = Units.gu(1 / 2)
         console.log("Loading started...")
-        if (loadRequest.status == WebView.LoadFailedStatus) {
+        if (loadRequest.status == WebEngineView.LoadFailedStatus) {
             console.log("Load failed! Error code: " + loadRequest.errorCode)
             webViewItem.loadHtml("Failed to load " + loadRequest.url, "",
                                  loadRequest.url)
@@ -176,7 +178,7 @@ LunaWebView {
                         "", loadRequest.url)
             pageIsLoading = false
         }
-        if (loadRequest.status == WebView.LoadSucceededStatus)
+        if (loadRequest.status == WebEngineView.LoadSucceededStatus)
             pageIsLoading = false
 
         console.log("Page loaded!")

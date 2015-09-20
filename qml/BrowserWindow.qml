@@ -229,10 +229,12 @@ ApplicationWindow {
         id: webViewItem
     }
 
+    //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
+    /*
     ScrollIndicator {
         flickableItem: webViewItem
         z: (webViewItem.z + navigationBar.z)/2
-    }
+    }*/
 
     ShareOptionList
     {

@@ -35,19 +35,17 @@ LunaWebEngineView {
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
-    //experimental.preferences.fullScreenEnabled: true
     profile.httpUserAgent: userAgent.defaultUA
 
-   /*
-    experimental.onEnterFullScreenRequested: {
-        navigationBar.visible = false;
-        //Window.showFullScreen();
+    onFullScreenRequested: {
+        if (request.toggleOn)
+            navigationBar.visible = false;
+            //Window.showFullScreen()
+        else
+            //Window.showNormal()
+            navigationBar.visible = true;
+        request.accept()
     }
-    experimental.onExitFullScreenRequested: {
-        //Window.showNormal();
-        navigationBar.visible = true;
-    }
-    */
 
     visible: true
     z: 1

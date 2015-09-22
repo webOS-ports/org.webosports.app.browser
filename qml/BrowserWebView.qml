@@ -136,6 +136,7 @@ LunaWebEngineView {
         id: webViewBackground
         source: webViewBackgroundSource
         anchors.fill: parent
+        z: 1
         Image {
             id: webViewPlaceholder
             anchors.horizontalCenter: parent.horizontalCenter

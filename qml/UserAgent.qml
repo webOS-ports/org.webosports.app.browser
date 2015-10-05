@@ -35,11 +35,12 @@ import "js/ua-overrides.js" as Overrides
 Item {
     // %1: form factor (Mobile, Tablet, Desktop)
     // %2: WebKit version
-    readonly property string _template: "Mozilla/5.0 (LuneOS; %1) WebKit/%2"
+    //readonly property string _template: "Mozilla/5.0 (LuneOS; %1) WebKit/%2"
+    readonly property string _template: "Mozilla/5.0 (LuneOS; %1) AppleWebKit/%2 (KHTML, like Gecko) QtWebEngine/5.5.0 Chrome/40.0.2214.115 Safari/%2"
 
     // See Source/WebCore/Configurations/Version.xcconfig in QtWebKit’s source tree
     // TODO: determine this value at runtime
-    readonly property string _webkitVersion: "538.1"
+    readonly property string _webkitVersion: "537.36"
 
     // FIXME: this is a quick hack that will become increasingly unreliable
     // as we support more devices, so we need a better solution for this

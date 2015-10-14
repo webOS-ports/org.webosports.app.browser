@@ -17,6 +17,7 @@
  */
 
 #include <QtQml>
+#include <QtWebEngine/qtwebengineglobal.h>
 
 #include "plugin.h"
 #include "browserutils.h"
@@ -24,6 +25,7 @@
 BrowserUtilsPlugin::BrowserUtilsPlugin(QObject *parent) :
 	QQmlExtensionPlugin(parent)
 {
+	 QtWebEngine::initialize();
 }
 
 void BrowserUtilsPlugin::registerTypes(const char *uri)

@@ -24,20 +24,20 @@
 #include <QtCore/QUrl>
 #include <QQuickItem>
 #include <QtQuick/private/qquickitem_p.h>
-#include <QtWebKit/private/qquickwebpage_p.h>
-#include <QtWebKit/private/qquickwebview_p.h>
+
+class QQuickWebEngineView;
 
 class BrowserUtils : public QQuickItem
 {
 	Q_OBJECT
 
-	Q_PROPERTY(QQuickWebView* webview READ webview WRITE setWebview NOTIFY webviewChanged)
+	Q_PROPERTY(QQuickWebEngineView* webview READ webview WRITE setWebview NOTIFY webviewChanged)
 
 public:
 	BrowserUtils(QQuickItem* parent=0);
 
-	QQuickWebView* webview() const;
-	void setWebview(QQuickWebView* webview);
+	QQuickWebEngineView* webview() const;
+	void setWebview(QQuickWebEngineView* webview);
 
 	Q_INVOKABLE void saveViewToFile(const QString outFile, const QSize imageSize);
 	Q_INVOKABLE void generateIconFromFile(const QString inFile, const QString outFile, const QSize imageSize);
@@ -54,7 +54,7 @@ private Q_SLOTS:
 	void doSaveWebView();
 
 private:
-	QQuickWebView* m_webview;
+	QQuickWebEngineView* m_webview;
 	QString m_outFile;
 	QSize m_imageSize;
 };

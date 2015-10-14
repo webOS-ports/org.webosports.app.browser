@@ -23,8 +23,7 @@
 #include <QtCore/QMetaObject>
 #include <QtCore/QTimer>
 #include <QtQuick/private/qsgrenderer_p.h>
-#include <QtWebKit/private/qquickwebpage_p.h>
-#include <QtWebKit/private/qquickwebview_p.h>
+#include <QtWebEngine/private/qquickwebengineview_p.h>
 #include <QDateTime>
 #include <QImage>
 #include <QStandardPaths>
@@ -49,12 +48,12 @@ BrowserUtils::BrowserUtils(QQuickItem* parent)
 {
 }
 
-QQuickWebView* BrowserUtils::webview() const
+QQuickWebEngineView* BrowserUtils::webview() const
 {
 	return m_webview;
 }
 
-void BrowserUtils::setWebview(QQuickWebView* webview)
+void BrowserUtils::setWebview(QQuickWebEngineView* webview)
 {
 	if (webview != m_webview) {
 		m_webview = webview;
@@ -126,15 +125,21 @@ QSGNode* BrowserUtils::updatePaintNode(QSGNode* oldNode, UpdatePaintNodeData* up
 		return oldNode;
 	}
 	setFlag(QQuickItem::ItemHasContents, false);
+#if 0
 	QQuickWebPage* page = m_webview->page();
 	qreal xmin = qMin(page->width(), m_webview->width());
 	qreal ymin = qMin(m_webview->height(), page->height());
+#else
+	// Here the screenshot of the page might be too large if the page is tiny
+	qreal xmin = m_webview->width();
+	qreal ymin = m_webview->height();
+#endif
 	ymin = qMin(static_cast<int>(ymin), m_imageSize.height());
 	xmin = qMin(static_cast<int>(xmin), m_imageSize.width());
 
 	QSize size(xmin, ymin);
 
-	QSGNode* node = QQuickItemPrivate::get(page)->itemNode();
+	QSGNode* node = QQuickItemPrivate::get(m_webview)->itemNode();
 	QSGNode* parent = node->QSGNode::parent();
 	QSGNode* previousSibling = node->previousSibling();
 	if (parent) {

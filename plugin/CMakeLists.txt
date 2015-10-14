@@ -1,5 +1,5 @@
 include_directories(
-	${Qt5WebKit_PRIVATE_INCLUDE_DIRS}
+	${Qt5WebEngine_PRIVATE_INCLUDE_DIRS}
 	${Qt5Quick_PRIVATE_INCLUDE_DIRS})
 
 set(SOURCES
@@ -7,7 +7,7 @@ set(SOURCES
     browserutils.cpp)
 
 add_library(browserutils MODULE ${SOURCES})
-qt5_use_modules(browserutils Quick WebKit)
+qt5_use_modules(browserutils Quick WebEngine)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/qmldir"
                                                               "${CMAKE_CURRENT_BINARY_DIR}/qmldir")

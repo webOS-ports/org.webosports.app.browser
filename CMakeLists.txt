@@ -16,9 +16,9 @@ if(NOT Qt5Quick_FOUND)
     message(FATAL_ERROR "Qt5Quick module is required!")
 endif()
 
-find_package(Qt5WebKit REQUIRED)
-if(NOT Qt5WebKit_FOUND)
-    message(FATAL_ERROR "Qt5WebKit module is required!")
+find_package(Qt5WebEngine REQUIRED)
+if(NOT Qt5WebEngine_FOUND)
+    message(FATAL_ERROR "Qt5WebEngine module is required!")
 endif()
 
 set(APP_DIR ${WEBOS_INSTALL_WEBOS_APPLICATIONSDIR}/org.webosports.app.browser)

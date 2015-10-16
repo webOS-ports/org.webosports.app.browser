@@ -7,6 +7,7 @@
 	"type": "qml",
 	"main": "qml/main.qml",
 	"noWindow": true,
+        "useWebEngine": true,
 	"icon": "icon.png",
 	"splashicon": "icon-256x256.png",
 	"uiRevision": "2",

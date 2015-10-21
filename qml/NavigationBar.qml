@@ -641,7 +641,7 @@ Rectangle {
                 searchResults.push({
                                        url: s.url,
                                        title: s.title,
-                                       icon64: t.icon64,
+                                       icon64: s.icon64,
                                        icon: "images/header-icon-history.png"
                                    })
             }

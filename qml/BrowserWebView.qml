@@ -24,6 +24,7 @@ import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import browserutils 0.1
 import "js/util.js" as EnyoUtils
+import QtWebChannel 1.0
 
 import "Utils"
 
@@ -58,43 +59,63 @@ LunaWebEngineView {
     property string thumbnail: ""
     property string icon64: ""
 
-    userScripts: [ WebEngineScript { name: "userScript"; sourceUrl: Qt.resolvedUrl("js/userscript.js") } ]
-/*
-    experimental.onMessageReceived: {
-        var data = null
-        try {
-            data = JSON.parse(message.data)
-        } catch (error) {
-            console.log('onMessageReceived: ' + message.data)
-            return
+    userScripts: [
+        WebEngineScript {
+            name: "qwebchannel";
+            sourceUrl: Qt.resolvedUrl("js/qwebchannel.js");
+            injectionPoint: WebEngineScript.DocumentReady;
+            worldId:WebEngineScript.MainWorld;
+        },
+         WebEngineScript {
+             name: "userscript";
+             sourceUrl: Qt.resolvedUrl("js/userscript.js");
+             injectionPoint: WebEngineScript.Deferred;
+             worldId:WebEngineScript.MainWorld;
         }
-        switch (data.type) {
-        case 'link':
-        {
-            //In case we're having a relative URL we need to prefix it with the proper baseURL.
-            if (data.href.indexOf("://") === -1) {
-                data.href = EnyoUtils.get_host(webViewItem.url) + data.href
-            }
+    ]
 
-            if (data.target === '_blank') {
-                // open link in new tab
-                window.openNewCard(data.href)
-            } else if (data.target && data.target !== "_parent") {
-                //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
-                if (data.href.slice(-1) !== "#") {
-                    window.openNewCard(data.href)
-                }
+    webChannel.registeredObjects: [messageHelper]
+
+    QtObject {
+        id: messageHelper
+        WebChannel.id: "messageHelper"
+
+        function onMessageReceived(message) {
+            var data = null
+            try {
+                data = JSON.parse(message)
+            } catch (error) {
+                console.log('onMessageReceived: ' + message)
+                return
             }
-            break
-        }
-        case 'longpress':
-        {
-            if (data.href && data.href !== "CANT FIND LINK")
-                contextMenu.show(data)
-        }
+            switch (data.type) {
+            case 'link':
+            {
+                //In case we're having a relative URL we need to prefix it with the proper baseURL.
+                if (data.href.indexOf("://") === -1) {
+                    data.href = EnyoUtils.get_host(webViewItem.url) + data.href
+                }
+
+                if (data.target === '_blank') {
+                    // open link in new tab
+                    window.openNewCard(data.href)
+                } else if (data.target && data.target !== "_parent") {
+                    //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
+                    if (data.href.slice(-1) !== "#") {
+                        window.openNewCard(data.href)
+                    }
+                }
+                break
+            }
+            case 'longpress':
+            {
+                if (data.href && data.href !== "CANT FIND LINK")
+                    contextMenu.show(data)
+            }
+            }
         }
     }
-*/
+
     function createViewImage() {
         t = (new Date()).getTime()
         p = "/var/luna/data/browser/icons/"

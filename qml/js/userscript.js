@@ -1,3 +1,10 @@
+var channel = new QWebChannel(qt.webChannelTransport, function(channel) {});
+
+function postMessage(message) {
+    var messageHelper = channel.objects.messageHelper;
+    messageHelper.onMessageReceived(message, function(ret) {});
+}
+
 var frames = document.documentElement.getElementsByTagName('iframe');
 
 function getImgFullUri(uri) {
@@ -103,32 +110,32 @@ function checkNode(e, node) {
         if (node.hasAttribute('target'))
             link.target = node.getAttribute('target');
         link.href = node.href //node.getAttribute('href'); // We want always the absolute link
-        navigator.qt.postMessage( JSON.stringify(link) );
+        postMessage( JSON.stringify(link) );
     }
 }
 
 // Catch window open events as normal links
 window.open = function (url, windowName, windowFeatures) {
     var link = new Object({'type':'link', 'target':'_blank', 'href':url});
-    navigator.qt.postMessage( JSON.stringify(link) );
+    postMessage( JSON.stringify(link) );
 }
 
 // virtual keyboard hook
 window.document.addEventListener('click', (function(e) {
     if (e.srcElement.tagName === ('INPUT'||'TEXTAREA')) {
         var inputContext = new Object({'type':'input', 'state':'show'})
-        navigator.qt.postMessage(JSON.stringify(inputContext))
+        postMessage(JSON.stringify(inputContext))
     }
 }), true);
 window.document.addEventListener('focus', (function() {
     if (e.srcElement.tagName === ('INPUT'||'TEXTAREA')) {
         var inputContext = new Object({'type':'input', 'state':'show'})
-        navigator.qt.postMessage(JSON.stringify(inputContext))
+        postMessage(JSON.stringify(inputContext))
     }
 }), true);
 //window.document.addEventListener('blur', (function() {
 //    var inputContext = new Object({'type':'input', 'state':'hide'})
-//    navigator.qt.postMessage(JSON.stringify(inputContext))
+//    postMessage(JSON.stringify(inputContext))
 //}), true);
 
 document.documentElement.addEventListener('click', (function(e) {
@@ -153,11 +160,11 @@ document.documentElement.addEventListener('click', (function(e) {
         if(elem.type == 'text' || elem.type == 'password') {
             elem.onfocus = function() {
                 var inputContext = new Object({'type':'input', 'state':'show'})
-                navigator.qt.postMessage(JSON.stringify(inputContext))
+                postMessage(JSON.stringify(inputContext))
             }
             elem.onblur = function() {
                 var inputContext = new Object({'type':'input', 'state':'hide'})
-                navigator.qt.postMessage(JSON.stringify(inputContext))
+                postMessage(JSON.stringify(inputContext))
             }
         }
     }
@@ -167,15 +174,14 @@ document.documentElement.addEventListener('click', (function(e) {
 
         telem.onfocus = function() {
             var inputContext = new Object({'type':'input', 'state':'show'})
-            navigator.qt.postMessage(JSON.stringify(inputContext))
+            postMessage(JSON.stringify(inputContext))
         }
         telem.onblur = function() {
             var inputContext = new Object({'type':'input', 'state':'hide'})
-            navigator.qt.postMessage(JSON.stringify(inputContext))
+            postMessage(JSON.stringify(inputContext))
         }
     }
 }
-*/
 
 navigator.qt.onmessage = function(ev) {
     //console.debug("[userscript.js] message received")
@@ -195,13 +201,14 @@ navigator.qt.onmessage = function(ev) {
         //console.debug("[userscript.js] 'query' received")
         var selection = adjustSelection(data);
         selection.type = 'selectionadjusted';
-        navigator.qt.postMessage(JSON.stringify(selection));
+        postMessage(JSON.stringify(selection));
 
     }
     else if (data.type === "search") {
         findString(data.searchTerm)
     }
 }
+*/
 
 // FIXME: experiementing on tap and hold
 var hold;
@@ -280,7 +287,7 @@ function longPressed(x, y, element) {
         data.images = images;
     }
 
-    navigator.qt.postMessage( JSON.stringify(data) );
+    postMessage( JSON.stringify(data) );
 }
 
 document.addEventListener('touchstart', (function(event) {
@@ -324,7 +331,7 @@ function findString(str) {
  }
  if (!strFound) {
      var data = new Object({'type': 'search', 'errorMsg': "String '" + str + "' not found!"})
-     navigator.qt.postMessage( JSON.stringify(data) );
+     postMessage( JSON.stringify(data) );
      //alert ("String '"+str+"' not found!")
  }
  return;

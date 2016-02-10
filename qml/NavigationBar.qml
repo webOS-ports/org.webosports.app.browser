@@ -21,9 +21,9 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 
 import LuneOS.Service 1.0
+import LuneOS.Components 1.0
 import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
-import "Utils"
 
 Rectangle {
     id: navigationBar

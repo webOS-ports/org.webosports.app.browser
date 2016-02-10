@@ -25,8 +25,6 @@ import LuneOS.Components 1.0
 import browserutils 0.1
 import "js/util.js" as EnyoUtils
 
-import "Utils"
-
 LunaWebEngineView {
     property string webViewBackgroundSource: "images/background-startpage.png"
     property string webViewPlaceholderSource: "images/startpage-placeholder.png"

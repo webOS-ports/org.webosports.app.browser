@@ -41,6 +41,7 @@ ApplicationWindow {
 
     Tweak {
         id: privateByDefaultTweak
+        serviceName: "org.webosports.app.browser"
         owner: "org.webosports.app.browser"
         key: "privateByDefaultKey"
         defaultValue: "false"

@@ -517,6 +517,7 @@ Rectangle {
         id: progressBarTweak
         owner: "org.webosports.app.browser"
         key: "alwaysShowProgressBarKey"
+        serviceName: "org.webosports.app.browser"
         defaultValue: "false"
         onValueChanged: updateProgressBar()
 
@@ -536,6 +537,7 @@ Rectangle {
     Tweak {
         id: toggleVKBTweak
         owner: "org.webosports.app.browser"
+        serviceName: "org.webosports.app.browser"
         key: "toggleVKBKey"
         defaultValue: "false"
         onValueChanged: updateToggleVKBButton()

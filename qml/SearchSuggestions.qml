@@ -22,7 +22,6 @@ import QtQuick.Controls.Styles 1.1
 
 import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
-import "Utils"
 
 Rectangle {
     property string searchResultsAll: "{}"

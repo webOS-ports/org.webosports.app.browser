@@ -21,9 +21,9 @@ import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 
 import LuneOS.Service 1.0
+import LuneOS.Components 1.0
 import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
-import "Utils"
 
 Rectangle {
     id: navigationBar
@@ -517,6 +517,7 @@ Rectangle {
         id: progressBarTweak
         owner: "org.webosports.app.browser"
         key: "alwaysShowProgressBarKey"
+        serviceName: "org.webosports.app.browser"
         defaultValue: "false"
         onValueChanged: updateProgressBar()
 
@@ -536,6 +537,7 @@ Rectangle {
     Tweak {
         id: toggleVKBTweak
         owner: "org.webosports.app.browser"
+        serviceName: "org.webosports.app.browser"
         key: "toggleVKBKey"
         defaultValue: "false"
         onValueChanged: updateToggleVKBButton()

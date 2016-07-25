@@ -21,8 +21,8 @@ import QtQuick 2.0
 Item {
     id: desktopRoot
 
-    width: 800
-    height: 600
+    width: 1024
+    height: 768
 
     property QtObject application: QtObject {
         property string launchParameters: "{}"

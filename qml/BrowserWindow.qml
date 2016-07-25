@@ -28,12 +28,15 @@ import LuneOS.Components 1.0
 import "js/util.js" as EnyoUtils
 
 ApplicationWindow {
-    id: window
+    id: appWindow
 
     type: WindowType.Card
 
-    width: 800
-    height: 600
+    width: 1024
+    height: 768
+
+    readonly property string webViewBackgroundSource: "images/background-startpage.png"
+    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
 
     UserAgent {
         id: userAgent
@@ -167,7 +170,7 @@ ApplicationWindow {
     }
 
     function openNewCard(url) {
-        window.__launchApplication( "org.webosports.app.browser",
+        appWindow.__launchApplication( "org.webosports.app.browser",
                                     JSON.stringify({"target": url})  );
     }
 
@@ -180,14 +183,14 @@ ApplicationWindow {
     /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
-        window.show()
-        window.visible = true
+        appWindow.show()
+        appWindow.visible = true
 
         //Determine initial connection status
         __getConnectionStatus()
 
         //Run query so we have the bookmarks item on first load of the panel
-        window.__queryDB(
+        appWindow.__queryDB(
                     "find",
                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
     }
@@ -228,6 +231,32 @@ ApplicationWindow {
     BrowserWebView
     {
         id: webViewItem
+        anchors.top: navigationBar.alwaysShowProgressBar ? progressBar.bottom : navigationBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+    }
+    //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
+    Image {
+        z: 1
+        id: webViewBackground
+        source: webViewBackgroundSource
+        anchors.fill: parent
+        Image {
+            id: webViewPlaceholder
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -keyboardHeight / 2.
+            source: webViewPlaceholderSource
+        }
+        Connections {
+            target: appWindow
+            onPageIsLoadingChanged: {
+                if (pageIsLoading) {
+                    webViewBackground.visible = false;
+                }
+            }
+        }
     }
 
     //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
@@ -245,6 +274,15 @@ ApplicationWindow {
     MyProgressBar
     {
         id: progressBar
+        value: webViewItem.loadProgress
+        Connections {
+            target: appWindow
+            onPageIsLoadingChanged: {
+                if (pageIsLoading) {
+                    progressBar.progressBarColor = "#2E8CF7"
+                }
+            }
+        }
     }
 
     BookmarkDialog {

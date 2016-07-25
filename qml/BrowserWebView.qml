@@ -55,7 +55,13 @@ LunaWebEngineView {
              sourceUrl: Qt.resolvedUrl("js/userscript.js");
              injectionPoint: WebEngineScript.Deferred;
              worldId:WebEngineScript.MainWorld;
-        }
+        },
+        WebEngineScript {
+            name: "setupViewport";
+            sourceUrl: Qt.resolvedUrl("js/setupViewport.js");
+            injectionPoint: WebEngineScript.DocumentReady;
+            worldId:WebEngineScript.MainWorld;
+       }
     ]
 
     webChannel.registeredObjects: [messageHelper]

@@ -35,7 +35,7 @@ Rectangle {
     visible: false
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
-    anchors.verticalCenterOffset : -window.keyboardHeight/2.
+    anchors.verticalCenterOffset : -appWindow.keyboardHeight/2.
     width: Units.gu(40)
     height: Units.gu(36)
     color: "transparent"
@@ -339,7 +339,7 @@ Rectangle {
 
                 bookmarkDialog.visible = false
                 dimBackground.visible = false
-                window.__queryDB(
+                appWindow.__queryDB(
                             "find",
                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
                 Qt.inputMethod.hide()

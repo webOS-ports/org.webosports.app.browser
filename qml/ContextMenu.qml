@@ -60,7 +60,7 @@ Item {
     signal copyURL(string url)
 
     onOpenNewCard: {
-        window.openNewCard(url)
+        appWindow.openNewCard(url)
     }
 
     onShareLink: {
@@ -68,7 +68,7 @@ Item {
     }
 
     onCopyURL: {
-        window.setClipboard(url)
+        appWindow.setClipboard(url)
     }
 
     ListModel {

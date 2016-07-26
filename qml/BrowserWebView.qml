@@ -27,13 +27,7 @@ import "js/util.js" as EnyoUtils
 import QtWebChannel 1.0
 
 LunaWebEngineView {
-    property string webViewBackgroundSource: "images/background-startpage.png"
-    property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     id: webViewItem
-    anchors.top: navigationBar.alwaysShowProgressBar ? progressBar.bottom : navigationBar.bottom
-    anchors.bottom: parent.bottom
-    anchors.left: parent.left
-    anchors.right: parent.right
     profile.httpUserAgent: userAgent.defaultUA
 
     onFullScreenRequested: {
@@ -49,14 +43,6 @@ LunaWebEngineView {
     visible: true
     z: 1
 
-    property bool viewImageCreated: false
-    property string t: ""
-    property int w: 90
-    property int h: 120
-    property string p: ""
-    property string thumbnail: ""
-    property string icon64: ""
-
     userScripts: [
         WebEngineScript {
             name: "qwebchannel";
@@ -69,7 +55,13 @@ LunaWebEngineView {
              sourceUrl: Qt.resolvedUrl("js/userscript.js");
              injectionPoint: WebEngineScript.Deferred;
              worldId:WebEngineScript.MainWorld;
-        }
+        },
+        WebEngineScript {
+            name: "setupViewport";
+            sourceUrl: Qt.resolvedUrl("js/setupViewport.js");
+            injectionPoint: WebEngineScript.DocumentReady;
+            worldId:WebEngineScript.MainWorld;
+       }
     ]
 
     webChannel.registeredObjects: [messageHelper]
@@ -96,11 +88,11 @@ LunaWebEngineView {
 
                 if (data.target === '_blank') {
                     // open link in new tab
-                    window.openNewCard(data.href)
+                    appWindow.openNewCard(data.href)
                 } else if (data.target && data.target !== "_parent") {
                     //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
                     if (data.href.slice(-1) !== "#") {
-                        window.openNewCard(data.href)
+                        appWindow.openNewCard(data.href)
                     }
                 }
                 break
@@ -114,18 +106,37 @@ LunaWebEngineView {
         }
     }
 
-    function createViewImage() {
-        t = (new Date()).getTime()
-        p = "/var/luna/data/browser/icons/"
-        thumbnail = p + "thumbnail-" + t + ".png"
-        icon64 = p + "icon64-" + t + ".png"
-        utils.saveViewToFile(thumbnail, Qt.size(w, h))
-        viewImageCreated = true
-    }
-
     BrowserUtils {
         id: utils
         webview: webViewItem
+    }
+
+    readonly property size thumbnail_size: Qt.size(90, 120)
+    property bool viewImageCreated: false
+    property string thumbnail: ""
+    property string icon64: ""
+
+    function createViewImage() {
+        var t = (new Date()).getTime()
+        var p = "/var/luna/data/browser/icons/"
+        thumbnail = p + "thumbnail-" + t + ".png"
+        icon64 = p + "icon64-" + t + ".png"
+        utils.saveViewToFile(thumbnail, thumbnail_size)
+        viewImageCreated = true
+    }
+
+    function createIconImages() {
+        viewImageCreated = false
+        utils.generateIconFromFile(thumbnail, icon64, thumbnail_size)
+        bookmarkDialog.myBookMarkIcon = icon64
+    }
+
+    //Nasty but works, we need a delay of 1000+ ms in order to be able to create the icons, because the viewImage has a delay of 1000ms
+    Timer {
+        interval: 1500
+        running: viewImageCreated && webViewItem.loadProgress === 100
+        repeat: true
+        onTriggered: createIconImages()
     }
 /*
     onNavigationRequested: {
@@ -148,20 +159,6 @@ LunaWebEngineView {
         }
     }
 */
-    //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
-    Image {
-        id: webViewBackground
-        source: webViewBackgroundSource
-        anchors.fill: parent
-        z: 1
-        Image {
-            id: webViewPlaceholder
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -window.keyboardHeight / 2.
-            source: webViewPlaceholderSource
-        }
-    }
 
     onLoadingChanged: {
 
@@ -229,20 +226,6 @@ LunaWebEngineView {
                 }
             }
         }
-    }
-
-    function createIconImages() {
-        utils.generateIconFromFile(thumbnail, icon64, Qt.size(w, h))
-        viewImageCreated = false
-        bookmarkDialog.myBookMarkIcon = icon64
-    }
-
-    //Nasty but works, we need a delay of 1000+ ms in order to be able to create the icons, because the viewImage has a delay of 1000ms
-    Timer {
-        interval: 1500
-        running: viewImageCreated && webViewItem.loadProgress === 100
-        repeat: true
-        onTriggered: createIconImages()
     }
 
     url: ""

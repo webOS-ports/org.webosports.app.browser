@@ -1157,7 +1157,7 @@ function getProp(parts, create, context) {
                 icon64: inIcons
             };
             //mixin(b, inIcons);
-            window.__queryDB("merge", JSON.stringify({objects: [b]}));
+            appWindow.__queryDB("merge", JSON.stringify({objects: [b]}));
         };
 
     function addBookmark(inTitle, inUrl, inIcons) {
@@ -1174,7 +1174,7 @@ function getProp(parts, create, context) {
             idx: null
         };
         //mixin(b, inIcons);
-         window.__queryPutDB(b)
+         appWindow.__queryPutDB(b)
         //this.$.bookmarksService.call({objects: [b]}, {method: "put"});
 
     };

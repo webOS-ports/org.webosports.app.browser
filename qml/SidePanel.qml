@@ -83,7 +83,7 @@ Item {
                             anchors.fill: bookmarkButtonImage
                             onClicked: {
                                 dataMode = "bookmarks"
-                                window.__queryDB(
+                                appWindow.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleftpressed.png"
@@ -128,7 +128,7 @@ Item {
                             anchors.fill: historyButtonImage
                             onClicked: {
                                 dataMode = "history"
-                                window.__queryDB(
+                                appWindow.__queryDB(
                                             "find",
                                             '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
                                 bookmarkButtonImage.source = "images/radiobuttondarkleft.png"
@@ -438,23 +438,6 @@ Item {
                         console.log("clearDownloads clicked, ")
                     }
                 }
-            }
-        }
-
-        //Add a timer for our progress bar
-        Timer {
-            running: true
-            repeat: true
-            interval: 10
-            onTriggered: {
-                //disable the background, otherwise it won't show the page
-                if (pageIsLoading) {
-                    progressBar.progressBarColor = "#2E8CF7"
-                    webViewItem.webViewBackgroundSource = ""
-                    webViewItem.webViewPlaceholderSource = ""
-                }
-                //Update ProgressBar (this one is more accurate compared to legacy :))
-                progressBar.value = webViewItem.loadProgress
             }
         }
     }

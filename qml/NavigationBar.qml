@@ -43,7 +43,7 @@ Rectangle {
 
     property bool initialSelection: true
     width: parent.width
-    height: Units.gu(5.2)
+    height: visible ? Units.gu(5.2) : Units.gu(0)
     color: "#343434"
 
     Component.onCompleted: navigationBar.__getDefaultSearch()

@@ -31,13 +31,12 @@ LunaWebEngineView {
     profile.httpUserAgent: userAgent.defaultUA
 
     onFullScreenRequested: {
-        if (request.toggleOn)
+        if (request.toggleOn) {
             navigationBar.visible = false;
-            //Window.showFullScreen()
-        else
-            //Window.showNormal()
+        } else {
             navigationBar.visible = true;
-        request.accept()
+        }
+        request.accept();
     }
 
     visible: true

@@ -22,6 +22,7 @@ import Qt.labs.settings 1.0
 import QtQuick 2.0
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
+import LuneOS.Service 1.0
 import browserutils 0.1
 import "js/util.js" as EnyoUtils
 import QtWebChannel 1.0
@@ -30,11 +31,23 @@ LunaWebEngineView {
     id: webViewItem
     profile.httpUserAgent: userAgent.defaultUA
 
+    LunaService {
+        id: service
+        name: "org.webosports.app.browser"
+        usePrivateBus: true
+    }
+
     onFullScreenRequested: {
         if (request.toggleOn) {
             navigationBar.visible = false;
+            service.call("luna://org.webosports.luna/enableFullScreenMode",
+                         JSON.stringify({"enable": true}),
+                         undefined, undefined);
         } else {
             navigationBar.visible = true;
+            service.call("luna://org.webosports.luna/enableFullScreenMode",
+                         JSON.stringify({"enable": false}),
+                         undefined, undefined);
         }
         request.accept();
     }

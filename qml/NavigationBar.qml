@@ -1188,7 +1188,7 @@ Rectangle {
                             0,
                             8).toLowerCase() === "https://" || text.substring(0,
                                                                 6).toLowerCase() === "ftp://"
-                        || text.substring(0, 7).toLowerCase() === "data://" || text.substring(0, 7).toLowerCase() === "file://") {
+                        || text.substring(0, 7).toLowerCase() === "data://" || text.substring(0, 7).toLowerCase() === "file://" || text.substring(0, 6).toLowerCase() === "about:") {
                     webView.url = addressBar.text
                     progressBar.height = Units.gu(1 / 2)
                     loadingIndicator.source = "images/menu-icon-stop.png"
@@ -1215,7 +1215,7 @@ Rectangle {
                 }
             } else {
                 //Just do a search with the default search engin
-                webView.url = defaultSearchURL.replace("#{searchTerms}",
+				webView.url = defaultSearchURL.replace("#{searchTerms}",
                                                        addressBar.text)
             }
         }

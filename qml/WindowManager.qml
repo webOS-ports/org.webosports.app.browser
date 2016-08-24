@@ -50,7 +50,11 @@ Item {
         var parentWindowId = (parentWindow !== null)?parentWindow.windowId:0;
         var windowComponent = Qt.createComponent("BrowserWindow.qml");
         if(windowComponent.status===Component.Ready) {
-            var window = windowComponent.createObject(windowManager, {url: url, windowManager: windowManager, parentWindowId: parentWindowId});
+            var window = windowComponent.createObject(windowManager, {
+                                                          url: url,
+                                                          windowManager: windowManager,
+                                                          parentWindowId: parentWindowId
+                                                      });
             windowModel.append({window: window });
             window.closed.connect(handleWindowClose)
         }

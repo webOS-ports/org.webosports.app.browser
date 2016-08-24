@@ -21,9 +21,6 @@ import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
 
 ListView {
-    anchors.top: progressBar.bottom
-    anchors.right: progressBar.right
-    anchors.rightMargin: Units.gu(2)
     width: Units.gu(
                18) //When we have Messaging we need to make it wider //Units.gu(23)
     height: Units.gu(30)

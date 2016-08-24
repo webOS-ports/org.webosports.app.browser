@@ -32,6 +32,11 @@ Rectangle {
     property string myBookMarkId: ""
     property string myButtonText: ""
 
+
+    property Item mainAppWindow // TOFE for appWindow
+    property Item bookmarkDialogSingleton // TOFE for bookmarkDialog
+    property Item dimBackground_ // TOFE for dimBackground
+
     visible: false
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter

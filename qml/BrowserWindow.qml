@@ -27,6 +27,8 @@ import LuneOS.Application 1.0
 import LuneOS.Components 1.0
 import "js/util.js" as EnyoUtils
 
+import "AppTweaks"
+
 LuneOSWindow {
     id: appWindow
 
@@ -35,31 +37,8 @@ LuneOSWindow {
     width: 1024
     height: 768
 
-    readonly property string webViewBackgroundSource: "images/background-startpage.png"
-    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
-
     UserAgent {
         id: userAgent
-    }
-
-    Tweak {
-        id: privateByDefaultTweak
-        serviceName: "org.webosports.app.browser"
-        owner: "org.webosports.app.browser"
-        key: "privateByDefaultKey"
-        defaultValue: "false"
-        onValueChanged: updatePrivateByDefault()
-
-        function updatePrivateByDefault() {
-            if (privateByDefaultTweak.value === true) {
-                privateByDefault = true;
-            } else {
-                privateByDefault = false;
-            }
-            if (enableDebugOutput) {
-                console.log("privateByDefault: " + privateByDefault);
-            }
-        }
     }
 
     /////// private //////
@@ -137,7 +116,6 @@ LuneOSWindow {
     function __connectionStatusSuccess(message)
     {
         connectionStatus = JSON.parse(message.payload);
-        internetAvailable = connectionStatus.isInternetConnectionAvailable;
         if(enableDebugOutput)
         {
             console.log("Internet Available: " + internetAvailable);
@@ -151,7 +129,7 @@ LuneOSWindow {
     }
 
     property real keyboardHeight: Qt.inputMethod.keyboardRectangle.height
-    property bool pageIsLoading: false
+    property bool pageIsLoading: webViewItem.loading
     property bool historyAvailable: false
     property bool forwardAvailable: false
     property bool enableDebugOutput: true
@@ -159,11 +137,12 @@ LuneOSWindow {
     property string myDownloadsData: '{}'
     property string myHistoryData: '{}'
     property string dataMode: "bookmarks"
-    property bool privateByDefault: false
+    property bool privateByDefault: AppTweaks.privateByDefaultTweakValue
     property var connectionStatus
-    property bool internetAvailable: false
+    readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
+    property bool alwaysShowProgressBar: true //AppTweaks.progressBarTweakValue
     property alias url: webViewItem.url
-    property Item windowManager: null
+    property Item windowManager
 
     function activateAppMenu() {
         appMenu.visible = !appMenu.visible;
@@ -175,9 +154,7 @@ LuneOSWindow {
     }
 
     function setClipboard(url) {
-        __hackClipboard.text = url
-        __hackClipboard.selectAll()
-        __hackClipboard.cut()
+        browserClipboard.copyToClipboard(url);
     }
 
     /* Without this line, we won't ever see the window... */
@@ -195,30 +172,8 @@ LuneOSWindow {
                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
     }
 
-    TextInput {
-        id: __hackClipboard
-        visible: false
-    }
-
-    AppMenu {
-        id: appMenu
-        z: 100 // above everything in the app
-        visible: false
-        anchors.fill: parent
-
-        onSettingsMenuItem:
-        {
-            settingsPage.showPage()
-        }
-    }
-
-    SettingsPage {
-        z: 4
-        id: settingsPage
-        anchors.fill: parent
-        visible: false
-
-
+    Clipboard {
+        id: browserClipboard
     }
 
     NavigationBar {
@@ -226,37 +181,20 @@ LuneOSWindow {
         webView: webViewItem
         z: 2
 
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
     }
 
     BrowserWebView
     {
         id: webViewItem
-        anchors.top: navigationBar.alwaysShowProgressBar ? progressBar.bottom : navigationBar.bottom
+        z: 1
+        anchors.top: navigationBar.bottom
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-    }
-    //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
-    Image {
-        z: 1
-        id: webViewBackground
-        source: webViewBackgroundSource
-        anchors.fill: parent
-        Image {
-            id: webViewPlaceholder
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -keyboardHeight / 2.
-            source: webViewPlaceholderSource
-        }
-        Connections {
-            target: appWindow
-            onPageIsLoadingChanged: {
-                if (pageIsLoading) {
-                    webViewBackground.visible = false;
-                }
-            }
-        }
     }
 
     //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
@@ -269,20 +207,9 @@ LuneOSWindow {
     ShareOptionList
     {
         id: shareOptionsList
-    }
-
-    MyProgressBar
-    {
-        id: progressBar
-        value: webViewItem.loadProgress
-        Connections {
-            target: appWindow
-            onPageIsLoadingChanged: {
-                if (pageIsLoading) {
-                    progressBar.progressBarColor = "#2E8CF7"
-                }
-            }
-        }
+        anchors.top: webViewItem.top
+        anchors.right: parent.right
+        anchors.rightMargin: Units.gu(2)
     }
 
     BookmarkDialog {
@@ -312,4 +239,22 @@ LuneOSWindow {
         z: 3
     }
 
+    SettingsPage {
+        z: 4
+        id: settingsPage
+        anchors.fill: parent
+        visible: false
     }
+
+    AppMenu {
+        id: appMenu
+        z: 100 // above everything in the app
+        visible: false
+        anchors.fill: parent
+
+        onSettingsMenuItem:
+        {
+            settingsPage.showPage()
+        }
+    }
+}

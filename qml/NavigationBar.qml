@@ -25,13 +25,14 @@ import LuneOS.Components 1.0
 import LunaNext.Common 0.1
 import "js/util.js" as EnyoUtils
 
+import "AppTweaks"
+
 Rectangle {
     id: navigationBar
 
-    property bool alwaysShowProgressBar: false
-    property bool showVKBButton: false
+    property Item webView
+
     property string searchProviderIcon: ""
-    property Item webView: null
     property string defaultSearch: ""
     property string defaultSearchURL: ""
     property string defaultSearchIcon: "images/list-icon-google.png"
@@ -42,8 +43,6 @@ Rectangle {
     property var searchResultsHistory
 
     property bool initialSelection: true
-    width: parent.width
-    height: visible ? Units.gu(5.2) : Units.gu(0)
     color: "#343434"
 
     Component.onCompleted: navigationBar.__getDefaultSearch()
@@ -510,48 +509,6 @@ Rectangle {
         {
             pasteRectMiddleLeft.width = pastePasteText.width / 2
             pasteRectMiddleRight.width = pastePasteText.width / 2
-        }
-    }
-
-    Tweak {
-        id: progressBarTweak
-        owner: "org.webosports.app.browser"
-        key: "alwaysShowProgressBarKey"
-        serviceName: "org.webosports.app.browser"
-        defaultValue: "false"
-        onValueChanged: updateProgressBar()
-
-        function updateProgressBar() {
-
-            if (progressBarTweak.value === true) {
-                alwaysShowProgressBar = true
-            } else {
-                alwaysShowProgressBar = false
-            }
-            if (appWindow.enableDebugOutput) {
-                console.log("alwaysShowProgressBar: " + alwaysShowProgressBar)
-            }
-        }
-    }
-
-    Tweak {
-        id: toggleVKBTweak
-        owner: "org.webosports.app.browser"
-        serviceName: "org.webosports.app.browser"
-        key: "toggleVKBKey"
-        defaultValue: "false"
-        onValueChanged: updateToggleVKBButton()
-
-        function updateToggleVKBButton() {
-
-            if (toggleVKBTweak.value === true) {
-                showVKBButton = true
-            } else {
-                showVKBButton = false
-            }
-            if (appWindow.enableDebugOutput) {
-                console.log("showVKButton: " + showVKBButton)
-            }
         }
     }
 
@@ -1044,11 +1001,6 @@ Rectangle {
             repeat: false
             interval: 100
             onTriggered: {
-
-                if (!webView.loading) {
-                    progressBar.progressBarColor = "green"
-                }
-
                 if (webView.canGoBack) {
                     backImage.opacity = 1.0
                     shareImage.opacity = 1.0
@@ -1343,11 +1295,11 @@ Rectangle {
         anchors.left: bookmarkImage.right
         anchors.verticalCenter: navigationBar.verticalCenter
         source: "images/icon-hide-keyboard.png"
-        height: showVKBButton ? Units.gu(4) : 0
-        width: showVKBButton ? Units.gu(4) : 0
+        height: AppTweaks.toggleVKBTweakValue ? Units.gu(4) : 0
+        width: AppTweaks.toggleVKBTweakValue ? Units.gu(4) : 0
         clip: true
         fillMode: Image.PreserveAspectCrop
-        visible: showVKBButton ? true : false
+        visible: AppTweaks.toggleVKBTweakValue
         opacity: 1
 
         MouseArea {

@@ -30,15 +30,16 @@ Rectangle {
     property int urlModelCount: 0
     property int suggestionListHeight: 0
     color: "#DADADA"
-    anchors.left: parent.left
-    anchors.top: parent.bottom
-    anchors.leftMargin: Screen.width < 900 ? 0 : isSecureSite ? Units.gu(
-                                                                    13.75) : Units.gu(
-                                                                    10)
-    width: Screen.width < 900 ? navigationBar.width : addressBarWidth
     radius: 4
     visible: false
     height: (urlModel.count + 1) * Units.gu(6)
+
+    function show() {
+        visible = true;
+    }
+    function hide() {
+        visible = false;
+    }
 
     Rectangle {
         id: searchRect
@@ -51,28 +52,17 @@ Rectangle {
         MouseArea {
             anchors.fill: parent
             onPressed: {
-                if (shareOptionsList.visible) {
-                    shareOptionsList.visible = false
-                }
-
-                topMarker.visible = false
-                bottomMarker.visible = false
-                cutCopyPasteRectangle.visible = false
-                pasteRectangle.visible = false
-                selectSelectAllRectangle.visible = false
-                cutCopyRectangle.visible = false
-
                 searchSuggestions.visible = false
                 webViewItem.url = defaultSearchURL.replace("#{searchTerms}",
-                                                           addressBar.text)
-                addressBar.text = defaultSearchURL.replace("#{searchTerms}",
-                                                           addressBar.text)
+                                                           addressBarItem.addressBarText)
+                addressBarItem.addressBarText = defaultSearchURL.replace("#{searchTerms}",
+                                                           addressBarItem.addressBarText)
             }
         }
 
         Text {
             id: optSearch
-            text: searchSuggestions.optSearchText + " \"" + addressBar.text + "\""
+            text: searchSuggestions.optSearchText + " \"" + addressBarItem.addressBarText + "\""
             width: searchRect.width - Units.gu(7)
             anchors.top: parent.top
             anchors.left: parent.left
@@ -155,7 +145,7 @@ Rectangle {
                 color: "#494949"
                 textFormat: Text.RichText
                 text: EnyoUtils.applyFilterHighlight(model.title,
-                                                     addressBar.text)
+                                                     addressBarItem.addressBarText)
                 z: 2
                 Text {
                     height: parent.height
@@ -171,7 +161,7 @@ Rectangle {
                     font.pixelSize: FontUtils.sizeToPixels("small")
                     textFormat: Text.RichText
                     text: EnyoUtils.applyFilterHighlight(model.url,
-                                                         addressBar.text)
+                                                         addressBarItem.addressBarText)
                     color: "#838383"
                     z: 2
                 }
@@ -207,20 +197,9 @@ Rectangle {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (shareOptionsList.visible) {
-                        shareOptionsList.visible = false
-                    }
-
                     searchSuggestions.visible = false
                     webViewItem.url = model.url
-                    addressBar.text = model.url
-                    topMarker.visible = false
-                    bottomMarker.visible = false
-                    cutCopyPasteRectangle.visible = false
-                    pasteRectangle.visible = false
-                    selectSelectAllRectangle.visible = false
-                    cutCopyRectangle.visible = false
-
+                    addressBarItem.addressBarText = model.url
                 }
             }
             Component.onCompleted: {

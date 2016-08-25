@@ -22,20 +22,14 @@ import QtQuick.Window 2.1
 import LunaNext.Common 0.1
 
 Item {
-    anchors.fill: parent
-    z: 2
     visible: false
     enabled: visible
 
-    MouseArea {
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: _sidePanel.left
-        onPressed: {
-            sidePanel.visible = false
-            mouse.accepted = false
-        }
+    function show() {
+        visible = true;
+    }
+    function hide() {
+        visible = false;
     }
 
     Rectangle {
@@ -307,7 +301,7 @@ Item {
                                       MouseArea {
                                           anchors.fill: parent
                                           onClicked: {
-                                              sidePanel.visible = false
+                                              historyPanel.visible = false
                                               webViewItem.url = model.url
                                           }
                                       }
@@ -365,7 +359,7 @@ Item {
                 MouseArea {
                     anchors.fill: dragHandle
                     onClicked: {
-                        sidePanel.visible = false
+                        historyPanel.visible = false
 
                     }
                 }
@@ -396,7 +390,7 @@ Item {
                             bookmarkDialog.myTitle = webViewItem.title
                             bookmarkDialog.myButtonText = "Add Bookmark"
                             bookmarkDialog.visible = true
-                            sidePanel.visible = false
+                            historyPanel.visible = false
                         }
                     }
                     onReleased: {

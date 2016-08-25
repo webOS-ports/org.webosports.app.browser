@@ -37,8 +37,6 @@ LuneOSWindow {
     width: 1024
     height: 768
 
-    property bool historyAvailable: false
-    property bool forwardAvailable: false
     property bool enableDebugOutput: true
     property string myBookMarkData: '{}'
     property string myDownloadsData: '{}'
@@ -153,9 +151,9 @@ LuneOSWindow {
         browserClipboard.copyToClipboard(url);
     }
 
-    /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
+        /* Without this line, we won't ever see the window... */
         appWindow.show()
         appWindow.visible = true
 
@@ -168,19 +166,64 @@ LuneOSWindow {
                     '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
     }
 
+    states: [
+               State {
+                   name: "browsing"
+                   StateChangeScript {
+                       script: windowDlgHelper.hideCurrentDialog();
+                   }
+               },
+                State {
+                    name: "shareOptions"
+                    StateChangeScript {
+                        script: windowDlgHelper.showDialog(shareOptionsList, 0);
+                    }
+                },
+                State {
+                    name: "bookmarkDialog"
+                    StateChangeScript {
+                        script: windowDlgHelper.showDialog(bookmarkDialog, 0.9);
+                    }
+                },
+                State {
+                    name: "historyPanel"
+                    StateChangeScript {
+                        script: windowDlgHelper.showDialog(historyPanel, 0);
+                    }
+                }
+           ]
+
     Clipboard {
         id: browserClipboard
     }
 
     NavigationBar {
         id: navigationBar
+        z: 2 // place it above the webview, so that the copy/cut/paste items are visible over the webview
+
         webView: webViewItem
-        z: 2
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
+
+        onToggleShareOptionsList: {
+            if(appWindow.state !== "shareOptions") {
+                appWindow.state = "shareOptions";
+            }
+            else {
+                appWindow.state = "browsing";
+            }
+        }
+        onToggleHistoryPanel: {
+            if(appWindow.state !== "historyPanel") {
+                appWindow.state = "historyPanel";
+            }
+            else {
+                appWindow.state = "browsing";
+            }
+        }
     }
 
     BrowserWebView
@@ -200,33 +243,50 @@ LuneOSWindow {
         z: (webViewItem.z + navigationBar.z)/2
     }*/
 
+    DialogHelper {
+        // the purpose of this item is simply to catch mouse clicks outside of the
+        // eventually currently shown dialog/panel.
+        id: windowDlgHelper
+        anchors.fill: parent
+        z: 2
+
+        onDialogHidden: appWindow.state = "browsing";
+    }
+
     ShareOptionList
     {
         id: shareOptionsList
-        anchors.top: webViewItem.top
+        anchors.top: navigationBar.bottom
         anchors.right: parent.right
         anchors.rightMargin: Units.gu(2)
+
+        onShowBookmarkDialog: {
+            bookmarkDialog.action = action;
+            bookmarkDialog.myURL = "" + webViewItem.url;
+            bookmarkDialog.myTitle = webViewItem.title;
+            bookmarkDialog.myButtonText = buttonText;
+
+            appWindow.state = "bookmarkDialog";
+        }
     }
 
     BookmarkDialog {
         id: bookmarkDialog
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
+
+        mainAppWindow: appWindow
+
+        z: 2
     }
 
-    Rectangle {
-           id: dimBackground
-           width: parent.width
-           height: parent.height
-           color: "#4C4C4C"
-           visible: false
-           opacity: 0.9
-           z:3
-
-           MouseArea { anchors.fill: parent; }
-       }
-
-    SidePanel
+    HistoryPanel
     {
-        id: sidePanel
+        id: historyPanel
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        z: 2
     }
 
     ContextMenu

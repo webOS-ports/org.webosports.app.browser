@@ -21,215 +21,141 @@ import QtQuick 2.0
 import LunaNext.Common 0.1
 
 
-    //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
-    //dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
+//For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
+//dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
+Item {
+    property string buttonText: ""
+    property string clearMode: ""
+    visible: false
+    anchors.verticalCenter: parent.verticalCenter
+    anchors.horizontalCenter: parent.horizontalCenter
+    width: Units.gu(40)
+    height: Units.gu(23)
+    z: 5
+
+    BorderImage {
+        source: "images/dialog-bg.png"
+        anchors.fill: parent
+        border.left: 25; border.top: 25
+        border.right: 25; border.bottom: 25
+    }
+
+    Text {
+        id: clearText
+        font.family: "Prelude"
+        color: "#292929"
+        text: popupConfirm.buttonText
+        anchors.left: parent.left
+        anchors.leftMargin: Units.gu(2)
+        font.pixelSize: FontUtils.sizeToPixels("large")
+        anchors.top: parent.top
+        anchors.topMargin: Units.gu(3)
+        width: parent.width - Units.gu(4)
+        wrapMode: Text.WordWrap
+        horizontalAlignment: Text.AlignHCenter
+    }
     Rectangle {
-        property string buttonText: ""
-        property string clearMode: ""
-        visible: false
-        anchors.verticalCenter: parent.verticalCenter
+        id: confirmRect
+        height: Units.gu(4.5)
         anchors.horizontalCenter: parent.horizontalCenter
-        width: Units.gu(40)
-        height: Units.gu(23)
-        color: "transparent"
-        radius: 10
-        z: 5
-
+        anchors.left: clearText.left
+        width: parent.width - Units.gu(10)
+        anchors.top: clearText.bottom
+        anchors.topMargin: Units.gu(1)
+        radius: 4
+        color: "#c01b1e"
         Image {
-            id: leftImageTop
-            anchors.top: parent.top
-            anchors.left: parent.left
-            source: "images/dialog-left-top.png"
-            height: Units.gu(2.5)
-            width: Units.gu(2.5)
-        }
-        Image {
-            id: leftImageMiddle
-            height: parent.height - leftImageTop.height - leftImageBottom.height
-            anchors.top: leftImageTop.bottom
-            anchors.left: parent.left
-            source: "images/dialog-left-middle.png"
+            id: confirmImageLeft
+            source: "images/button-up-left.png"
+            width: Units.gu(1.9)
+            height: parent.height
             fillMode: Image.Stretch
-            width: Units.gu(2.5)
-        }
-        Image {
-            id: leftImageBottom
-            height: Units.gu(2.5)
-            anchors.bottom: parent.bottom
             anchors.left: parent.left
-            source: "images/dialog-left-bottom.png"
-
-            width: Units.gu(2.5)
-        }
-
-        Image {
-            id: centerImageTop
-            height: Units.gu(2.5)
-            anchors.left: leftImageTop.right
-            anchors.top: parent.top
-            source: "images/dialog-center-top.png"
-            width: parent.width - leftImageTop.width - rightImageTop.width
         }
         Image {
-            id: centerImageMiddle
-            height: parent.height - centerImageTop.height - centerImageBottom.height
-            anchors.left: leftImageMiddle.right
-            anchors.top: centerImageTop.bottom
-            source: "images/dialog-center-middle.png"
-            width: parent.width - leftImageTop.width - rightImageTop.width
+            id: confirmImageCenter
+            source: "images/button-up-center.png"
+            width: confirmRect.width - confirmImageLeft.width - confirmImageRight.width
+            height: parent.height
             fillMode: Image.Stretch
-        }
-        Image {
-            id: centerImageBottom
-            height: Units.gu(2.5)
-            anchors.left: leftImageBottom.right
-            anchors.bottom: parent.bottom
-            source: "images/dialog-center-bottom.png"
-            width: parent.width - leftImageBottom.width - rightImageBottom.width
+            anchors.left: confirmImageLeft.right
         }
 
         Image {
-            id: rightImageTop
-            anchors.right: parent.right
-            anchors.top: parent.top
-            source: "images/dialog-right-top.png"
-            width: Units.gu(2.5)
-            height: Units.gu(2.5)
-        }
-        Image {
-            id: rightImageMiddle
-            anchors.right: parent.right
-            anchors.top: rightImageTop.bottom
-            source: "images/dialog-right-middle.png"
-            width: Units.gu(2.5)
-            height: parent.height - rightImageTop.height - rightImageBottom.height
+            id: confirmImageRight
+            source: "images/button-up-right.png"
+            height: parent.height
             fillMode: Image.Stretch
+            anchors.right: confirmRect.right
         }
 
-        Image {
-            id: rightImageBottom
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            source: "images/dialog-right-bottom.png"
-            width: Units.gu(2.5)
-            height: Units.gu(2.5)
-        }
         Text {
-            id: clearText
             font.family: "Prelude"
-            color: "#292929"
-            text: popupConfirm.buttonText
-            anchors.left: parent.left
-            anchors.leftMargin: Units.gu(2)
-            font.pixelSize: FontUtils.sizeToPixels("large")
-            anchors.top: parent.top
-            anchors.topMargin: Units.gu(3)
-            width: parent.width - Units.gu(4)
-            wrapMode: Text.WordWrap
-            horizontalAlignment: Text.AlignHCenter
-        }
-        Rectangle {
-            id: confirmRect
-            height: Units.gu(4.5)
+            text: "Clear " + popupConfirm.clearMode
+            anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.left: clearText.left
-            width: parent.width - Units.gu(10)
-            anchors.top: clearText.bottom
-            anchors.topMargin: Units.gu(1)
-            radius: 4
-            color: "#c01b1e"
-            Image {
-                id: confirmImageLeft
-                source: "images/button-up-left.png"
-                width: Units.gu(1.9)
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.left: parent.left
-            }
-            Image {
-                id: confirmImageCenter
-                source: "images/button-up-center.png"
-                width: confirmRect.width - confirmImageLeft.width - confirmImageRight.width
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.left: confirmImageLeft.right
-            }
-
-            Image {
-                id: confirmImageRight
-                source: "images/button-up-right.png"
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.right: confirmRect.right
-            }
-
-            Text {
-                font.family: "Prelude"
-                text: "Clear " + popupConfirm.clearMode
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                color: "white"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
-            MouseArea {
-                anchors.fill: parent
-                onPressed: {
-                    overlayRect.visible = false
-                    popupConfirm.visible = false
-                    clearItems(popupConfirm.clearMode)
-                }
-            }
+            color: "white"
+            font.pixelSize: FontUtils.sizeToPixels("medium")
         }
-
-        Rectangle {
-            id: cancelRect
-            height: Units.gu(4.5)
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.left: clearText.left
-            width: parent.width - Units.gu(10)
-            anchors.top: confirmRect.bottom
-            anchors.topMargin: Units.gu(1)
-            color: "transparent"
-            radius: 4
-            Image {
-                id: cancelImageLeft
-                source: "images/button-up-left.png"
-                width: Units.gu(1.9)
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.left: parent.left
-            }
-            Image {
-                id: cancelImageCenter
-                source: "images/button-up-center.png"
-                width: cancelRect.width - cancelImageLeft.width - cancelImageRight.width
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.left: cancelImageLeft.right
-            }
-
-            Image {
-                id: cancelImageRight
-                source: "images/button-up-right.png"
-                height: parent.height
-                fillMode: Image.Stretch
-                anchors.right: cancelRect.right
-            }
-
-            Text {
-                font.family: "Prelude"
-                text: "Cancel"
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
-            MouseArea {
-                anchors.fill: parent
-                onPressed: {
-                    overlayRect.visible = false
-                    popupConfirm.visible = false
-                }
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                overlayRect.visible = false
+                popupConfirm.visible = false
+                clearItems(popupConfirm.clearMode)
             }
         }
     }
+
+    Rectangle {
+        id: cancelRect
+        height: Units.gu(4.5)
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left: clearText.left
+        width: parent.width - Units.gu(10)
+        anchors.top: confirmRect.bottom
+        anchors.topMargin: Units.gu(1)
+        color: "transparent"
+        radius: 4
+        Image {
+            id: cancelImageLeft
+            source: "images/button-up-left.png"
+            width: Units.gu(1.9)
+            height: parent.height
+            fillMode: Image.Stretch
+            anchors.left: parent.left
+        }
+        Image {
+            id: cancelImageCenter
+            source: "images/button-up-center.png"
+            width: cancelRect.width - cancelImageLeft.width - cancelImageRight.width
+            height: parent.height
+            fillMode: Image.Stretch
+            anchors.left: cancelImageLeft.right
+        }
+
+        Image {
+            id: cancelImageRight
+            source: "images/button-up-right.png"
+            height: parent.height
+            fillMode: Image.Stretch
+            anchors.right: cancelRect.right
+        }
+
+        Text {
+            font.family: "Prelude"
+            text: "Cancel"
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: FontUtils.sizeToPixels("medium")
+        }
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                overlayRect.visible = false
+                popupConfirm.visible = false
+            }
+        }
+    }
+}
 

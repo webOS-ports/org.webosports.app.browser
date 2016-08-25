@@ -30,7 +30,7 @@ import "AppTweaks"
 Rectangle {
     id: navigationBar
 
-    property Item webView
+    property BrowserWebView webView
 
     property string searchProviderIcon: ""
     property string defaultSearch: ""
@@ -795,7 +795,7 @@ Rectangle {
         font.family: "Prelude"
         font.pixelSize: FontUtils.sizeToPixels("medium")
         inputMethodHints: Qt.ImhUrlCharactersOnly
-        color: appWindow.privateByDefault ? "#2E8CF7" : "#E5E5E5"
+        color: AppTweaks.privateByDefaultTweakValue ? "#2E8CF7" : "#E5E5E5"
         selectedTextColor: "#000000"
         selectionColor: "#ADAD15"
         verticalAlignment: TextInput.AlignVCenter
@@ -916,13 +916,13 @@ Rectangle {
             clip: true
             fillMode: Image.PreserveAspectCrop
             verticalAlignment: Image.AlignTop
-            source: "images/menu-icon-refresh.png"
+            source: webView.loading ? "images/menu-icon-stop.png" : "images/menu-icon-refresh.png"
 
             //Handle stop/reload
             MouseArea {
                 anchors.fill: loadingIndicator
 
-                onPressed: {
+                onClicked: {
                     if (shareOptionsList.visible) {
                         shareOptionsList.visible = false
                     }
@@ -933,30 +933,15 @@ Rectangle {
                         forwardImage.opacity = 1
                     }
 
-                    //TODO: Work out a more proper way of dealing with this. It works currently but it's not pretty
-                    var myString = "'" + loadingIndicator.source
-                    var mySplit = myString.split("/")
-                    if (mySplit[mySplit.length - 1] === 'menu-icon-refresh.png') {
-
-                        if (addressBar.text !== "") {
-                            progressBar.height = Units.gu(1 / 2)
-                            progressBar.value = 0
-                        }
-                        webView.reload
-                        loadingIndicator.source = "images/menu-icon-stop.png"
+                    if (!webView.loading) {
+                        webView.reload()
                     } else {
+                        webView.stop()
                         if (addressBar.selectedText !== "") {
-                            addressBar.deselect
+                            addressBar.deselect();
                             addressBar.focus = true
                             addressBar.text = ""
                             Qt.inputMethod.show()
-                        } else {
-                            webView.stop
-                            loadingIndicator.source = "images/menu-icon-refresh.png"
-                            if (!alwaysShowProgressBar) {
-                                progressBar.height = 0
-                            }
-                            progressBar.value = 0
                         }
                     }
                 }
@@ -969,13 +954,6 @@ Rectangle {
             repeat: true
             interval: 500
             onTriggered: {
-
-                if (!webView.loading) {
-                    if (!alwaysShowProgressBar) {
-                        progressBar.height = 0
-                    }
-                }
-
                 if (addressBar.selectedText === "") {
                     loadingIndicator.source = "images/menu-icon-refresh.png"
                     urlTimer.stop

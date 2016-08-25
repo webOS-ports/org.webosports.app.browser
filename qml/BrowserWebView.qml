@@ -211,7 +211,7 @@ LunaWebEngineView {
         if (webViewItem.loadProgress === 100) {
             //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
             //Only create history item in case we're not using Private Browsing
-            if (!privateByDefault) {
+            if (!AppTweaks.privateByDefaultTweakValue) {
 
                 //Create the icon/images for the page
                 createViewImage()
@@ -273,7 +273,7 @@ LunaWebEngineView {
             id: webViewPlaceholder
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -keyboardHeight / 2.
+            anchors.verticalCenterOffset: -Qt.inputMethod.keyboardRectangle.height / 2.
             source: webViewPlaceholderSource
         }
     }

@@ -40,7 +40,7 @@ Rectangle {
     visible: false
     anchors.horizontalCenter: parent.horizontalCenter
     anchors.verticalCenter: parent.verticalCenter
-    anchors.verticalCenterOffset : -appWindow.keyboardHeight/2.
+    anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
     width: Units.gu(40)
     height: Units.gu(36)
     color: "transparent"

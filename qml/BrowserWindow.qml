@@ -37,6 +37,18 @@ LuneOSWindow {
     width: 1024
     height: 768
 
+    property bool historyAvailable: false
+    property bool forwardAvailable: false
+    property bool enableDebugOutput: true
+    property string myBookMarkData: '{}'
+    property string myDownloadsData: '{}'
+    property string myHistoryData: '{}'
+    property string dataMode: "bookmarks"
+    property var connectionStatus
+    readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
+    property alias url: webViewItem.url
+    property Item windowManager
+
     UserAgent {
         id: userAgent
     }
@@ -127,22 +139,6 @@ LuneOSWindow {
     {
         console.log("Unable to get connection status");
     }
-
-    property real keyboardHeight: Qt.inputMethod.keyboardRectangle.height
-    property bool pageIsLoading: webViewItem.loading
-    property bool historyAvailable: false
-    property bool forwardAvailable: false
-    property bool enableDebugOutput: true
-    property string myBookMarkData: '{}'
-    property string myDownloadsData: '{}'
-    property string myHistoryData: '{}'
-    property string dataMode: "bookmarks"
-    property bool privateByDefault: AppTweaks.privateByDefaultTweakValue
-    property var connectionStatus
-    readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
-    property bool alwaysShowProgressBar: true //AppTweaks.progressBarTweakValue
-    property alias url: webViewItem.url
-    property Item windowManager
 
     function activateAppMenu() {
         appMenu.visible = !appMenu.visible;

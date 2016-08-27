@@ -68,38 +68,6 @@ Item {
                     }
                 }
 
-                onContentSizeChanged: {
-                    //We need a different query in case the lenght is 0
-                    if (addressBarTextInput.text.length === 0) {
-                    //    navigationBar.__queryDB(
-                    //                "find",
-                    //                '{"query":{"from":"com.palm.browserbookmarks:1"}}')
-                    } else {
-                        navigationBar.__queryDB(
-                                    "search",
-                                    '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'
-                                    + "\"" + addressBarTextInput.text + "\""
-                                    + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
-                    }
-                    searchSuggestions.optSearchText = defaultSearchDisplayName
-                    searchSuggestions.defaultSearchIcon = defaultSearchIcon
-                    searchSuggestions.height = (searchSuggestions.urlModelCount + 1) * Units.gu(
-                                6)
-                    searchSuggestions.suggestionListHeight = searchSuggestions.urlModelCount * Units.gu(
-                                6)
-                    if (addressBarTextInput.text.length === 0 || addressBarTextInput.text.substring(
-                                0,
-                                4) === "http" || addressBarTextInput.text.substring(0,
-                                                                           3) === "ftp"
-                            || addressBarTextInput.text.substring(0, 4) === "data" || addressBarTextInput.text.substring(
-                                0,
-                                4) === "file") {
-                        searchSuggestions.visible = false
-                    } else {
-                        searchSuggestions.visible = true
-                    }
-                }
-
                 Text {
                     anchors.fill: addressBarTextInput
                     font.family: "Prelude"

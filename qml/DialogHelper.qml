@@ -42,7 +42,7 @@ Rectangle {
     Connections {
         target: currentShowDialog
         onVisibleChanged: {
-            if(!currentShowDialog.visible) {
+            if(currentShowDialog && !currentShowDialog.visible) {
                 currentShowDialog = null;
                 dialogBackground.visible = false
             }

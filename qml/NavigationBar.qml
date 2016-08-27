@@ -75,77 +75,6 @@ Rectangle {
         console.log("Could not start application : " + message)
     }
 
-    function __queryDB(action, params) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Querying DB with action: " + action + " and params: " + params)
-        }
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError)
-    }
-
-    function __handleQueryDBError(message) {
-        console.log("Could not query DB : " + message)
-    }
-
-    function __handleQueryDBSuccess(message) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Queried DB : " + JSON.stringify(message.payload))
-        }
-        searchResultsBookmarks = JSON.parse(message.payload)
-        navigationBar.__queryHDB(
-                    "search",
-                    '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'
-                    + "\"" + addressBarItem.addressBarText + "\""
-                    + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}')
-    }
-
-    function __queryHDB(action, params) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Querying History DB with action: " + action + " and params: " + params)
-        }
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryHDBSuccess, __handleQueryHDBError)
-    }
-
-    function __handleQueryHDBError(message) {
-        console.log("Could not query History DB : " + message)
-    }
-
-    function __handleQueryHDBSuccess(message) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Queried History DB : " + JSON.stringify(
-                            message.payload))
-        }
-
-        searchResultsHistory = JSON.parse(message.payload)
-
-        //We need to put the icon for each of the types (bookmarks/history) so we put them in a new combined array
-        var searchResults = []
-
-        for (var j = 0, t; t = searchResultsBookmarks.results[j]; j++) {
-            searchResults.push({
-                                   url: t.url,
-                                   title: t.title,
-                                   icon64: t.icon64,
-                                   icon: "images/header-icon-bookmarks.png"
-                               })
-        }
-        if (searchResultsHistory.results.length <= 32) {
-            for (var i = 0, s; s = searchResultsHistory.results[i]; i++) {
-                searchResults.push({
-                                       url: s.url,
-                                       title: s.title,
-                                       icon64: s.icon64,
-                                       icon: "images/header-icon-history.png"
-                                   })
-            }
-        }
-
-        //Stringify them so we can use it in the JSONList
-        searchSuggestions.searchResultsAll = JSON.stringify(searchResults)
-        return searchSuggestions.searchResultsAll
-    }
-
     function __queryPutDB(myData) {
         if (appWindow.enableDebugOutput) {
             console.log("Putting Data to DB (NavigationBar): JSON.stringify(myData): " + JSON.stringify(
@@ -418,5 +347,18 @@ Rectangle {
                                                                         13.75) : Units.gu(
                                                                         10)
         width: Screen.width < 900 ? Screen.width : addressBarItem.width
+
+        searchString: addressBarItem.addressBarText
+        optSearchText: defaultSearchDisplayName
+        defaultSearchIcon: navigationBar.defaultSearchIcon
+
+        onSuggestionsCountChanged: {
+            if(count===0) searchSuggestions.hide();
+            else navigationBarDlgHelper.showDialog(searchSuggestions, false);
+        }
+        onRequestUrl: {
+            webView.url = url;
+            addressBarItem.addressBarText = url;
+        }
     }
 }

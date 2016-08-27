@@ -48,7 +48,7 @@ Item {
         id: progressBarTweak
         owner: appTweaks.owner
         serviceName: appTweaks.serviceName
-        key: "tapRippleSupport"
+        key: "alwaysShowProgressBarKey"
         defaultValue: false
     }
 

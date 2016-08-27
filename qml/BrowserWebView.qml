@@ -216,7 +216,7 @@ LunaWebEngineView {
                 //Create the icon/images for the page
                 createViewImage()
 
-                navigationBar.__queryDB(
+                appWindow.__queryDB(
                             "del",
                             '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"' + webViewItem.url + '"}]}}')
 

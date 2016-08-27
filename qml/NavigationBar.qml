@@ -295,14 +295,6 @@ Rectangle {
                 anchors.fill: parent
 
                 onClicked: {
-                    navigationBar.__queryDB(
-                                "find",
-                                '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
-
-                    navigationBar.__queryDB(
-                                "find",
-                                '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
-
                     Qt.inputMethod.hide()
                     toggleHistoryPanel();
                 }

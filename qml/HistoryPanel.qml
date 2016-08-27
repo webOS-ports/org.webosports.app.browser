@@ -19,9 +19,14 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.1
+
 import LunaNext.Common 0.1
 
+import LuneOS.Service 1.0
+
 Item {
+    id: historyPanel
+
     visible: false
     enabled: visible
 
@@ -31,6 +36,26 @@ Item {
     function hide() {
         visible = false;
     }
+
+    Db8Model {
+        id: historyDbModel
+        kind: "com.palm.browserhistory:1"
+        watch: true
+        query: { "limit":50, "orderBy":"date" }
+    }
+    Db8Model {
+        id: bookmarksDbModel
+        kind: "com.palm.browserbookmarks:1"
+        watch: true
+        query: { "limit":32 }
+    }
+    ListModel {
+        //TODO Mocked some data for now until we have the DownloadManager ready
+        id: downloadsDbModel
+        Component.onCompleted: downloadsDbModel.append({"url":"", "title":"Downloads not implemented yet"});
+    }
+
+    property string dataMode: "bookmarks"
 
     Rectangle {
         id: _sidePanel
@@ -77,9 +102,7 @@ Item {
                             anchors.fill: bookmarkButtonImage
                             onClicked: {
                                 dataMode = "bookmarks"
-                                appWindow.__queryDB(
-                                            "find",
-                                            '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+
                                 bookmarkButtonImage.source = "images/radiobuttondarkleftpressed.png"
                                 bookmarkButtonImageInside.verticalAlignment = Image.AlignBottom
                                 addBookMark.visible = true
@@ -122,9 +145,7 @@ Item {
                             anchors.fill: historyButtonImage
                             onClicked: {
                                 dataMode = "history"
-                                appWindow.__queryDB(
-                                            "find",
-                                            '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}')
+
                                 bookmarkButtonImage.source = "images/radiobuttondarkleft.png"
                                 bookmarkButtonImageInside.verticalAlignment = Image.AlignTop
 
@@ -169,8 +190,6 @@ Item {
                             anchors.fill: downloadButtonImage
                             onClicked: {
                                 dataMode = "downloads"
-                                //TODO Mocked some data for now until we have the DownloadManager ready
-                                myDownloadsData = '{"results":[{"url":"", "title":"Downloads not implemented yet"}]}'
 
                                 downloadButtonImage.source
                                         = "images/radiobuttondarkrightpressed.png"
@@ -216,29 +235,9 @@ Item {
                 id: dataList
                 width: parent.width
                 height: parent.height
-                JSONListModel {
-                    id: dataModel
-                    json: getJSONData()
 
-                    query: "$.results[*]"
-
-                    function getJSONData() {
-                        if (dataMode === "bookmarks") {
-                            return myBookMarkData
-                        } else if (dataMode === "downloads") {
-                            return myDownloadsData
-                        } else if (dataMode === "history") {
-                            return myHistoryData
-                        }
-                        else
-                        {
-                            return "'{}'"
-                        }
-
-                    }
-                }
-
-                model: dataModel.model
+                model: dataMode === "history" ? historyDbModel:
+                       dataMode === "bookmarks" ? bookmarksDbModel: undefined
 
                 delegate: Rectangle {
                                   id: dataSectionRect
@@ -257,7 +256,7 @@ Item {
 
                                       Image {
                                           id: dataResultsImage
-                                          source: dataMode === "history" ? "images/header-icon-history.png" : dataMode === "bookmarks" ? model.icon64 : ""
+                                          source: dataMode === "history" ? "images/header-icon-history.png" : dataMode === "bookmarks" ? (model.icon64||"") : ""
                                           anchors.top: dataResultsRect.top
                                           anchors.left: dataResultsRect.left
                                           height: dataMode === "history" ? Units.gu(3) : Units.gu(5)
@@ -301,7 +300,7 @@ Item {
                                       MouseArea {
                                           anchors.fill: parent
                                           onClicked: {
-                                              historyPanel.visible = false
+                                              historyPanel.hide()
                                               webViewItem.url = model.url
                                           }
                                       }

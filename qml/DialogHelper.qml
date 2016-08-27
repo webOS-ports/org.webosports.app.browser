@@ -43,8 +43,7 @@ Rectangle {
         target: currentShowDialog
         onVisibleChanged: {
             if(currentShowDialog && !currentShowDialog.visible) {
-                currentShowDialog = null;
-                dialogBackground.visible = false
+                hideCurrentDialog();
             }
         }
     }

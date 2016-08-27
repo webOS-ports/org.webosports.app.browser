@@ -211,9 +211,6 @@ Item {
 
                     bookmarkDialog.visible = false
 
-                    mainAppWindow.__queryDB(
-                                "find",
-                                '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
                     Qt.inputMethod.hide()
                 }
             }

@@ -38,10 +38,6 @@ LuneOSWindow {
     height: 768
 
     property bool enableDebugOutput: true
-    property string myBookMarkData: '{}'
-    property string myDownloadsData: '{}'
-    property string myHistoryData: '{}'
-    property string dataMode: "bookmarks"
     property var connectionStatus
     readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
     property alias url: webViewItem.url
@@ -82,17 +78,6 @@ LuneOSWindow {
 
     function __handleQueryDBSuccess(message) {
         console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        if (dataMode === "bookmarks") {
-            myBookMarkData = message.payload;
-        } else if (dataMode === "downloads") {
-            myDownloadsData = '{"results":[{"url":"Downloads not implemented yet", "title":"Downloads not implemented yet"}]}';
-        } else if (dataMode === "history") {
-            myHistoryData = message.payload;
-        }
-        else
-        {
-            console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        }
     }
 
     function __queryPutDB(myData) {

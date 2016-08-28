@@ -34,7 +34,6 @@ Item {
     property string myBookMarkId: ""
     property string myButtonText: ""
 
-    property Item mainAppWindow
     property BookmarkDbModel bookmarksDbModel
 
     visible: false

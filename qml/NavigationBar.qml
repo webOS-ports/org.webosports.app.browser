@@ -74,7 +74,7 @@ Rectangle {
 
     function __handleGetDefaultSearchSuccess(message) {
         if (appWindow.enableDebugOutput) {
-            console.log("Got default search successfully")
+            console.log("Got default search successfully: " + message.payload)
         }
         var defbrows = JSON.parse(message.payload)
         defaultSearch = defbrows.SearchPreference.defaultSearchEngine
@@ -337,8 +337,10 @@ Rectangle {
         defaultSearchIcon: navigationBar.defaultSearchIcon
 
         onSuggestionsCountChanged: {
-            if(count===0) searchSuggestions.hide();
-            else navigationBarDlgHelper.showDialog(searchSuggestions, false);
+            if(addressBarItem.hasFocus) {
+                if(count===0 && navigationBar.defaultSearchURL === "") searchSuggestions.hide();
+                else navigationBarDlgHelper.showDialog(searchSuggestions, false);
+            }
         }
         onRequestUrl: {
             webView.url = url;
@@ -346,6 +348,15 @@ Rectangle {
         }
 
         Connections {
+            target: addressBarItem
+            onAddressBarTextChanged: {
+                if(addressBarItem.hasFocus) {
+                    if(addressBarItem.addressBarText.length<2)
+                        searchSuggestions.hide();
+                    else if(navigationBar.defaultSearchURL !== "")
+                        navigationBarDlgHelper.showDialog(searchSuggestions, false);
+                }
+            }
         }
     }
 }

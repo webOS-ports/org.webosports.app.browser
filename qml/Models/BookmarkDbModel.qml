@@ -36,7 +36,7 @@ Db8Model {
             idx: null
         };
         //mixin(b, inIcons);
-         __queryDB("put", b)
+         __queryDB("put", JSON.stringify({objects: [b]}))
         //this.$.bookmarksService.call({objects: [b]}, {method: "put"});
     }
 

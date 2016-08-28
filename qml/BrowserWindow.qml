@@ -201,11 +201,9 @@ LuneOSWindow {
         id: bookmarkDialog
         anchors.centerIn: parent
         anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
-
-        mainAppWindow: appWindow
-        bookmarksDbModel: mainBookmarkDbModel
-
         z: 2
+
+        bookmarksDbModel: mainBookmarkDbModel
     }
 
     SidePanel

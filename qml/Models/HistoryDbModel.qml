@@ -21,7 +21,7 @@ Db8Model {
             date: (new Date()).getTime()
         }
 
-        __queryDB("put", history)
+        __queryDB("put", JSON.stringify({objects: [history]}));
     }
 
     function clearDB() {

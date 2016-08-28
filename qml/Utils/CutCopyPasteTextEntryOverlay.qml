@@ -14,7 +14,7 @@ Item {
 
     property bool markerVisible: textEntry.selectedText.length>0
     property bool actionsVisible: showCut || showCopy || showPaste || showSelect || showSelectAll
-    visible: markerVisible || actionsVisible
+    visible: (markerVisible || actionsVisible) && textEntry.focus
 
     // some helpers for the most common cases
     function showCutCopy() {

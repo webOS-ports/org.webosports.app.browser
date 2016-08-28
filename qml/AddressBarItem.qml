@@ -10,6 +10,7 @@ Item {
 
     property Item webViewItem
     property alias addressBarText: addressBarTextInput.text
+    property alias hasFocus: addressBarTextInput.focus
 
     signal commitURL(string newURL);
 
@@ -82,7 +83,7 @@ Item {
                 }
 
                 Binding {
-                    when: webView.loading
+                    when: webViewItem.loading
                     target: addressBarTextInput
                     property: "text"
                     value: webViewItem.url
@@ -102,6 +103,7 @@ Item {
 
                     onClicked: {
                         if (!addressBarTextInput.focus) {
+                            cutCopyPasteOverlay.hideActions();
                             addressBarTextInput.focus = true
                             addressBarTextInput.selectAll()
                         }
@@ -150,7 +152,7 @@ Item {
                 id: faviconImage
                 anchors.right: loadingIndicator.left
                 anchors.verticalCenter: parent.verticalCenter
-                source: webView.icon
+                source: webViewItem.icon
                 width: Units.gu(2.4)
                 height: Units.gu(2.4)
             }
@@ -165,17 +167,17 @@ Item {
                 clip: true
                 fillMode: Image.PreserveAspectCrop
                 verticalAlignment: Image.AlignTop
-                source: webView.loading ? "images/menu-icon-stop.png" : "images/menu-icon-refresh.png"
+                source: webViewItem.loading ? "images/menu-icon-stop.png" : "images/menu-icon-refresh.png"
 
                 //Handle stop/reload
                 MouseArea {
                     anchors.fill: loadingIndicator
 
                     onClicked: {
-                        if (!webView.loading) {
-                            webView.reload()
+                        if (!webViewItem.loading) {
+                            webViewItem.reload()
                         } else {
-                            webView.stop()
+                            webViewItem.stop()
                             if (addressBarTextInput.selectedText !== "") {
                                 addressBarTextInput.deselect();
                                 addressBarTextInput.focus = true

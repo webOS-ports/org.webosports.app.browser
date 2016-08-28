@@ -34,7 +34,7 @@ Rectangle {
     property BrowserWebView webView
     property HistoryDbModel historyDbModel
 
-    signal toggleHistoryPanel();
+    signal toggleSidePanel();
     signal toggleShareOptionsList();
     signal launchApplication(string id, string params);
 
@@ -290,7 +290,7 @@ Rectangle {
 
                 onClicked: {
                     Qt.inputMethod.hide()
-                    toggleHistoryPanel();
+                    toggleSidePanel();
                 }
             }
         }

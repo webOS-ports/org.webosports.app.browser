@@ -33,11 +33,22 @@ Rectangle {
 
     function hideCurrentDialog() {
         if(currentShowDialog)
+        {
             currentShowDialog.hide();
-        currentShowDialog = null;
-        dialogBackground.visible = false;
+            currentShowDialog = null;
+            dialogBackground.visible = false;
 
-        dialogHidden();
+            dialogHidden();
+        }
+    }
+
+    function toggleDialog(dialog, dimBackground)  {
+        if(currentShowDialog !== dialog) {
+            showDialog(dialog, dimBackground);
+        }
+        else {
+            hideCurrentDialog();
+        }
     }
 
     Connections {

@@ -113,32 +113,6 @@ LuneOSWindow {
         __subscribeConnectionStatus()
     }
 
-    states: [
-               State {
-                   name: "browsing"
-                   StateChangeScript {
-                       script: windowDlgHelper.hideCurrentDialog();
-                   }
-               },
-                State {
-                    name: "shareOptions"
-                    StateChangeScript {
-                        script: windowDlgHelper.showDialog(shareOptionsList, false);
-                    }
-                },
-                State {
-                    name: "bookmarkDialog"
-                    StateChangeScript {
-                        script: windowDlgHelper.showDialog(bookmarkDialog, true);
-                    }
-                },
-                State {
-                    name: "historyPanel"
-                    StateChangeScript {
-                        script: windowDlgHelper.showDialog(sidePanel, false);
-                    }
-                }
-           ]
 
     Clipboard {
         id: browserClipboard
@@ -169,22 +143,8 @@ LuneOSWindow {
         height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
 
         onLaunchApplication: appWindow.__launchApplication(id, params);
-        onToggleShareOptionsList: {
-            if(appWindow.state !== "shareOptions") {
-                appWindow.state = "shareOptions";
-            }
-            else {
-                appWindow.state = "browsing";
-            }
-        }
-        onToggleHistoryPanel: {
-            if(appWindow.state !== "historyPanel") {
-                appWindow.state = "historyPanel";
-            }
-            else {
-                appWindow.state = "browsing";
-            }
-        }
+        onToggleShareOptionsList: windowDlgHelper.toggleDialog(shareOptionsList, false);
+        onToggleSidePanel: windowDlgHelper.toggleDialog(sidePanel, false);
     }
 
     BrowserWebView
@@ -217,7 +177,7 @@ LuneOSWindow {
         anchors.fill: parent
         z: 2
 
-        onDialogHidden: appWindow.state = "browsing";
+        onDialogHidden: windowDlgHelper.hideCurrentDialog();
     }
 
     ShareOptionList
@@ -233,7 +193,7 @@ LuneOSWindow {
             bookmarkDialog.myTitle = webViewItem.title;
             bookmarkDialog.myButtonText = buttonText;
 
-            appWindow.state = "bookmarkDialog";
+            windowDlgHelper.showDialog(bookmarkDialog, true);
         }
     }
 
@@ -269,7 +229,7 @@ LuneOSWindow {
             bookmarkDialog.myTitle = webViewItem.title
             bookmarkDialog.myButtonText = "Add Bookmark"
 
-            appWindow.state = "bookmarkDialog";
+            windowDlgHelper.showDialog(bookmarkDialog, true);
         }
         onEditBookmark:  {
             bookmarkDialog.action = "editBookmark";
@@ -279,7 +239,7 @@ LuneOSWindow {
             bookmarkDialog.myBookMarkId = id
             bookmarkDialog.myButtonText = "Save"
 
-            appWindow.state = "bookmarkDialog";
+            windowDlgHelper.showDialog(bookmarkDialog, true);
         }
     }
 

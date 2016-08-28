@@ -6,8 +6,9 @@ Rectangle {
     id: dialogBackground
     visible: false
     color: "#4C4C4C"
-    opacity: 0.8
+    opacity: dimBackground ? 0.8 : 0
 
+    property bool dimBackground: true
     property Item currentShowDialog
 
     signal dialogHidden();
@@ -17,12 +18,12 @@ Rectangle {
         onClicked: hideCurrentDialog();
     }
 
-    function showDialog(dialog, opacityBg) {
+    function showDialog(dialog, dimBackground) {
         if(currentShowDialog)
             currentShowDialog.hide();
 
         currentShowDialog = dialog;
-        dialogBackground.opacity = opacityBg;
+        dialogBackground.dimBackground = dimBackground;
 
         if(currentShowDialog)
             currentShowDialog.show();

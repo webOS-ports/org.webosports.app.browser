@@ -40,6 +40,10 @@ Db8Model {
         //this.$.bookmarksService.call({objects: [b]}, {method: "put"});
     }
 
+    function clearDB() {
+        __queryDB("del", '{"query":{"from":"com.palm.browserbookmarks:1"}}');
+    }
+
     property QtObject __ls2service: LunaService {
         name: "org.webosports.app.browser"
     }

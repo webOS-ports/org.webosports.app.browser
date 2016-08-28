@@ -24,6 +24,10 @@ Db8Model {
         __queryDB("put", history)
     }
 
+    function clearDB() {
+        __queryDB("del", '{"query":{"from":"com.palm.browserhistory:1"}}');
+    }
+
     property QtObject __ls2service: LunaService {
         name: "org.webosports.app.browser"
     }

@@ -20,7 +20,7 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.0
-import "js/ua-overrides.js" as Overrides
+import "../js/ua-overrides.js" as Overrides
 
 /*
  * Useful documentation:

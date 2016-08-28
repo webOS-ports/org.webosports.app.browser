@@ -20,6 +20,8 @@
 import QtQuick 2.0
 import LunaNext.Common 0.1
 
+import "Models"
+
 //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
 //dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
 Item {

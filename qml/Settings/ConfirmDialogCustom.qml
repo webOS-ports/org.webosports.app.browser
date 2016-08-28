@@ -24,17 +24,25 @@ import LunaNext.Common 0.1
 //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
 //dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
 Item {
-    property string buttonText: ""
-    property string clearMode: ""
+    id: confirmDialogRoot
+
+    property alias buttonText: clearText.text
+    property alias title: titleTextItem.text
     visible: false
-    anchors.verticalCenter: parent.verticalCenter
-    anchors.horizontalCenter: parent.horizontalCenter
     width: Units.gu(40)
     height: Units.gu(23)
-    z: 5
+
+    signal commitAction();
+
+    function show() {
+        confirmDialogRoot.visible = true;
+    }
+    function hide() {
+        confirmDialogRoot.visible = false;
+    }
 
     BorderImage {
-        source: "images/dialog-bg.png"
+        source: "../images/dialog-bg.png"
         anchors.fill: parent
         border.left: 25; border.top: 25
         border.right: 25; border.bottom: 25
@@ -44,7 +52,6 @@ Item {
         id: clearText
         font.family: "Prelude"
         color: "#292929"
-        text: popupConfirm.buttonText
         anchors.left: parent.left
         anchors.leftMargin: Units.gu(2)
         font.pixelSize: FontUtils.sizeToPixels("large")
@@ -66,7 +73,7 @@ Item {
         color: "#c01b1e"
         Image {
             id: confirmImageLeft
-            source: "images/button-up-left.png"
+            source: "../images/button-up-left.png"
             width: Units.gu(1.9)
             height: parent.height
             fillMode: Image.Stretch
@@ -74,7 +81,7 @@ Item {
         }
         Image {
             id: confirmImageCenter
-            source: "images/button-up-center.png"
+            source: "../images/button-up-center.png"
             width: confirmRect.width - confirmImageLeft.width - confirmImageRight.width
             height: parent.height
             fillMode: Image.Stretch
@@ -83,15 +90,15 @@ Item {
 
         Image {
             id: confirmImageRight
-            source: "images/button-up-right.png"
+            source: "../images/button-up-right.png"
             height: parent.height
             fillMode: Image.Stretch
             anchors.right: confirmRect.right
         }
 
         Text {
+            id: titleTextItem
             font.family: "Prelude"
-            text: "Clear " + popupConfirm.clearMode
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
             color: "white"
@@ -100,9 +107,8 @@ Item {
         MouseArea {
             anchors.fill: parent
             onPressed: {
-                overlayRect.visible = false
-                popupConfirm.visible = false
-                clearItems(popupConfirm.clearMode)
+                confirmDialogRoot.commitAction();
+                confirmDialogRoot.hide();
             }
         }
     }
@@ -119,7 +125,7 @@ Item {
         radius: 4
         Image {
             id: cancelImageLeft
-            source: "images/button-up-left.png"
+            source: "../images/button-up-left.png"
             width: Units.gu(1.9)
             height: parent.height
             fillMode: Image.Stretch
@@ -127,7 +133,7 @@ Item {
         }
         Image {
             id: cancelImageCenter
-            source: "images/button-up-center.png"
+            source: "../images/button-up-center.png"
             width: cancelRect.width - cancelImageLeft.width - cancelImageRight.width
             height: parent.height
             fillMode: Image.Stretch
@@ -136,7 +142,7 @@ Item {
 
         Image {
             id: cancelImageRight
-            source: "images/button-up-right.png"
+            source: "../images/button-up-right.png"
             height: parent.height
             fillMode: Image.Stretch
             anchors.right: cancelRect.right
@@ -152,8 +158,7 @@ Item {
         MouseArea {
             anchors.fill: parent
             onPressed: {
-                overlayRect.visible = false
-                popupConfirm.visible = false
+                confirmDialogRoot.hide();
             }
         }
     }

@@ -25,6 +25,8 @@ import LunaNext.Common 0.1
 import "js/util-uri.js" as EnyoUriUtils
 
 import "AppTweaks"
+import "Models"
+import "Utils"
 
 Rectangle {
     id: navigationBar

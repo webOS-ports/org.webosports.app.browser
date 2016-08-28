@@ -21,8 +21,9 @@ import QtQuick 2.0
 import QtQuick.Window 2.1
 
 import LunaNext.Common 0.1
-
 import LuneOS.Service 1.0
+
+import "Models"
 
 Rectangle {
     id: sidePanelRoot

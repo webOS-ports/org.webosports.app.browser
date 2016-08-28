@@ -30,6 +30,7 @@ import browserutils 0.1
 import "js/util-uri.js" as EnyoUriUtils
 
 import "AppTweaks"
+import "Models"
 
 LunaWebEngineView {
     id: webViewItem

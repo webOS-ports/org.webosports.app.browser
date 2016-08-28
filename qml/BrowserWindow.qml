@@ -27,6 +27,9 @@ import LuneOS.Application 1.0
 import LuneOS.Components 1.0
 
 import "AppTweaks"
+import "Settings"
+import "Utils"
+import "Models"
 import "js/util-sharing.js" as SharingUtils
 
 LuneOSWindow {
@@ -120,19 +123,19 @@ LuneOSWindow {
                 State {
                     name: "shareOptions"
                     StateChangeScript {
-                        script: windowDlgHelper.showDialog(shareOptionsList, 0);
+                        script: windowDlgHelper.showDialog(shareOptionsList, false);
                     }
                 },
                 State {
                     name: "bookmarkDialog"
                     StateChangeScript {
-                        script: windowDlgHelper.showDialog(bookmarkDialog, 0.9);
+                        script: windowDlgHelper.showDialog(bookmarkDialog, true);
                     }
                 },
                 State {
                     name: "historyPanel"
                     StateChangeScript {
-                        script: windowDlgHelper.showDialog(sidePanel, 0);
+                        script: windowDlgHelper.showDialog(sidePanel, false);
                     }
                 }
            ]
@@ -306,6 +309,16 @@ LuneOSWindow {
         id: settingsPage
         anchors.fill: parent
         visible: false
+
+        historyDbModel: mainHistoryDbModel
+        bookmarkDbModel: mainBookmarkDbModel
+        defaultSearchProviderDisplayName: navigationBar.defaultSearchDisplayName
+
+        onApplyNewPreferences: {
+            navigationBar.defaultSearchURL = defaultSearchURL;
+            navigationBar.defaultSearchIcon = defaultSearchIcon;
+            navigationBar.defaultSearchDisplayName = defaultSearchDisplayName;
+        }
     }
 
     AppMenu {

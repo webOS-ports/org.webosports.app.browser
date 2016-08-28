@@ -45,7 +45,7 @@ Item {
 
     Image {
         id: topMarker
-        source: "images/topmarker.png"
+        source: "../images/topmarker.png"
         visible: markerVisible
         y: -height + 8
 
@@ -65,7 +65,7 @@ Item {
 
     Image {
         id: bottomMarker
-        source: "images/bottommarker.png"
+        source: "../images/bottommarker.png"
         visible: markerVisible
         y: textEntry.height - 8
 
@@ -91,24 +91,24 @@ Item {
 
         Image {
             id: overlayBackgroundLeft
-            source: "images/ate-left.png"
+            source: "../images/ate-left.png"
         }
         Image {
-            source: "images/ate-middle.png"
+            source: "../images/ate-middle.png"
             width: overlayContentRow.width/2 - overlayBackgroundArrowUp.width/2
         }
         Image {
             id: overlayBackgroundArrowUp
-            source: "images/ate-arrow-up.png"
+            source: "../images/ate-arrow-up.png"
             anchors.bottom: overlayBackgroundLeft.bottom
             anchors.bottomMargin: 7
         }
         Image {
-            source: "images/ate-middle.png"
+            source: "../images/ate-middle.png"
             width: overlayContentRow.width/2 - overlayBackgroundArrowUp.width/2
         }
         Image {
-            source: "images/ate-right.png"
+            source: "../images/ate-right.png"
         }
     }
 
@@ -140,7 +140,7 @@ Item {
             visible: cutCopyPasteOverlayItem.showCut
         }
         Image {
-            source: "images/ate-divider.png"
+            source: "../images/ate-divider.png"
             anchors.verticalCenter: overlayContentRow.verticalCenter
 
             visible: cutCopyPasteTextCut.visible && cutCopyPasteTextCopy.visible
@@ -165,7 +165,7 @@ Item {
             visible: cutCopyPasteOverlayItem.showCopy
         }
         Image {
-            source: "images/ate-divider.png"
+            source: "../images/ate-divider.png"
             anchors.verticalCenter: overlayContentRow.verticalCenter
 
             visible: cutCopyPasteTextCopy.visible && cutCopyPasteTextPaste.visible
@@ -190,7 +190,7 @@ Item {
             visible: cutCopyPasteOverlayItem.showPaste
         }
         Image {
-            source: "images/ate-divider.png"
+            source: "../images/ate-divider.png"
             anchors.verticalCenter: overlayContentRow.verticalCenter
 
             visible: cutCopyPasteTextPaste.visible && selectSelectAllTextSelect.visible
@@ -215,7 +215,7 @@ Item {
             visible: cutCopyPasteOverlayItem.showSelect
         }
         Image {
-            source: "images/ate-divider.png"
+            source: "../images/ate-divider.png"
             anchors.verticalCenter: overlayContentRow.verticalCenter
 
             visible: selectSelectAllTextSelect.visible && selectSelectAllTextSelectAll.visible

@@ -23,8 +23,6 @@ import QtQuick.Controls.Styles 1.1
 import LuneOS.Service 1.0
 import LunaNext.Common 0.1
 
-import "js/util.js" as EnyoUtils
-
 Rectangle {
     id: seachSuggestionsItem
     property string searchString
@@ -142,7 +140,7 @@ Rectangle {
                 font.pixelSize: FontUtils.sizeToPixels("large")
                 color: "#494949"
                 textFormat: Text.RichText
-                text: EnyoUtils.applyFilterHighlight(model.title,
+                text: urlTitle.applyFilterHighlight(model.title,
                                                      addressBarItem.addressBarText)
                 Text {
                     height: parent.height
@@ -157,9 +155,22 @@ Rectangle {
                     font.family: "Prelude"
                     font.pixelSize: FontUtils.sizeToPixels("small")
                     textFormat: Text.RichText
-                    text: EnyoUtils.applyFilterHighlight(model.url,
+                    text: urlTitle.applyFilterHighlight(model.url,
                                                          addressBarItem.addressBarText)
                     color: "#838383"
+                }
+
+                function applyFilterHighlight(a, b) {
+                    //function applyFilterHighlight(a, b, c) {
+                    //return a.replace(new RegExp(b, "i"), '<span class="' + c + '">$&</span>');
+                    //We cannot use classes and background images so we use color and underline here instead
+                    if(a && a.length>0)
+                    {
+                        //console.log("log output: "+a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>'))
+                        return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
+                    }
+
+                    return "";
                 }
             }
             Rectangle {

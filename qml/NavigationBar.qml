@@ -22,7 +22,7 @@ import QtQuick.Layouts 1.1
 import LuneOS.Service 1.0
 import LuneOS.Components 1.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
+import "js/util-uri.js" as EnyoUriUtils
 
 import "AppTweaks"
 
@@ -30,16 +30,17 @@ Rectangle {
     id: navigationBar
 
     property BrowserWebView webView
+    property HistoryDbModel historyDbModel
 
     signal toggleHistoryPanel();
     signal toggleShareOptionsList();
+    signal launchApplication(string id, string params);
 
     property string searchProviderIcon: ""
     property string defaultSearch: ""
     property string defaultSearchURL: ""
     property string defaultSearchIcon: "images/list-icon-google.png"
     property string defaultSearchDisplayName: "Google"
-    property bool isSecureSite: false
     property var searchResultsBookmarks
     property var searchResultsHistory
 
@@ -58,42 +59,6 @@ Rectangle {
             console.log("setFocus called with" + focusState)
         }
         addressBar.focus = focusState
-    }
-
-    function __launchApplication(id, params) {
-        if (appWindow.enableDebugOutput) {
-            console.log("launching app " + id + " with params " + params)
-        }
-        luna.call("luna://com.palm.applicationManager/launch", JSON.stringify({
-                                                                                  id: id,
-                                                                                  params: params
-                                                                              }),
-                  undefined, __handleLaunchAppError)
-    }
-
-    function __handleLaunchAppError(message) {
-        console.log("Could not start application : " + message)
-    }
-
-    function __queryPutDB(myData) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Putting Data to DB (NavigationBar): JSON.stringify(myData): " + JSON.stringify(
-                            myData))
-        }
-        luna.call("luna://com.palm.db/put", JSON.stringify({
-                                                               objects: [myData]
-                                                           }),
-                  __handlePutDBSuccess, __handlePutDBError)
-    }
-
-    function __handlePutDBError(message) {
-        console.log("Could not put DB : " + message)
-    }
-
-    function __handlePutDBSuccess(message) {
-        if (appWindow.enableDebugOutput) {
-            console.log("Put DB: " + JSON.stringify(message.payload))
-        }
     }
 
     function __getDefaultSearch() {
@@ -209,7 +174,11 @@ Rectangle {
             Layout.preferredHeight: Units.gu(3.75)
             anchors.verticalCenter: parent.verticalCenter
             opacity: 0.9
-            visible: navigationBar.isSecureSite
+            visible: isSecureSite(webView.url)
+
+            function isSecureSite(url) {
+                return (url.toString().substring(0, 8).toLowerCase() === "https://");
+            }
         }
 
         AddressBarItem {
@@ -219,6 +188,30 @@ Rectangle {
             Layout.preferredHeight: parent.height - Units.gu(1.6)
             Layout.leftMargin: Units.gu(0.8)
             Layout.rightMargin: Units.gu(0.8)
+
+            webViewItem: webView
+
+            onCommitURL: {
+                //TODO Dirty function for prefixing with http:// for now. Would be good if we can detect if site can do https and use that or else http
+                var uri = EnyoUriUtils.parseUri(newURL);
+                if ((EnyoUriUtils.isValidScheme(uri) && EnyoUriUtils.isUri(newURL,uri))) {
+                    if (newURL.substring(0, 7).toLowerCase() === "http://" ||
+                        newURL.substring(0, 8).toLowerCase() === "https://" ||
+                        newURL.substring(0, 6).toLowerCase() === "ftp://" ||
+                        newURL.substring(0, 7).toLowerCase() === "data://" ||
+                        newURL.substring(0, 7).toLowerCase() === "file://" ||
+                        newURL.substring(0, 6).toLowerCase() === "about:") {
+
+                        webView.url = newURL;
+                    } else {
+                        webView.url = "http://" + newURL;
+                        addressBarItem.addressBarText = "http://" + newURL;
+                    }
+                } else {
+                    //Just do a search with the default search engin
+                    webView.url = defaultSearchURL.replace("#{searchTerms}", newURL);
+                }
+            }
         }
 
         Image {
@@ -261,8 +254,7 @@ Rectangle {
                         console.log("New Card Pressed")
                     }
                     newCardImage.verticalAlignment = Image.AlignBottom
-                    navigationBar.__launchApplication("org.webosports.app.browser",
-                                                      "{}")
+                    navigationBar.launchApplication("org.webosports.app.browser", "{}")
                 }
                 onCanceled: {
                     if (appWindow.enableDebugOutput) {
@@ -335,9 +327,7 @@ Rectangle {
         id: searchSuggestions
         anchors.left: parent.left
         anchors.top: parent.bottom
-        anchors.leftMargin: Screen.width < 900 ? 0 : isSecureSite ? Units.gu(
-                                                                        13.75) : Units.gu(
-                                                                        10)
+        anchors.leftMargin: Screen.width < 900 ? 0 : addressBarItem.x
         width: Screen.width < 900 ? Screen.width : addressBarItem.width
 
         searchString: addressBarItem.addressBarText
@@ -351,6 +341,9 @@ Rectangle {
         onRequestUrl: {
             webView.url = url;
             addressBarItem.addressBarText = url;
+        }
+
+        Connections {
         }
     }
 }

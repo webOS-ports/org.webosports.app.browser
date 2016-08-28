@@ -25,9 +25,9 @@ import LunaNext.Common 0.1
 import LuneOS.Service 1.0
 import LuneOS.Application 1.0
 import LuneOS.Components 1.0
-import "js/util.js" as EnyoUtils
 
 import "AppTweaks"
+import "js/util-sharing.js" as SharingUtils
 
 LuneOSWindow {
     id: appWindow
@@ -67,44 +67,9 @@ LuneOSWindow {
         console.log("Could not start application : " + message);
     }
 
-    function __queryDB(action, params) {
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError);
-    }
-
-    function __handleQueryDBError(message) {
-        console.log("Could not query DB : " + message);
-    }
-
-    function __handleQueryDBSuccess(message) {
-        console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-    }
-
-    function __queryPutDB(myData) {
-        if (enableDebugOutput) {
-            console.log("Putting Data to DB (main.qml): JSON.stringify(myData): " + JSON.stringify(
-                            myData));
-        }
-        luna.call("luna://com.palm.db/put", JSON.stringify({
-                                                               objects: [myData]
-                                                           }),
-                  __handlePutDBSuccess, __handlePutDBError);
-    }
-
-    function __handlePutDBError(message) {
-            console.log("Could not put DB : " + message);
-    }
-
-    function __handlePutDBSuccess(message) {
-        if(enableDebugOutput)
-        {
-            console.log("Put DB: " + JSON.stringify(message.payload));
-        }
-    }
-
-    function __getConnectionStatus()
+    function __subscribeConnectionStatus()
     {
-        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({}),
+        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({"subscribe": true}),
                                         __connectionStatusSuccess, __connectionStatusError);
     }
 
@@ -117,7 +82,6 @@ LuneOSWindow {
         }
 
     }
-
     function __connectionStatusError(message)
     {
         console.log("Unable to get connection status");
@@ -143,12 +107,7 @@ LuneOSWindow {
         appWindow.visible = true
 
         //Determine initial connection status
-        __getConnectionStatus()
-
-        //Run query so we have the bookmarks item on first load of the panel
-        appWindow.__queryDB(
-                    "find",
-                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+        __subscribeConnectionStatus()
     }
 
     states: [
@@ -173,7 +132,7 @@ LuneOSWindow {
                 State {
                     name: "historyPanel"
                     StateChangeScript {
-                        script: windowDlgHelper.showDialog(historyPanel, 0);
+                        script: windowDlgHelper.showDialog(sidePanel, 0);
                     }
                 }
            ]
@@ -182,17 +141,31 @@ LuneOSWindow {
         id: browserClipboard
     }
 
+    HistoryDbModel {
+        id: mainHistoryDbModel
+    }
+
+    BookmarkDbModel {
+        id: mainBookmarkDbModel
+    }
+
+    DownloadsDbModel {
+        id: mainDownloadsDbModel
+    }
+
     NavigationBar {
         id: navigationBar
         z: 2 // place it above the webview, so that the copy/cut/paste items are visible over the webview
 
         webView: webViewItem
+        historyDbModel: mainHistoryDbModel
 
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
 
+        onLaunchApplication: appWindow.__launchApplication(id, params);
         onToggleShareOptionsList: {
             if(appWindow.state !== "shareOptions") {
                 appWindow.state = "shareOptions";
@@ -219,6 +192,12 @@ LuneOSWindow {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
+
+        internetAvailable: appWindow.internetAvailable
+        historyDbModel: mainHistoryDbModel
+
+        onOpenNewCard: appWindow.openNewCard(urlToOpen);
+        onOpenContextualMenu: contextMenu.show();
     }
 
     //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
@@ -261,23 +240,65 @@ LuneOSWindow {
         anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
 
         mainAppWindow: appWindow
+        bookmarksDbModel: mainBookmarkDbModel
 
         z: 2
     }
 
-    HistoryPanel
+    SidePanel
     {
-        id: historyPanel
+        id: sidePanel
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         anchors.right: parent.right
+        width: Screen.width < 900 ? parent.width : Units.gu(32)
         z: 2
+
+        historyDbModel: mainHistoryDbModel
+        bookmarksDbModel: mainBookmarkDbModel
+        downloadsDbModel: mainDownloadsDbModel
+
+        onGoToURL: webViewItem.url = url;
+
+        onAddBookmark: {
+            bookmarkDialog.action = "addBookmark"
+            bookmarkDialog.myURL = "" + webViewItem.url
+            bookmarkDialog.myTitle = webViewItem.title
+            bookmarkDialog.myButtonText = "Add Bookmark"
+
+            appWindow.state = "bookmarkDialog";
+        }
+        onEditBookmark:  {
+            bookmarkDialog.action = "editBookmark";
+            bookmarkDialog.myURL = "" + url;
+            bookmarkDialog.myTitle = title
+            bookmarkDialog.myBookMarkIcon = icon
+            bookmarkDialog.myBookMarkId = id
+            bookmarkDialog.myButtonText = "Save"
+
+            appWindow.state = "bookmarkDialog";
+        }
     }
 
     ContextMenu
     {
         id: contextMenu
         z: 3
+
+        onOpenNewCard: {
+            windowDlgHelper.hideCurrentDialog();
+            appWindow.openNewCard(url)
+        }
+
+        onShareLinkViaEmail: {
+            windowDlgHelper.hideCurrentDialog();
+            SharingUtils.shareLinkViaEmail(url, contextMenu.contextText)
+        }
+
+        onCopyURL: {
+            windowDlgHelper.hideCurrentDialog();
+            appWindow.setClipboard(url)
+        }
     }
 
     SettingsPage {

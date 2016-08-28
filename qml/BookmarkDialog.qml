@@ -1,4 +1,3 @@
-
 /*
 * Copyright (C) 2014 Simon Busch <morphis@gravedo.de>
 * Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
@@ -17,10 +16,9 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+
 import QtQuick 2.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
-
 
 //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
 //dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
@@ -35,6 +33,7 @@ Item {
     property string myButtonText: ""
 
     property Item mainAppWindow
+    property BookmarkDbModel bookmarksDbModel
 
     visible: false
     width: Units.gu(40)
@@ -198,14 +197,14 @@ Item {
                 anchors.fill: parent
                 onClicked: {
                     if (bookmarkDialog.action === "editBookmark") {
-                        EnyoUtils.editBookmark(title.text, url.text,
+                        bookmarksDbModel.editBookmark(title.text, url.text,
                                                bookmarkDialog.myBookMarkIcon,
                                                bookmarkDialog.myBookMarkId)
                     } else if (bookmarkDialog.action === "addBookmark") {
-                        EnyoUtils.addBookmark(title.text, url.text,
+                        bookmarksDbModel.addBookmark(title.text, url.text,
                                               bookmarkDialog.myBookMarkIcon)
                     } else if (bookmarkDialog.action === "addToLauncher") {
-                        EnyoUtils.addToLauncher(title.text, url.text,
+                        bookmarkDialog.addToLauncher(title.text, url.text,
                                                 bookmarkDialog.myBookMarkIcon)
                     }
 
@@ -237,5 +236,32 @@ Item {
                 }
             }
         }
+    }
+
+    function addToLauncher(inTitle, inUrl, inIcons) {
+        var appParams = {
+                    "url": inUrl
+                };
+
+        var callParams = {
+            "id": "org.webosports.app.browser",
+            "icon": inIcons,
+            "title": inTitle,
+            "params": appParams
+        };
+
+        console.log("callparams: "+callParams)
+        console.log("JSON.stringify(callParams): "+JSON.stringify({parameters: callParams}))
+
+        luna.call("luna://com.palm.applicationManager/addLaunchPoint", JSON.stringify(callParams),
+                  __handleAddLaunchPointSuccess, __handleAddLaunchPointError);
+    }
+
+    function __handleAddLaunchPointSuccess(message) {
+        console.log("Successfully added App Launchpoint : " + message.payload);
+    }
+
+    function __handleAddLaunchPointError(message) {
+        console.log("Could not start application : " + message.payload);
     }
 }

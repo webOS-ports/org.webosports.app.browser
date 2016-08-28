@@ -2,14 +2,15 @@ import QtQuick 2.0
 
 import LunaNext.Common 0.1
 
-import "js/util.js" as EnyoUtils
-
 import "AppTweaks"
 
 Item {
     id: addressBarItem
 
+    property Item webViewItem
     property alias addressBarText: addressBarTextInput.text
+
+    signal commitURL(string newURL);
 
     Row {
         height: parent.height
@@ -50,14 +51,14 @@ Item {
 
                 state: ""
 
-                onAccepted: updateURL()
+                onAccepted: commitURL(addressBarTextInput.text)
                 onFocusChanged: {
                     searchSuggestions.visible = false
                 }
 
                 onActiveFocusChanged: {
                     Qt.inputMethod.show()
-                    if (addressBarTextInput.text === "" && webViewItem.url !="") {
+                    if (addressBarTextInput.text === "" && webViewItem.url !== "") {
                         addressBarTextInput.text = webViewItem.url
                     }
                 }
@@ -133,37 +134,6 @@ Item {
                         else if(!cutCopyPasteOverlay.actionsVisible) {
                             cutCopyPasteOverlay.showCutCopy();
                         }
-                    }
-                }
-
-                //TODO Dirty function for prefixing with http:// for now. Would be good if we can detect if site can do https and use that or else http
-                function updateURL() {
-                    searchSuggestions.visible = false
-                    var uri = EnyoUtils.parseUri(addressBarTextInput.text)
-                    if ((EnyoUtils.isValidScheme(uri) && EnyoUtils.isUri(
-                             addressBarTextInput.text,
-                             uri))) {
-                        if (text.substring(0, 7).toLowerCase() === "http://" || text.substring(
-                                    0,
-                                    8).toLowerCase() === "https://" || text.substring(0,
-                                                                        6).toLowerCase() === "ftp://"
-                                || text.substring(0, 7).toLowerCase() === "data://" || text.substring(0, 7).toLowerCase() === "file://" || text.substring(0, 6).toLowerCase() === "about:") {
-                            webView.url = addressBarTextInput.text
-
-                            //Show the lock in case of https
-                            if (text.substring(0, 8).toLowerCase() === "https://") {
-                                isSecureSite = true
-                            } else {
-                                isSecureSite = false
-                            }
-                        } else {
-                            webView.url = "http://" + addressBarTextInput.text
-                            addressBarTextInput.text = "http://" + addressBarTextInput.text
-                        }
-                    } else {
-                        //Just do a search with the default search engin
-                        webView.url = defaultSearchURL.replace("#{searchTerms}",
-                                                               addressBarTextInput.text)
                     }
                 }
             }

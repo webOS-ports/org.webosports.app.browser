@@ -18,7 +18,7 @@
 */
 import QtQuick 2.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
+import "js/util-sharing.js" as SharingUtils
 
 ListView {
     id: shareOptionsListView
@@ -105,10 +105,10 @@ ListView {
             anchors.fill: parent
             onClicked: {
                 if (actionName === "shareLinkEmail") {
-                    EnyoUtils.shareLinkViaEmail(webViewItem.url,
+                    SharingUtils.shareLinkViaEmail(webViewItem.url,
                                                 webViewItem.title)
                 } else if (actionName === "shareLinkMessaging") {
-                    EnyoUtils.shareLinkViaMessaging(webViewItem.url,
+                    SharingUtils.shareLinkViaMessaging(webViewItem.url,
                                                     webViewItem.title)
                 } else if (actionName === "addToLauncher") {
                     showBookmarkDialog("addToLauncher", "Add to Launcher");

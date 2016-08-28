@@ -16,22 +16,32 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+import QtQuick 2.0
 import QtWebEngine 1.2
 import QtWebEngine.experimental 1.0
+import QtWebChannel 1.0
 import Qt.labs.settings 1.0
-import QtQuick 2.0
+
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import LuneOS.Service 1.0
+
 import browserutils 0.1
-import "js/util.js" as EnyoUtils
-import QtWebChannel 1.0
+import "js/util-uri.js" as EnyoUriUtils
 
 import "AppTweaks"
 
 LunaWebEngineView {
     id: webViewItem
     profile.httpUserAgent: userAgent.defaultUA
+
+    url: ""
+
+    property bool internetAvailable: false
+    property HistoryDbModel historyDbModel
+
+    signal openNewCard(string urlToOpen);
+    signal openContextualMenu(var contextMenuData);
 
     readonly property string webViewBackgroundSource: "images/background-startpage.png"
     readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
@@ -41,6 +51,8 @@ LunaWebEngineView {
         name: "org.webosports.app.browser"
         usePrivateBus: true
     }
+
+    onJavaScriptConsoleMessage: console.warn("CONSOLE JS: " + message);
 
     onFullScreenRequested: {
         if (request.toggleOn) {
@@ -61,7 +73,7 @@ LunaWebEngineView {
         WebEngineScript {
             name: "qwebchannel";
             sourceUrl: Qt.resolvedUrl("js/qwebchannel.js");
-            injectionPoint: WebEngineScript.DocumentReady;
+            injectionPoint: WebEngineScript.DocumentCreation;
             worldId:WebEngineScript.MainWorld;
         },
          WebEngineScript {
@@ -96,22 +108,22 @@ LunaWebEngineView {
             case 'link':
                 //In case we're having a relative URL we need to prefix it with the proper baseURL.
                 if (data.href.indexOf("://") === -1) {
-                    data.href = EnyoUtils.get_host(webViewItem.url) + data.href
+                    data.href = EnyoUriUtils.get_host(webViewItem.url) + data.href
                 }
 
                 if (data.target === '_blank') {
                     // open link in new tab
-                    appWindow.openNewCard(data.href)
+                    webViewItem.openNewCard(data.href)
                 } else if (data.target && data.target !== "_parent") {
                     //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
                     if (data.href.slice(-1) !== "#") {
-                        appWindow.openNewCard(data.href)
+                        webViewItem.openNewCard(data.href)
                     }
                 }
                 break
             case 'longpress':
                 if (data.href && data.href !== "CANT FIND LINK")
-                    contextMenu.show(data)
+                    webViewItem.openContextualMenu(data)
                 break
             }
         }
@@ -172,10 +184,6 @@ LunaWebEngineView {
 */
 
     onLoadingChanged: {
-
-        //Refresh connection status
-        __getConnectionStatus()
-
         if (loadRequest.status == WebEngineView.LoadStartedStatus) {
             console.log("Loading started...")
             loadingProgressBarItem.show();
@@ -216,19 +224,8 @@ LunaWebEngineView {
                 //Create the icon/images for the page
                 createViewImage()
 
-                appWindow.__queryDB(
-                            "del",
-                            '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"' + webViewItem.url + '"}]}}')
-
-                var history = {
-                    _kind: "com.palm.browserhistory:1",
-                    url: "" + webViewItem.url,
-                    title: "" + webViewItem.title,
-                    date: (new Date()).getTime()
-                }
-
                 //Put the URL in browser history after the page is loaded successfully :)
-                navigationBar.__queryPutDB(history)
+                historyDbModel.addHistoryUrl(webViewItem.url, webViewItem.title, true);
             } else {
                 if (enableDebugOutput) {
                     console.log("Private browsing enabled so we don't create a history entry")
@@ -236,8 +233,6 @@ LunaWebEngineView {
             }
         }
     }
-
-    url: ""
 
     // Add a progress bar at the top of the webview
     MyProgressBar

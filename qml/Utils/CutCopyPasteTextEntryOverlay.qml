@@ -47,7 +47,10 @@ Item {
         id: topMarker
         source: "../images/topmarker.png"
         visible: markerVisible
-        y: -height + 8
+        y: -height + Units.gu(0.8)
+
+        width: Units.gu(1.8)
+        height: Units.gu(1.5)
 
         Connections {
             target: textEntry
@@ -67,7 +70,10 @@ Item {
         id: bottomMarker
         source: "../images/bottommarker.png"
         visible: markerVisible
-        y: textEntry.height - 8
+        y: textEntry.height - Units.gu(0.8)
+
+        width: Units.gu(1.8)
+        height: Units.gu(1.5)
 
         Connections {
             target: textEntry
@@ -92,23 +98,30 @@ Item {
         Image {
             id: overlayBackgroundLeft
             source: "../images/ate-left.png"
+            height: Units.gu(6)
+            width: Units.gu(1.7)
         }
         Image {
             source: "../images/ate-middle.png"
             width: overlayContentRow.width/2 - overlayBackgroundArrowUp.width/2
+            height: Units.gu(6)
         }
         Image {
             id: overlayBackgroundArrowUp
             source: "../images/ate-arrow-up.png"
             anchors.bottom: overlayBackgroundLeft.bottom
-            anchors.bottomMargin: 7
+            height: Units.gu(6.7)
+            width: Units.gu(3.3)
         }
         Image {
             source: "../images/ate-middle.png"
             width: overlayContentRow.width/2 - overlayBackgroundArrowUp.width/2
+            height: Units.gu(6)
         }
         Image {
             source: "../images/ate-right.png"
+            height: Units.gu(6)
+            width: Units.gu(1.7)
         }
     }
 
@@ -116,9 +129,9 @@ Item {
         id: overlayContentRow
         visible: actionsVisible
         anchors.centerIn: overlayBackground
-        anchors.verticalCenterOffset: -6
+        anchors.verticalCenterOffset: -Units.gu(1.0)
 
-        spacing: 6
+        spacing: Units.gu(0.6)
 
         Text {
             id: cutCopyPasteTextCut

@@ -27,7 +27,8 @@ Rectangle {
     id: seachSuggestionsItem
     property string searchString
 
-    signal suggestionsCountChanged(int count);
+    property alias suggestionsCount: urlModel.count
+
     signal requestUrl(string url);
 
     property string optSearchText: ""
@@ -64,8 +65,6 @@ Rectangle {
 
     ListModel {
         id: urlModel
-
-        onCountChanged: suggestionsCountChanged(count);
     }
 
     ListView {

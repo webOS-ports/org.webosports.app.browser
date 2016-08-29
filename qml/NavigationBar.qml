@@ -336,12 +336,7 @@ Rectangle {
         optSearchText: defaultSearchDisplayName
         defaultSearchIcon: navigationBar.defaultSearchIcon
 
-        onSuggestionsCountChanged: {
-            if(addressBarItem.hasFocus) {
-                if(count===0 && navigationBar.defaultSearchURL === "") searchSuggestions.hide();
-                else navigationBarDlgHelper.showDialog(searchSuggestions, false);
-            }
-        }
+        onSuggestionsCountChanged: searchSuggestions.refreshVisibileStatus()
         onRequestUrl: {
             webView.url = url;
             addressBarItem.addressBarText = url;
@@ -349,13 +344,21 @@ Rectangle {
 
         Connections {
             target: addressBarItem
-            onAddressBarTextChanged: {
-                if(addressBarItem.hasFocus) {
-                    if(addressBarItem.addressBarText.length<2)
-                        searchSuggestions.hide();
-                    else if(navigationBar.defaultSearchURL !== "")
-                        navigationBarDlgHelper.showDialog(searchSuggestions, false);
-                }
+            onAddressBarTextChanged: searchSuggestions.refreshVisibileStatus()
+            onHasActionsShownChanged: searchSuggestions.refreshVisibileStatus()
+        }
+
+        function refreshVisibileStatus() {
+            if(addressBarItem.hasFocus                &&
+               !addressBarItem.hasActionsShown        &&
+               searchSuggestions.suggestionsCount > 0 &&
+               searchSuggestions.searchString.length >= 2)
+            {
+                navigationBarDlgHelper.showDialog(searchSuggestions, false);
+            }
+            else
+            {
+                searchSuggestions.hide();
             }
         }
     }

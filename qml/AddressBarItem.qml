@@ -11,6 +11,7 @@ Item {
     property Item webViewItem
     property alias addressBarText: addressBarTextInput.text
     property alias hasFocus: addressBarTextInput.focus
+    property alias hasActionsShown: cutCopyPasteOverlay.actionsVisible
 
     signal commitURL(string newURL);
 

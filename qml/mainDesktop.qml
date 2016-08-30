@@ -18,6 +18,8 @@
 
 import QtQuick 2.0
 
+import LuneOS.Service 1.0
+
 Item {
     id: desktopRoot
 
@@ -27,6 +29,35 @@ Item {
     property QtObject application: QtObject {
         property string launchParameters: "{}"
         signal relaunched(string parameters);
+    }
+
+    LunaService {
+        id: luna
+        name: "org.webosports.app.browser"
+    }
+    Db8Model {
+        kind: "com.palm.browserbookmarks:1"
+        query: ({})
+        Component.onCompleted: {
+            // Fill in the stub db8 for history and bookmarks
+            luna.call("luna://com.palm.db/find", '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}',
+                      function (message) {
+                          var payload = JSON.parse(message.payload);
+                          put(payload.results);
+                      }, undefined);
+        }
+    }
+    Db8Model {
+        kind: "com.palm.browserhistory:1"
+        query: ({})
+        Component.onCompleted: {
+            // Fill in the stub db8 for history and bookmarks
+            luna.call("luna://com.palm.db/find", '{"query":{"from":"com.palm.browserhistory:1", "limit":50, "orderBy":"date"}}',
+                      function (message) {
+                          var payload = JSON.parse(message.payload);
+                          put(payload.results);
+                      }, undefined);
+        }
     }
 
     Component.onCompleted: {

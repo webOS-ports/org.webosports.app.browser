@@ -18,14 +18,17 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.1
+
 import LunaNext.Common 0.1
+import LuneOS.Service 1.0
+
+import "../Models"
+import "../Utils"
 
 Rectangle {
     id: root
     color: "#e5e5e5"
 
-    signal closePage
-    signal showPage
     property bool enableDebugOutput: false
     property bool blockPopups: true
     property bool enableJavascript: true
@@ -34,23 +37,25 @@ Rectangle {
     property var defaultBrowserPreferences
     property var searchProviderResults
     property string searchProvidersAll: "{}"
-    property string dbmode: ""
     property string defaultSearchProvider: ""
     property string defaultSearchProviderURL: ""
     property string defaultSearchProviderIcon: ""
     property string defaultSearchProviderDisplayName: ""
 
+    property BookmarkDbModel  bookmarkDbModel
+    property HistoryDbModel   historyDbModel
+
+    signal closePage()
+    signal showPage()
+    signal applyNewPreferences(string defaultSearchURL, string defaultSearchIcon, string defaultSearchDisplayName)
+
     MouseArea {
         anchors.fill: parent
     }
 
-    Rectangle {
-        id: overlayRect
-        color: "#4C4C4C"
-        opacity: 0.9
-        anchors.fill: parent
-        visible: false
-        z: 1
+    LunaService {
+        id: luna
+        name: "org.webosports.app.browser"
     }
 
     onShowPage: {
@@ -60,22 +65,19 @@ Rectangle {
     }
     onClosePage: {
         //Save the preferences (this probably needs some reworking but it does the trick for now :P)
-        dbmode = ""
-        __queryDB("merge", '{"props":{"value":' + blockPopups
+        __mergeDB('{"props":{"value":' + blockPopups
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"blockPopups"}]}}')
-        __queryDB("merge", '{"props":{"value":' + enableJavascript
+        __mergeDB('{"props":{"value":' + enableJavascript
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"enableJavascript"}]}}')
-        __queryDB("merge", '{"props":{"value":' + enablePlugins
+        __mergeDB('{"props":{"value":' + enablePlugins
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"enablePlugins"}]}}')
-        __queryDB("merge", '{"props":{"value":' + rememberPasswords
+        __mergeDB('{"props":{"value":' + rememberPasswords
                   + '},"query":{"from":"com.palm.browserpreferences:1","where":[{"prop":"key","op":"=","val":"rememberPasswords"}]}}')
 
         luna.call("luna://com.palm.universalsearch/setSearchPreference", '{"key":"defaultSearchEngine", "value": "'+defaultSearchProvider+'"}', __handleSPSuccess, __handleSPError)
 
         //Make sure we update the search engine as well
-        navigationBar.defaultSearchURL = defaultSearchProviderURL
-        navigationBar.defaultSearchIcon = defaultSearchProviderIcon
-        navigationBar.defaultSearchDisplayName = defaultSearchProviderDisplayName
+        applyNewPreferences(defaultSearchProviderURL, defaultSearchProviderIcon, defaultSearchProviderDisplayName);
 
         root.visible = false
     }
@@ -91,12 +93,17 @@ Rectangle {
     }
 
 
-    function __queryDB(action, params) {
+    function __findDB(params) {
         if (root.enableDebugOutput) {
             console.log("Querying DB with action: " + action + " and params: " + params)
         }
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError)
+        luna.call("luna://com.palm.db/find", params, __handleQueryDBSuccess, __handleQueryDBError)
+    }
+    function __mergeDB(params) {
+        if (root.enableDebugOutput) {
+            console.log("Merging DB with action: " + action + " and params: " + params)
+        }
+        luna.call("luna://com.palm.db/merge", params, undefined, __handleQueryDBError)
     }
 
     function __handleQueryDBError(message) {
@@ -107,46 +114,28 @@ Rectangle {
         if (root.enableDebugOutput) {
             console.log("Queried Prefs DB : " + JSON.stringify(message.payload))
         }
-        if (dbmode === "prefs") {
-            //TODO: Far from pretty but it works
-            defaultBrowserPreferences = JSON.parse(message.payload)
-            for (var j = 0, t; t = defaultBrowserPreferences.results[j]; j++) {
-                if (t.key === "blockPopups") {
-                    blockPopups = t.value
-                } else if (t.key === "enableJavascript") {
-                    enableJavascript = t.value
-                } else if (t.key === "enablePlugins") {
-                    enablePlugins = t.value
-                } else if (t.key === "rememberPasswords") {
-                    rememberPasswords = t.value
-                }
+
+        defaultBrowserPreferences = JSON.parse(message.payload)
+        for (var j = 0, t; t = defaultBrowserPreferences.results[j]; j++) {
+            if (t.key === "blockPopups") {
+                blockPopups = t.value
+            } else if (t.key === "enableJavascript") {
+                enableJavascript = t.value
+            } else if (t.key === "enablePlugins") {
+                enablePlugins = t.value
+            } else if (t.key === "rememberPasswords") {
+                rememberPasswords = t.value
             }
-        } else {
-            console.log("Nothing to do for this dbmode: " + dbmode)
         }
     }
 
     function _initDialog() {
         // get the setting values, and fill in the parameters of the dialog
-        dbmode = "prefs"
-        __queryDB("find", '{"query":{"from":"com.palm.browserpreferences:1"}}')
+        __findDB('{"query":{"from":"com.palm.browserpreferences:1"}}')
 
         //Query Search Providers on loading
         __querySearchProviders()
 
-    }
-
-    function clearItems(clearMode) {
-        if (clearMode === "History") {
-            dbmode = "history"
-            __queryDB(
-                        "del", '{"query":{"from":"com.palm.browserhistory:1"}}')
-        } else if (clearMode === "Bookmarks") {
-            dbmode = "bookmarks"
-            __queryDB(
-                        "del",
-                        '{"query":{"from":"com.palm.browserbookmarks:1"}}')
-        }
     }
 
     function __querySearchProviders(action, params) {
@@ -174,38 +163,33 @@ Rectangle {
     }
 
 
-    Rectangle {
+    Image {
         id: header
         width: parent.width
         height: Units.gu(7)
-        color: "transparent"
+
+        source: "../images/header.png"
+        fillMode: Image.TileHorizontally
 
         Image {
-            id: headerBG
-            source: "images/header.png"
-            fillMode: Image.TileHorizontally
-            anchors.fill: parent
-
-            Image {
-                id: headerImage
-                height: Units.gu(6)
-                width: Units.gu(6)
-                anchors.left: parent.left
-                anchors.leftMargin: (header.width / 2) - (headerText.width / 2) - Units.gu(
-                                        3)
-                anchors.verticalCenter: parent.verticalCenter
-                source: "images/header-icon-prefs.png"
-            }
-            Text {
-                id: headerText
-                text: "Preferences"
-                font.family: "Prelude"
-                color: "#444444"
-                font.pixelSize: FontUtils.sizeToPixels("large")
-                anchors.left: headerImage.right
-                anchors.leftMargin: Units.gu(1)
-                anchors.verticalCenter: parent.verticalCenter
-            }
+            id: headerImage
+            height: Units.gu(6)
+            width: Units.gu(6)
+            anchors.left: parent.left
+            anchors.leftMargin: (header.width / 2) - (headerText.width / 2) - Units.gu(
+                                    3)
+            anchors.verticalCenter: parent.verticalCenter
+            source: "../images/header-icon-prefs.png"
+        }
+        Text {
+            id: headerText
+            text: "Preferences"
+            font.family: "Prelude"
+            color: "#444444"
+            font.pixelSize: FontUtils.sizeToPixels("large")
+            anchors.left: headerImage.right
+            anchors.leftMargin: Units.gu(1)
+            anchors.verticalCenter: parent.verticalCenter
         }
     }
 
@@ -245,7 +229,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.leftMargin: Units.gu(1)
                 anchors.verticalCenter: parent.verticalCenter
-                text: navigationBar.defaultSearchDisplayName
+                text: root.defaultSearchProviderDisplayName
                 font.family: "Prelude"
                 color: "#444444"
                 font.pixelSize: FontUtils.sizeToPixels("medium")
@@ -253,7 +237,7 @@ Rectangle {
             Image
             {
                 id: searchPrefsImage
-                source: "images/menu-arrow.png"
+                source: "../images/menu-arrow.png"
                 anchors.right: parent.right
                 anchors.rightMargin: Units.gu(1)
                 anchors.verticalCenter: parent.verticalCenter
@@ -332,7 +316,7 @@ Rectangle {
                 anchors.right: searchProviderName.right
                 anchors.rightMargin: Units.gu(3)
                 anchors.verticalCenter: parent.verticalCenter
-                source: searchPrefsText.text === model.displayName ? "images/checkmark.png" : ""
+                source: searchPrefsText.text === model.displayName ? "../images/checkmark.png" : ""
             }
             Rectangle {
                 color: "silver"
@@ -410,7 +394,7 @@ Rectangle {
                 Image {
                     id: blockPopupsToggleOff
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "images/toggle-button-off.png"
+                    source: "../images/toggle-button-off.png"
                     anchors.right: parent.right
                     anchors.rightMargin: Units.gu(1)
                     height: Units.gu(4)
@@ -439,7 +423,7 @@ Rectangle {
                     id: blockPopupsToggleOn
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Units.gu(1)
-                    source: "images/toggle-button-on.png"
+                    source: "../images/toggle-button-on.png"
                     height: Units.gu(4)
                     width: Units.gu(8)
                     anchors.right: parent.right
@@ -490,7 +474,7 @@ Rectangle {
                 Image {
                     id: enableJavascriptToggleOff
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "images/toggle-button-off.png"
+                    source: "../images/toggle-button-off.png"
                     anchors.right: parent.right
                     anchors.rightMargin: Units.gu(1)
                     visible: enableJavascript ? false : true
@@ -519,7 +503,7 @@ Rectangle {
                     id: enableJavascriptToggleOn
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.rightMargin: Units.gu(1)
-                    source: "images/toggle-button-on.png"
+                    source: "../images/toggle-button-on.png"
                     anchors.right: parent.right
                     visible: enableJavascript ? true : false
                     height: Units.gu(4)
@@ -571,7 +555,7 @@ Rectangle {
                     Image {
                         id: enablePluginsToggleOff
                         anchors.verticalCenter: parent.verticalCenter
-                        source: "images/toggle-button-off.png"
+                        source: "../images/toggle-button-off.png"
                         anchors.right: parent.right
                         anchors.rightMargin: Units.gu(1)
                         visible: enablePlugins ? false : true
@@ -600,7 +584,7 @@ Rectangle {
                         id: enablePluginsToggleOn
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.rightMargin: Units.gu(1)
-                        source: "images/toggle-button-on.png"
+                        source: "../images/toggle-button-on.png"
                         anchors.right: parent.right
                         visible: enablePlugins ? true : false
                         height: Units.gu(4)
@@ -653,7 +637,7 @@ Rectangle {
                     Image {
                         id: rememberPasswordsToggleOff
                         anchors.verticalCenter: parent.verticalCenter
-                        source: "images/toggle-button-off.png"
+                        source: "../images/toggle-button-off.png"
                         anchors.right: parent.right
                         anchors.rightMargin: Units.gu(1)
                         visible: rememberPasswords ? false : true
@@ -682,7 +666,7 @@ Rectangle {
                         id: rememberPasswordsToggleOn
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.rightMargin: Units.gu(1)
-                        source: "images/toggle-button-on.png"
+                        source: "../images/toggle-button-on.png"
                         anchors.right: parent.right
                         visible: rememberPasswords ? true : false
                         height: Units.gu(4)
@@ -711,35 +695,31 @@ Rectangle {
         }
     }
 
-    Rectangle {
+    Item {
         id: clearBookmarksButton
         anchors.top: browserPrefsOutside.bottom
         anchors.topMargin: Units.gu(1.5)
         anchors.horizontalCenter: parent.horizontalCenter
         width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
         height: Units.gu(4)
-        radius: 4
-        color: "transparent"
+
         MouseArea {
             anchors.fill: parent
             onPressed: {
-                overlayRect.visible = true
-                popupConfirm.visible = true
-                popupConfirm.buttonText = "Would you like to clear your bookmarks?"
-                popupConfirm.clearMode = "Bookmarks"
+                dialogHelper.showDialog(popupConfirmClearBookmarks, true);
             }
         }
 
         Image {
             id: clearBookmarksButtonImageLeft
-            source: "images/button-up-left.png"
+            source: "../images/button-up-left.png"
             anchors.left: parent.left
             height: parent.height
         }
 
         Image {
             id: clearBookmarksButtonImageCenter
-            source: "images/button-up-center.png"
+            source: "../images/button-up-center.png"
             fillMode: Image.Stretch
             anchors.left: clearBookmarksButtonImageLeft.right
             anchors.right: clearBookmarksButtonImageRight.left
@@ -748,7 +728,7 @@ Rectangle {
 
         Image {
             id: clearBookmarksButtonImageRight
-            source: "images/button-up-right.png"
+            source: "../images/button-up-right.png"
             anchors.right: parent.right
             height: parent.height
         }
@@ -763,36 +743,31 @@ Rectangle {
         }
     }
 
-    Rectangle {
+    Item {
         id: clearHistoryButton
         anchors.top: clearBookmarksButton.bottom
         anchors.topMargin: Units.gu(0.75)
         anchors.horizontalCenter: parent.horizontalCenter
         width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
         height: Units.gu(4)
-        radius: 4
-        color: "transparent"
 
         MouseArea {
             anchors.fill: parent
             onPressed: {
-                overlayRect.visible = true
-                popupConfirm.visible = true
-                popupConfirm.buttonText = "Would you like to clear your browser history?"
-                popupConfirm.clearMode = "History"
+                dialogHelper.showDialog(popupConfirmClearHistory, true);
             }
         }
 
         Image {
             id: clearHistoryButtonImageLeft
-            source: "images/button-up-left.png"
+            source: "../images/button-up-left.png"
             anchors.left: parent.left
             height: parent.height
         }
 
         Image {
             id: clearHistoryButtonImageCenter
-            source: "images/button-up-center.png"
+            source: "../images/button-up-center.png"
             fillMode: Image.Stretch
             anchors.left: clearHistoryButtonImageLeft.right
             anchors.right: clearHistoryButtonImageRight.left
@@ -801,7 +776,7 @@ Rectangle {
 
         Image {
             id: clearHistoryButtonImageRight
-            source: "images/button-up-right.png"
+            source: "../images/button-up-right.png"
             anchors.right: parent.right
             height: parent.height
         }
@@ -816,11 +791,6 @@ Rectangle {
         }
     }
 
-    ConfirmDialogCustom
-    {
-        id: popupConfirm
-    }
-
     Rectangle {
         id: footer
         height: Units.gu(7)
@@ -830,7 +800,7 @@ Rectangle {
         Image {
             anchors.fill: parent
             id: footerBG
-            source: "images/toolbar-light.png"
+            source: "../images/toolbar-light.png"
             fillMode: Image.TileHorizontally
 
             Rectangle {
@@ -843,14 +813,14 @@ Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
                 Image {
                     id: footerButtonImageLeft
-                    source: "images/button-up-left.png"
+                    source: "../images/button-up-left.png"
                     anchors.left: parent.left
                     height: parent.height
                 }
 
                 Image {
                     id: footerButtonImageCenter
-                    source: "images/button-up-center.png"
+                    source: "../images/button-up-center.png"
                     fillMode: Image.Stretch
                     anchors.left: footerButtonImageLeft.right
                     anchors.right: footerButtonImageRight.left
@@ -859,7 +829,7 @@ Rectangle {
 
                 Image {
                     id: footerButtonImageRight
-                    source: "images/button-up-right.png"
+                    source: "../images/button-up-right.png"
                     anchors.right: parent.right
                     height: parent.height
                 }
@@ -883,5 +853,36 @@ Rectangle {
                 }
             }
         }
+    }
+
+    DialogHelper {
+        id: dialogHelper
+        anchors.fill: parent
+    }
+
+    ConfirmDialogCustom
+    {
+        id: popupConfirmClearHistory
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: false;
+
+        title: "Clear History"
+        buttonText: "Would you like to clear your browser history?"
+
+        onCommitAction: historyDbModel.clearDB();
+    }
+
+    ConfirmDialogCustom
+    {
+        id: popupConfirmClearBookmarks
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: false;
+
+        title: "Clear Bookmarks"
+        buttonText: "Would you like to clear your bookmarks?"
+
+        onCommitAction: bookmarkDbModel.clearDB();
     }
 }

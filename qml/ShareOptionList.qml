@@ -18,17 +18,25 @@
 */
 import QtQuick 2.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
+import "js/util-sharing.js" as SharingUtils
 
 ListView {
-    anchors.top: progressBar.bottom
-    anchors.right: progressBar.right
-    anchors.rightMargin: Units.gu(2)
-    width: Units.gu(
-               18) //When we have Messaging we need to make it wider //Units.gu(23)
-    height: Units.gu(30)
+    id: shareOptionsListView
+    width: Units.gu(18) //When we have Messaging we need to make it wider //Units.gu(23)
+    height: shareOptionsModel.count * optionsRectHeight
     visible: false
     z: 5
+
+    property real optionsRectHeight: Units.gu(5)
+
+    signal showBookmarkDialog(string action, string buttonText)
+
+    function show() {
+        visible = true;
+    }
+    function hide() {
+        visible = false;
+    }
 
     Rectangle {
         height: parent.height
@@ -64,7 +72,7 @@ ListView {
 
     delegate: Rectangle {
         id: optionRect
-        height: Units.gu(5)
+        height: optionsRectHeight
         width: parent.width
         anchors.left: parent.left
         color: "#D9D9D9"
@@ -97,33 +105,17 @@ ListView {
             anchors.fill: parent
             onClicked: {
                 if (actionName === "shareLinkEmail") {
-                    EnyoUtils.shareLinkViaEmail(webViewItem.url,
+                    SharingUtils.shareLinkViaEmail(webViewItem.url,
                                                 webViewItem.title)
                 } else if (actionName === "shareLinkMessaging") {
-                    EnyoUtils.shareLinkViaMessaging(webViewItem.url,
+                    SharingUtils.shareLinkViaMessaging(webViewItem.url,
                                                     webViewItem.title)
                 } else if (actionName === "addToLauncher") {
-                    dimBackground.visible = true
-                    bookmarkDialog.action = "addToLauncher"
-                    bookmarkDialog.myURL = "" + webViewItem.url
-                    bookmarkDialog.myTitle = webViewItem.title
-                    bookmarkDialog.myButtonText = "Add to Launcher"
-                    bookmarkDialog.visible = true
+                    showBookmarkDialog("addToLauncher", "Add to Launcher");
                 } else if (actionName === "addBookmark") {
-                    dimBackground.visible = true
-                    bookmarkDialog.action = "addBookmark"
-                    bookmarkDialog.myURL = "" + webViewItem.url
-                    bookmarkDialog.myTitle = webViewItem.title
-                    bookmarkDialog.myButtonText = "Add Bookmark"
-                    bookmarkDialog.visible = true
+                    showBookmarkDialog("addBookmark", "Add Bookmark");
                 }
-
-                shareOptionsList.visible = false
             }
-        }
-
-        Component.onCompleted: {
-            shareOptionsList.height = (shareOptionsModel.count) * optionRect.height
         }
     }
 }

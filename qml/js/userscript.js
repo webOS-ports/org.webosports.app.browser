@@ -1,7 +1,14 @@
-var channel = new QWebChannel(qt.webChannelTransport, function(channel) {});
+
+var _channelAPI = {};
+
+var _channel = new QWebChannel(qt.webChannelTransport, function(channel) {
+    // all published objects are available in channel.objects under
+    // the identifier set in their attached WebChannel.id property
+    _channelAPI = channel.objects;
+});
 
 function postMessage(message) {
-    var messageHelper = channel.objects.messageHelper;
+    var messageHelper = _channelAPI.messageHelper;
     messageHelper.onMessageReceived(message, function(ret) {});
 }
 
@@ -127,7 +134,7 @@ window.document.addEventListener('click', (function(e) {
         postMessage(JSON.stringify(inputContext))
     }
 }), true);
-window.document.addEventListener('focus', (function() {
+window.document.addEventListener('focus', (function(e) {
     if (e.srcElement.tagName === ('INPUT'||'TEXTAREA')) {
         var inputContext = new Object({'type':'input', 'state':'show'})
         postMessage(JSON.stringify(inputContext))

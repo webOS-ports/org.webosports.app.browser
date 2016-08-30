@@ -20,125 +20,110 @@ import QtQuick.Window 2.1
 import QtQuick.Controls 1.1
 import QtQuick.Controls.Styles 1.1
 
+import LuneOS.Service 1.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
 
 Rectangle {
-    property string searchResultsAll: "{}"
+    id: seachSuggestionsItem
+    property string searchString
+
+    property alias suggestionsCount: urlModel.count
+
+    signal requestUrl(string url);
+
     property string optSearchText: ""
     property string defaultSearchIcon: ""
-    property int urlModelCount: 0
-    property int suggestionListHeight: 0
+
     color: "#DADADA"
-    anchors.left: parent.left
-    anchors.top: parent.bottom
-    anchors.leftMargin: Screen.width < 900 ? 0 : isSecureSite ? Units.gu(
-                                                                    13.75) : Units.gu(
-                                                                    10)
-    width: Screen.width < 900 ? navigationBar.width : addressBarWidth
     radius: 4
     visible: false
     height: (urlModel.count + 1) * Units.gu(6)
 
-    Rectangle {
-        id: searchRect
-        height: Units.gu(6)
-        width: parent.width
-        anchors.left: parent.left
-        color: "transparent"
-        z: 3
+    function show() {
+        visible = true;
+    }
+    function hide() {
+        visible = false;
+    }
 
-        MouseArea {
-            anchors.fill: parent
-            onPressed: {
-                if (shareOptionsList.visible) {
-                    shareOptionsList.visible = false
-                }
+    onSearchStringChanged: {
+        urlModel.clear();
 
-                topMarker.visible = false
-                bottomMarker.visible = false
-                cutCopyPasteRectangle.visible = false
-                pasteRectangle.visible = false
-                selectSelectAllRectangle.visible = false
-                cutCopyRectangle.visible = false
-
-                searchSuggestions.visible = false
-                webViewItem.url = defaultSearchURL.replace("#{searchTerms}",
-                                                           addressBar.text)
-                addressBar.text = defaultSearchURL.replace("#{searchTerms}",
-                                                           addressBar.text)
-            }
+        if (searchString.length === 0 ||
+            searchString.substring(0, 4) === "http" ||
+            searchString.substring(0, 3) === "ftp" ||
+            searchString.substring(0, 4) === "data" ||
+            searchString.substring(0, 4) === "file")
+        {
+            seachSuggestionsItem.hide();
         }
-
-        Text {
-            id: optSearch
-            text: searchSuggestions.optSearchText + " \"" + addressBar.text + "\""
-            width: searchRect.width - Units.gu(7)
-            anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.leftMargin: Units.gu(2)
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignLeft
-            font.pixelSize: FontUtils.sizeToPixels("large")
-            font.family: "Prelude"
-            color: "#494949"
-            height: Units.gu(6)
-            elide: Text.ElideRight
-            z: 3
-        }
-        Rectangle {
-            id: imgSearchRect
-            height: urlModel.count > 0 ? parent.height : 0
-            anchors.right: parent.right
-            z: 3
-            Image {
-                id: imgSearch
-                height: Units.gu(3)
-                width: Units.gu(3)
-                anchors.top: imgSearchRect.top
-                anchors.topMargin: Units.gu(1.5)
-                anchors.right: parent.right
-                anchors.rightMargin: Units.gu(1.5)
-                horizontalAlignment: Image.AlignRight
-                source: searchSuggestions.defaultSearchIcon
-                z: 3
-            }
-        }
-        Rectangle {
-            id: searchDivider
-            color: "silver"
-
-            width: parent.width
-            height: urlModel.count > 0 ? Units.gu(1 / 5) : 0
-            anchors.top: imgSearchRect.bottom
-            z: 3
+        else
+        {
+            seachSuggestionsItem.__queryBookmarks(searchString);
         }
     }
+
+    ListModel {
+        id: urlModel
+    }
+
     ListView {
-        anchors.top: searchRect.bottom
         id: suggestionList
-        width: parent.width
-        z: 2
-        height: suggestionListHeight
+        anchors.fill: parent
+        clip: true
 
-        JSONListModel {
-            id: urlModel
-            json: getURLHistory()
-            query: "$[*]"
+        model: urlModel
 
-            function getURLHistory() {
-                return searchResultsAll
+        header: Item {
+            height: Units.gu(6)
+            width: suggestionList.width
+
+            Text {
+                id: optSearch
+                text: seachSuggestionsItem.optSearchText + " \"" + addressBarItem.addressBarText + "\""
+                anchors.fill: parent
+                anchors.leftMargin: Units.gu(2)
+                anchors.rightMargin: Units.gu(5)
+                verticalAlignment: Text.AlignVCenter
+                horizontalAlignment: Text.AlignLeft
+                font.pixelSize: FontUtils.sizeToPixels("large")
+                font.family: "Prelude"
+                color: "#494949"
+                height: Units.gu(6)
+                elide: Text.ElideRight
+
+                Image {
+                    id: imgSearch
+                    height: Units.gu(3)
+                    width: Units.gu(3)
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.left: parent.right
+                    anchors.leftMargin: Units.gu(1.5)
+                    horizontalAlignment: Image.AlignRight
+                    source: seachSuggestionsItem.defaultSearchIcon
+                }
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onPressed: {
+                    seachSuggestionsItem.hide();
+                    requestUrl(defaultSearchURL.replace("#{searchTerms}", addressBarItem.addressBarText));
+                }
+            }
+            Rectangle {
+                id: searchDivider
+                color: "silver"
+
+                width: parent.width
+                height: urlModel.count > 0 ? Units.gu(1 / 5) : 0
+                anchors.top: optSearch.bottom
             }
         }
-        model: urlModel.model
-
-        delegate: Rectangle {
+        delegate: Item {
             id: sectionRect
             height: Units.gu(6)
-            width: parent.width
-            anchors.left: parent.left
-            color: "transparent"
-            z: 2
+            width: suggestionList.width
 
             Text {
                 id: urlTitle
@@ -154,9 +139,8 @@ Rectangle {
                 font.pixelSize: FontUtils.sizeToPixels("large")
                 color: "#494949"
                 textFormat: Text.RichText
-                text: EnyoUtils.applyFilterHighlight(model.title,
-                                                     addressBar.text)
-                z: 2
+                text: urlTitle.applyFilterHighlight(model.title,
+                                                     addressBarItem.addressBarText)
                 Text {
                     height: parent.height
                     clip: true
@@ -170,10 +154,22 @@ Rectangle {
                     font.family: "Prelude"
                     font.pixelSize: FontUtils.sizeToPixels("small")
                     textFormat: Text.RichText
-                    text: EnyoUtils.applyFilterHighlight(model.url,
-                                                         addressBar.text)
+                    text: urlTitle.applyFilterHighlight(model.url,
+                                                         addressBarItem.addressBarText)
                     color: "#838383"
-                    z: 2
+                }
+
+                function applyFilterHighlight(a, b) {
+                    //function applyFilterHighlight(a, b, c) {
+                    //return a.replace(new RegExp(b, "i"), '<span class="' + c + '">$&</span>');
+                    //We cannot use classes and background images so we use color and underline here instead
+                    if(a && a.length>0)
+                    {
+                        //console.log("log output: "+a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>'))
+                        return a.replace(new RegExp(b, "i"), '<span style="color:#5B8DB8; text-decoration: underline;">$&</span>');
+                    }
+
+                    return "";
                 }
             }
             Rectangle {
@@ -181,7 +177,6 @@ Rectangle {
                 height: Units.gu(1 / 10)
                 width: parent.width
                 anchors.top: parent.top
-                z: 2
             }
 
             Rectangle {
@@ -189,7 +184,6 @@ Rectangle {
                 height: Units.gu(6)
                 anchors.right: parent.right
                 anchors.top: sectionRect.top
-                z: 2
 
                 Image {
                     source: model.icon64 ? model.icon64: model.icon
@@ -200,41 +194,71 @@ Rectangle {
                     anchors.topMargin: Units.gu(1.5)
                     anchors.rightMargin: Units.gu(1)
                     horizontalAlignment: Image.AlignRight
-                    z: 2
                 }
             }
 
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    if (shareOptionsList.visible) {
-                        shareOptionsList.visible = false
-                    }
-
-                    searchSuggestions.visible = false
-                    webViewItem.url = model.url
-                    addressBar.text = model.url
-                    topMarker.visible = false
-                    bottomMarker.visible = false
-                    cutCopyPasteRectangle.visible = false
-                    pasteRectangle.visible = false
-                    selectSelectAllRectangle.visible = false
-                    cutCopyRectangle.visible = false
-
+                    seachSuggestionsItem.hide();
+                    requestUrl(model.url);
                 }
             }
-            Component.onCompleted: {
-                urlModelCount = urlModel.count
-                searchSuggestions.height = (urlModel.count + 1) * Units.gu(
-                            6)
-                suggestionList.height = (urlModel.count) * Units.gu(6)
-            }
-            Component.onDestruction: {
-                urlModelCount = urlModel.count
-                searchSuggestions.height = (urlModel.count + 1) * Units.gu(
-                            6)
-                suggestionList.height = (urlModel.count) * Units.gu(6)
+        }
+    }
 
+    /////// private //////
+    LunaService {
+        id: luna
+        name: "org.webosports.app.browser"
+    }
+
+    function __queryBookmarks(inputSearchString) {
+        luna.call("luna://com.palm.db/search",
+                  '{"query":{"from":"com.palm.browserbookmarks:1", "where":[{"prop":"searchText", "op":"?", "val":'
+                  + "\"" + inputSearchString + "\""
+                  + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}',
+                  __handleQueryBookmarksDBSuccess, __handleQueryBookmarksDBError)
+    }
+
+    function __handleQueryBookmarksDBError(message) {
+        console.warn("Could not query bookmarks DB : " + message)
+    }
+
+    function __handleQueryBookmarksDBSuccess(message) {
+        // put all these results in the model
+        var searchResultsBookmarks = JSON.parse(message.payload)
+        for (var j = 0, t; t = searchResultsBookmarks.results[j]; j++) {
+            urlModel.append({
+                               url: t.url,
+                               title: t.title,
+                               icon64: t.icon64,
+                               icon: "images/header-icon-bookmarks.png"
+                           })
+        }
+
+        luna.call("luna://com.palm.db/search",
+                  '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"searchText", "op":"?", "val":'
+                  + "\"" + addressBarItem.addressBarText + "\""
+                  + ', "collate":"primary"}], "orderBy": "_rev", "desc": true}}',
+                  __handleQueryHistoryDBSuccess, __handleQueryHistoryDBError)
+    }
+
+    function __handleQueryHistoryDBError(message) {
+        console.warn("Could not query History DB : " + message)
+    }
+
+    function __handleQueryHistoryDBSuccess(message) {
+        // put all these results in the model
+        var searchResultsHistory = JSON.parse(message.payload)
+        if (searchResultsHistory.results.length <= 32) {
+            for (var i = 0, s; s = searchResultsHistory.results[i]; i++) {
+                urlModel.append({
+                                   url: s.url,
+                                   title: s.title,
+                                   icon64: s.icon64,
+                                   icon: "images/header-icon-history.png"
+                               })
             }
         }
     }

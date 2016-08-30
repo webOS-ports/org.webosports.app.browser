@@ -22,31 +22,27 @@ import LunaNext.Common 0.1
 import QtQuick.Controls.Styles 1.1
 import QtQuick.Controls 1.1
 
-	ProgressBar {
-        property int minimum: 0
-        property int maximum: 100
-        property int value: 0
-        property string progressBarColor: "#2E8CF7"
+ProgressBar {
+    id: progressBarRoot
 
-        z: 1
-        minimumValue: 0
-        maximumValue: 100
-        height: pageIsLoading ? Units.gu(1/2) : 0
-        visible: true
-        anchors.top: navigationBar.bottom
-        style: ProgressBarStyle {
-            background: Rectangle {
-                radius: 2
-                color: "darkgray"
-                border.color: "gray"
-                border.width: 1
-                implicitWidth: navigationBar.width
-                implicitHeight: Units.gu(1 / 2)
-            }
-            progress: Rectangle {
-                id: progressRect
-                color: progressBarColor
-                border.color: progressBarColor
-            }
+    value: 0
+    property string progressBarColor: value === 1.0 ? "green" : "#2E8CF7"
+
+    height: Units.gu(0.5)
+
+    style: ProgressBarStyle {
+        background: Rectangle {
+            radius: 2
+            color: "darkgray"
+            border.color: "gray"
+            border.width: 1
+            implicitWidth: progressBarRoot.width
+            implicitHeight: Units.gu(0.5)
+        }
+        progress: Rectangle {
+            id: progressRect
+            color: progressBarColor
+            border.color: progressBarColor
         }
     }
+}

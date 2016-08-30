@@ -25,7 +25,12 @@ import LunaNext.Common 0.1
 import LuneOS.Service 1.0
 import LuneOS.Application 1.0
 import LuneOS.Components 1.0
-import "js/util.js" as EnyoUtils
+
+import "AppTweaks"
+import "Settings"
+import "Utils"
+import "Models"
+import "js/util-sharing.js" as SharingUtils
 
 LuneOSWindow {
     id: appWindow
@@ -35,31 +40,14 @@ LuneOSWindow {
     width: 1024
     height: 768
 
-    readonly property string webViewBackgroundSource: "images/background-startpage.png"
-    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
+    property bool enableDebugOutput: true
+    property var connectionStatus
+    readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
+    property alias url: webViewItem.url
+    property Item windowManager
 
     UserAgent {
         id: userAgent
-    }
-
-    Tweak {
-        id: privateByDefaultTweak
-        serviceName: "org.webosports.app.browser"
-        owner: "org.webosports.app.browser"
-        key: "privateByDefaultKey"
-        defaultValue: "false"
-        onValueChanged: updatePrivateByDefault()
-
-        function updatePrivateByDefault() {
-            if (privateByDefaultTweak.value === true) {
-                privateByDefault = true;
-            } else {
-                privateByDefault = false;
-            }
-            if (enableDebugOutput) {
-                console.log("privateByDefault: " + privateByDefault);
-            }
-        }
     }
 
     /////// private //////
@@ -82,88 +70,25 @@ LuneOSWindow {
         console.log("Could not start application : " + message);
     }
 
-    function __queryDB(action, params) {
-        luna.call("luna://com.palm.db/" + action, params,
-                  __handleQueryDBSuccess, __handleQueryDBError);
-    }
-
-    function __handleQueryDBError(message) {
-        console.log("Could not query DB : " + message);
-    }
-
-    function __handleQueryDBSuccess(message) {
-        console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        if (dataMode === "bookmarks") {
-            myBookMarkData = message.payload;
-        } else if (dataMode === "downloads") {
-            myDownloadsData = '{"results":[{"url":"Downloads not implemented yet", "title":"Downloads not implemented yet"}]}';
-        } else if (dataMode === "history") {
-            myHistoryData = message.payload;
-        }
-        else
-        {
-            console.log("Handle DB Query Success: "+JSON.stringify(message.payload));
-        }
-    }
-
-    function __queryPutDB(myData) {
-        if (enableDebugOutput) {
-            console.log("Putting Data to DB (main.qml): JSON.stringify(myData): " + JSON.stringify(
-                            myData));
-        }
-        luna.call("luna://com.palm.db/put", JSON.stringify({
-                                                               objects: [myData]
-                                                           }),
-                  __handlePutDBSuccess, __handlePutDBError);
-    }
-
-    function __handlePutDBError(message) {
-            console.log("Could not put DB : " + message);
-    }
-
-    function __handlePutDBSuccess(message) {
-        if(enableDebugOutput)
-        {
-            console.log("Put DB: " + JSON.stringify(message.payload));
-        }
-    }
-
-    function __getConnectionStatus()
+    function __subscribeConnectionStatus()
     {
-        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({}),
+        luna.call("luna://com.palm.connectionmanager/getstatus", JSON.stringify({"subscribe": true}),
                                         __connectionStatusSuccess, __connectionStatusError);
     }
 
     function __connectionStatusSuccess(message)
     {
         connectionStatus = JSON.parse(message.payload);
-        internetAvailable = connectionStatus.isInternetConnectionAvailable;
         if(enableDebugOutput)
         {
             console.log("Internet Available: " + internetAvailable);
         }
 
     }
-
     function __connectionStatusError(message)
     {
         console.log("Unable to get connection status");
     }
-
-    property real keyboardHeight: Qt.inputMethod.keyboardRectangle.height
-    property bool pageIsLoading: false
-    property bool historyAvailable: false
-    property bool forwardAvailable: false
-    property bool enableDebugOutput: true
-    property string myBookMarkData: '{}'
-    property string myDownloadsData: '{}'
-    property string myHistoryData: '{}'
-    property string dataMode: "bookmarks"
-    property bool privateByDefault: false
-    property var connectionStatus
-    property bool internetAvailable: false
-    property alias url: webViewItem.url
-    property Item windowManager: null
 
     function activateAppMenu() {
         appMenu.visible = !appMenu.visible;
@@ -175,29 +100,183 @@ LuneOSWindow {
     }
 
     function setClipboard(url) {
-        __hackClipboard.text = url
-        __hackClipboard.selectAll()
-        __hackClipboard.cut()
+        browserClipboard.copyToClipboard(url);
     }
 
-    /* Without this line, we won't ever see the window... */
     Component.onCompleted:
     {
+        /* Without this line, we won't ever see the window... */
         appWindow.show()
         appWindow.visible = true
 
         //Determine initial connection status
-        __getConnectionStatus()
-
-        //Run query so we have the bookmarks item on first load of the panel
-        appWindow.__queryDB(
-                    "find",
-                    '{"query":{"from":"com.palm.browserbookmarks:1", "limit":32}}')
+        __subscribeConnectionStatus()
     }
 
-    TextInput {
-        id: __hackClipboard
+
+    Clipboard {
+        id: browserClipboard
+    }
+
+    HistoryDbModel {
+        id: mainHistoryDbModel
+    }
+
+    BookmarkDbModel {
+        id: mainBookmarkDbModel
+    }
+
+    DownloadsDbModel {
+        id: mainDownloadsDbModel
+    }
+
+    NavigationBar {
+        id: navigationBar
+        z: 2 // place it above the webview, so that the copy/cut/paste items are visible over the webview
+
+        webView: webViewItem
+        historyDbModel: mainHistoryDbModel
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
+
+        onLaunchApplication: appWindow.__launchApplication(id, params);
+        onToggleShareOptionsList: windowDlgHelper.toggleDialog(shareOptionsList, false);
+        onToggleSidePanel: windowDlgHelper.toggleDialog(sidePanel, false);
+    }
+
+    BrowserWebView
+    {
+        id: webViewItem
+        z: 1
+        anchors.top: navigationBar.bottom
+        anchors.bottom: parent.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+
+        internetAvailable: appWindow.internetAvailable
+        historyDbModel: mainHistoryDbModel
+
+        onOpenNewCard: appWindow.openNewCard(urlToOpen);
+        onOpenContextualMenu: contextMenu.show();
+    }
+
+    //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
+    /*
+    ScrollIndicator {
+        flickableItem: webViewItem
+        z: (webViewItem.z + navigationBar.z)/2
+    }*/
+
+    DialogHelper {
+        // the purpose of this item is simply to catch mouse clicks outside of the
+        // eventually currently shown dialog/panel.
+        id: windowDlgHelper
+        anchors.fill: parent
+        z: 2
+
+        onDialogHidden: windowDlgHelper.hideCurrentDialog();
+    }
+
+    ShareOptionList
+    {
+        id: shareOptionsList
+        anchors.top: navigationBar.bottom
+        anchors.right: parent.right
+        anchors.rightMargin: Units.gu(2)
+
+        onShowBookmarkDialog: {
+            bookmarkDialog.action = action;
+            bookmarkDialog.myURL = "" + webViewItem.url;
+            bookmarkDialog.myTitle = webViewItem.title;
+            bookmarkDialog.myButtonText = buttonText;
+
+            windowDlgHelper.showDialog(bookmarkDialog, true);
+        }
+    }
+
+    BookmarkDialog {
+        id: bookmarkDialog
+        anchors.centerIn: parent
+        anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
+        z: 2
+
+        bookmarksDbModel: mainBookmarkDbModel
+    }
+
+    SidePanel
+    {
+        id: sidePanel
+        anchors.top: parent.top
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
+        width: Screen.width < 900 ? parent.width : Units.gu(32)
+        z: 2
+
+        historyDbModel: mainHistoryDbModel
+        bookmarksDbModel: mainBookmarkDbModel
+        downloadsDbModel: mainDownloadsDbModel
+
+        onGoToURL: webViewItem.url = url;
+
+        onAddBookmark: {
+            bookmarkDialog.action = "addBookmark"
+            bookmarkDialog.myURL = "" + webViewItem.url
+            bookmarkDialog.myTitle = webViewItem.title
+            bookmarkDialog.myButtonText = "Add Bookmark"
+
+            windowDlgHelper.showDialog(bookmarkDialog, true);
+        }
+        onEditBookmark:  {
+            bookmarkDialog.action = "editBookmark";
+            bookmarkDialog.myURL = "" + url;
+            bookmarkDialog.myTitle = title
+            bookmarkDialog.myBookMarkIcon = icon
+            bookmarkDialog.myBookMarkId = id
+            bookmarkDialog.myButtonText = "Save"
+
+            windowDlgHelper.showDialog(bookmarkDialog, true);
+        }
+    }
+
+    ContextMenu
+    {
+        id: contextMenu
+        z: 3
+
+        onOpenNewCard: {
+            windowDlgHelper.hideCurrentDialog();
+            appWindow.openNewCard(url)
+        }
+
+        onShareLinkViaEmail: {
+            windowDlgHelper.hideCurrentDialog();
+            SharingUtils.shareLinkViaEmail(url, contextMenu.contextText)
+        }
+
+        onCopyURL: {
+            windowDlgHelper.hideCurrentDialog();
+            appWindow.setClipboard(url)
+        }
+    }
+
+    SettingsPage {
+        z: 4
+        id: settingsPage
+        anchors.fill: parent
         visible: false
+
+        historyDbModel: mainHistoryDbModel
+        bookmarkDbModel: mainBookmarkDbModel
+        defaultSearchProviderDisplayName: navigationBar.defaultSearchDisplayName
+
+        onApplyNewPreferences: {
+            navigationBar.defaultSearchURL = defaultSearchURL;
+            navigationBar.defaultSearchIcon = defaultSearchIcon;
+            navigationBar.defaultSearchDisplayName = defaultSearchDisplayName;
+        }
     }
 
     AppMenu {
@@ -211,105 +290,4 @@ LuneOSWindow {
             settingsPage.showPage()
         }
     }
-
-    SettingsPage {
-        z: 4
-        id: settingsPage
-        anchors.fill: parent
-        visible: false
-
-
-    }
-
-    NavigationBar {
-        id: navigationBar
-        webView: webViewItem
-        z: 2
-
-    }
-
-    BrowserWebView
-    {
-        id: webViewItem
-        anchors.top: navigationBar.alwaysShowProgressBar ? progressBar.bottom : navigationBar.bottom
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-    }
-    //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
-    Image {
-        z: 1
-        id: webViewBackground
-        source: webViewBackgroundSource
-        anchors.fill: parent
-        Image {
-            id: webViewPlaceholder
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.verticalCenterOffset: -keyboardHeight / 2.
-            source: webViewPlaceholderSource
-        }
-        Connections {
-            target: appWindow
-            onPageIsLoadingChanged: {
-                if (pageIsLoading) {
-                    webViewBackground.visible = false;
-                }
-            }
-        }
-    }
-
-    //Disable the ScrollIndicator since QtWebView already offers scrollbars out of the box
-    /*
-    ScrollIndicator {
-        flickableItem: webViewItem
-        z: (webViewItem.z + navigationBar.z)/2
-    }*/
-
-    ShareOptionList
-    {
-        id: shareOptionsList
-    }
-
-    MyProgressBar
-    {
-        id: progressBar
-        value: webViewItem.loadProgress
-        Connections {
-            target: appWindow
-            onPageIsLoadingChanged: {
-                if (pageIsLoading) {
-                    progressBar.progressBarColor = "#2E8CF7"
-                }
-            }
-        }
-    }
-
-    BookmarkDialog {
-        id: bookmarkDialog
-    }
-
-    Rectangle {
-           id: dimBackground
-           width: parent.width
-           height: parent.height
-           color: "#4C4C4C"
-           visible: false
-           opacity: 0.9
-           z:3
-
-           MouseArea { anchors.fill: parent; }
-       }
-
-    SidePanel
-    {
-        id: sidePanel
-    }
-
-    ContextMenu
-    {
-        id: contextMenu
-        z: 3
-    }
-
-    }
+}

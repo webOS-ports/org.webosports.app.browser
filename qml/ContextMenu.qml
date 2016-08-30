@@ -20,7 +20,6 @@
 
 import QtQuick 2.0
 import LunaNext.Common 0.1
-import "js/util.js" as EnyoUtils
 
 Item {
     id: contextMenuRoot
@@ -56,19 +55,11 @@ Item {
     }
 
     signal openNewCard(string url)
-    signal shareLink(string url)
+    signal shareLinkViaEmail(string url, string text)
     signal copyURL(string url)
 
-    onOpenNewCard: {
-        appWindow.openNewCard(url)
-    }
-
-    onShareLink: {
-        EnyoUtils.shareLinkViaEmail(url, contextMenu.contextText)
-    }
-
-    onCopyURL: {
-        appWindow.setClipboard(url)
+    function shareLink(url) {
+        shareLinkViaEmail(url, contextMenu.contextText);
     }
 
     ListModel {

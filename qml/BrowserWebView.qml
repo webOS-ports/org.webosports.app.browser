@@ -16,20 +16,36 @@
 * You should have received a copy of the GNU General Public License
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
+import QtQuick 2.0
 import QtWebEngine 1.2
 import QtWebEngine.experimental 1.0
+import QtWebChannel 1.0
 import Qt.labs.settings 1.0
-import QtQuick 2.0
+
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import LuneOS.Service 1.0
+
 import browserutils 0.1
-import "js/util.js" as EnyoUtils
-import QtWebChannel 1.0
+import "js/util-uri.js" as EnyoUriUtils
+
+import "AppTweaks"
+import "Models"
 
 LunaWebEngineView {
     id: webViewItem
     profile.httpUserAgent: userAgent.defaultUA
+
+    url: ""
+
+    property bool internetAvailable: false
+    property HistoryDbModel historyDbModel
+
+    signal openNewCard(string urlToOpen);
+    signal openContextualMenu(var contextMenuData);
+
+    readonly property string webViewBackgroundSource: "images/background-startpage.png"
+    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
 
     LunaService {
         id: service
@@ -37,14 +53,14 @@ LunaWebEngineView {
         usePrivateBus: true
     }
 
+    onJavaScriptConsoleMessage: console.warn("CONSOLE JS: " + message);
+
     onFullScreenRequested: {
         if (request.toggleOn) {
-            navigationBar.visible = false;
             service.call("luna://org.webosports.luna/enableFullScreenMode",
                          JSON.stringify({"enable": true}),
                          undefined, undefined);
         } else {
-            navigationBar.visible = true;
             service.call("luna://org.webosports.luna/enableFullScreenMode",
                          JSON.stringify({"enable": false}),
                          undefined, undefined);
@@ -53,13 +69,12 @@ LunaWebEngineView {
     }
 
     visible: true
-    z: 1
 
     userScripts: [
         WebEngineScript {
             name: "qwebchannel";
             sourceUrl: Qt.resolvedUrl("js/qwebchannel.js");
-            injectionPoint: WebEngineScript.DocumentReady;
+            injectionPoint: WebEngineScript.DocumentCreation;
             worldId:WebEngineScript.MainWorld;
         },
          WebEngineScript {
@@ -92,28 +107,25 @@ LunaWebEngineView {
             }
             switch (data.type) {
             case 'link':
-            {
                 //In case we're having a relative URL we need to prefix it with the proper baseURL.
                 if (data.href.indexOf("://") === -1) {
-                    data.href = EnyoUtils.get_host(webViewItem.url) + data.href
+                    data.href = EnyoUriUtils.get_host(webViewItem.url) + data.href
                 }
 
                 if (data.target === '_blank') {
                     // open link in new tab
-                    appWindow.openNewCard(data.href)
+                    webViewItem.openNewCard(data.href)
                 } else if (data.target && data.target !== "_parent") {
                     //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
                     if (data.href.slice(-1) !== "#") {
-                        appWindow.openNewCard(data.href)
+                        webViewItem.openNewCard(data.href)
                     }
                 }
                 break
-            }
             case 'longpress':
-            {
                 if (data.href && data.href !== "CANT FIND LINK")
-                    contextMenu.show(data)
-            }
+                    webViewItem.openContextualMenu(data)
+                break
             }
         }
     }
@@ -173,65 +185,48 @@ LunaWebEngineView {
 */
 
     onLoadingChanged: {
-
-        //Refresh connection status
-        __getConnectionStatus()
-
-        if (loadRequest.status == WebEngineView.LoadStartedStatus)
-            pageIsLoading = true
-        progressBar.height = Units.gu(1 / 2)
-        console.log("Loading started...")
-        if (loadRequest.status == WebEngineView.LoadFailedStatus) {
+        if (loadRequest.status == WebEngineView.LoadStartedStatus) {
+            console.log("Loading started...")
+            loadingProgressBarItem.show();
+            webViewBackground.visible = false;
+        }
+        else if (loadRequest.status == WebEngineView.LoadFailedStatus) {
             console.log("Load failed! Error code: " + loadRequest.errorCode)
             webViewItem.loadHtml("Failed to load " + loadRequest.url, "",
                                  loadRequest.url)
-            pageIsLoading = false
+
             if (loadRequest.errorCode === NetworkReply.OperationCanceledError
-                    && internetAvailable)
+                    && internetAvailable) {
                 console.log("Load cancelled by user")
-            webViewItem.loadHtml(
-                        "Loading of " + loadRequest.url + " cancelled by user",
-                        "", loadRequest.url)
-            pageIsLoading = false
-
-            if (loadRequest.errorCode === NetworkReply.OperationCanceledError
-                    && !internetAvailable)
+                webViewItem.loadHtml(
+                            "Loading of " + loadRequest.url + " cancelled by user",
+                            "", loadRequest.url)
+            }
+            else if (loadRequest.errorCode === NetworkReply.OperationCanceledError
+                    && !internetAvailable) {
                 console.log("No internet connection available")
-            console.log("loadRequest.status: " + loadRequest.status
-                        + " loadRequest.errorCode: " + loadRequest.errorCode
-                        + " loadRequest.errorString: " + loadRequest.errorString)
-            webViewItem.loadHtml(
-                        "No internet connection available, cannot load " + loadRequest.url,
-                        "", loadRequest.url)
-            pageIsLoading = false
+                console.log("loadRequest.status: " + loadRequest.status
+                            + " loadRequest.errorCode: " + loadRequest.errorCode
+                            + " loadRequest.errorString: " + loadRequest.errorString)
+                webViewItem.loadHtml(
+                            "No internet connection available, cannot load " + loadRequest.url,
+                            "", loadRequest.url)
+            }
         }
-        if (loadRequest.status == WebEngineView.LoadSucceededStatus)
-            pageIsLoading = false
-
-        console.log("Page loaded!")
+        else if (loadRequest.status == WebEngineView.LoadSucceededStatus) {
+            console.log("Page loaded!")
+        }
 
         if (webViewItem.loadProgress === 100) {
-
             //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
             //Only create history item in case we're not using Private Browsing
-            if (!privateByDefault) {
+            if (!AppTweaks.privateByDefaultTweakValue) {
 
                 //Create the icon/images for the page
                 createViewImage()
 
-                navigationBar.__queryDB(
-                            "del",
-                            '{"query":{"from":"com.palm.browserhistory:1", "where":[{"prop":"url", "op":"=", "val":"' + webViewItem.url + '"}]}}')
-
-                var history = {
-                    _kind: "com.palm.browserhistory:1",
-                    url: "" + webViewItem.url,
-                    title: "" + webViewItem.title,
-                    date: (new Date()).getTime()
-                }
-
                 //Put the URL in browser history after the page is loaded successfully :)
-                navigationBar.__queryPutDB(history)
+                historyDbModel.addHistoryUrl(webViewItem.url, webViewItem.title, true);
             } else {
                 if (enableDebugOutput) {
                     console.log("Private browsing enabled so we don't create a history entry")
@@ -240,5 +235,42 @@ LunaWebEngineView {
         }
     }
 
-    url: ""
+    // Add a progress bar at the top of the webview
+    MyProgressBar
+    {
+        id: loadingProgressBarItem
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
+        visible: false
+        z: 1
+
+        function show()
+        {
+            if(AppTweaks.progressBarTweakValue) visible = true;
+        }
+        Timer {
+            interval: 100
+            repeat: false
+            running: !webViewItem.loading && loadingProgressBarItem.visible
+            onTriggered: loadingProgressBarItem.visible = false
+        }
+
+        value: webViewItem.loadProgress / 100
+    }
+
+    //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
+    Image {
+        z: 1
+        id: webViewBackground
+        source: webViewBackgroundSource
+        anchors.fill: parent
+        Image {
+            id: webViewPlaceholder
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.verticalCenterOffset: -Qt.inputMethod.keyboardRectangle.height / 2.
+            source: webViewPlaceholderSource
+        }
+    }
 }

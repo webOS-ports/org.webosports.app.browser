@@ -351,7 +351,7 @@ Rectangle {
         function refreshVisibileStatus() {
             if(addressBarItem.hasFocus                &&
                !addressBarItem.hasActionsShown        &&
-               searchSuggestions.suggestionsCount > 0 &&
+               (searchSuggestions.suggestionsCount > 0 || navigationBar.defaultSearchURL !== "") &&
                searchSuggestions.searchString.length >= 2)
             {
                 navigationBarDlgHelper.showDialog(searchSuggestions, false);

@@ -137,14 +137,18 @@ LuneOSWindow {
         webView: webViewItem
         historyDbModel: mainHistoryDbModel
 
-        anchors.top: parent.top
+        y: webViewItem.isFullScreen ? -height : 0
         anchors.left: parent.left
         anchors.right: parent.right
-        height: webViewItem.isFullScreen ? 0 : Units.gu(5.2)
+        height: Units.gu(5.2)
 
         onLaunchApplication: appWindow.__launchApplication(id, params);
         onToggleShareOptionsList: windowDlgHelper.toggleDialog(shareOptionsList, false);
         onToggleSidePanel: windowDlgHelper.toggleDialog(sidePanel, false);
+
+        Behavior on y {
+            NumberAnimation { duration: 300 }
+        }
     }
 
     BrowserWebView

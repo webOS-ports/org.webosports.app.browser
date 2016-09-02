@@ -251,24 +251,8 @@ Rectangle {
                 id: newCardImageMouseArea
                 anchors.fill: parent
 
-                onPressed: {
-                    if (appWindow.enableDebugOutput) {
-                        console.log("New Card Pressed")
-                    }
-                    newCardImage.verticalAlignment = Image.AlignBottom
+                onClicked: {
                     navigationBar.launchApplication("org.webosports.app.browser", "{}")
-                }
-                onCanceled: {
-                    if (appWindow.enableDebugOutput) {
-                        console.log("New Card Released")
-                    }
-                    newCardImage.verticalAlignment = Image.AlignTop
-                }
-                onReleased: {
-                    if (appWindow.enableDebugOutput) {
-                        console.log("New Card Released")
-                    }
-                    newCardImage.verticalAlignment = Image.AlignTop
                 }
             }
         }

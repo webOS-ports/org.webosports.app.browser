@@ -45,6 +45,11 @@ Item {
         return null;
     }
 
+    function openNewCardForRequest(request) {
+        var newWindow = create("");
+        request.openIn(newWindow.internalWebView);
+    }
+
     function create(url) {
         var parentWindow = findActiveWindow();
         var parentWindowId = (parentWindow !== null)?parentWindow.windowId:0;
@@ -56,7 +61,10 @@ Item {
                                                           parentWindowId: parentWindowId
                                                       });
             windowModel.append({window: window });
-            window.closed.connect(handleWindowClose)
+            window.closed.connect(handleWindowClose);
+            window.openNewCardForRequest.connect(openNewCardForRequest);
+
+            return window;
         }
         else {
             console.error("Error during instantiation of BrowserWindow.qml!");

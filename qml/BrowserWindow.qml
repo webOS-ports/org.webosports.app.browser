@@ -40,10 +40,13 @@ LuneOSWindow {
     width: 1024
     height: 768
 
+    signal openNewCardForRequest(var request);
+
     property bool enableDebugOutput: true
     property var connectionStatus
     readonly property bool internetAvailable: connectionStatus ? connectionStatus.isInternetConnectionAvailable : false
     property alias url: webViewItem.url
+    property alias internalWebView: webViewItem
     property Item windowManager
 
     UserAgent {
@@ -163,6 +166,7 @@ LuneOSWindow {
         internetAvailable: appWindow.internetAvailable
         historyDbModel: mainHistoryDbModel
 
+        onOpenNewCardForRequest: appWindow.openNewCardForRequest(request);
         onOpenNewCard: appWindow.openNewCard(urlToOpen);
         onOpenContextualMenu: contextMenu.show();
     }
@@ -242,27 +246,6 @@ LuneOSWindow {
             bookmarkDialog.myButtonText = "Save"
 
             windowDlgHelper.showDialog(bookmarkDialog, true);
-        }
-    }
-
-    ContextMenu
-    {
-        id: contextMenu
-        z: 3
-
-        onOpenNewCard: {
-            windowDlgHelper.hideCurrentDialog();
-            appWindow.openNewCard(url)
-        }
-
-        onShareLinkViaEmail: {
-            windowDlgHelper.hideCurrentDialog();
-            SharingUtils.shareLinkViaEmail(url, contextMenu.contextText)
-        }
-
-        onCopyURL: {
-            windowDlgHelper.hideCurrentDialog();
-            appWindow.setClipboard(url)
         }
     }
 

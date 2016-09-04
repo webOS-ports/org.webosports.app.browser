@@ -79,12 +79,6 @@ LunaWebEngineView {
             injectionPoint: WebEngineScript.DocumentCreation;
             worldId:WebEngineScript.MainWorld;
         },
-         WebEngineScript {
-             name: "userscript";
-             sourceUrl: Qt.resolvedUrl("js/userscript.js");
-             injectionPoint: WebEngineScript.Deferred;
-             worldId:WebEngineScript.MainWorld;
-        },
         WebEngineScript {
             name: "setupViewport";
             sourceUrl: Qt.resolvedUrl("js/setupViewport.js");
@@ -92,41 +86,6 @@ LunaWebEngineView {
             worldId:WebEngineScript.MainWorld;
        }
     ]
-
-    webChannel.registeredObjects: [messageHelper]
-
-    QtObject {
-        id: messageHelper
-        WebChannel.id: "messageHelper"
-
-        function onMessageReceived(message) {
-            var data = null
-            try {
-                data = JSON.parse(message)
-            } catch (error) {
-                console.log('onMessageReceived: ' + message)
-                return
-            }
-            switch (data.type) {
-            case 'link':
-                //In case we're having a relative URL we need to prefix it with the proper baseURL.
-                if (data.href.indexOf("://") === -1) {
-                    data.href = EnyoUriUtils.get_host(webViewItem.url) + data.href
-                }
-
-                if (data.target === '_blank') {
-                    // open link in new tab
-                    webViewItem.openNewCard(data.href)
-                } else if (data.target && data.target !== "_parent") {
-                    //Nasty hack to prevent URLs ending with # to open in a new card where they shouldn't.
-                    if (data.href.slice(-1) !== "#") {
-                        webViewItem.openNewCard(data.href)
-                    }
-                }
-                break
-            }
-        }
-    }
 
     // Handle the signal. Dynamically create the window and
     // use its WebEngineView as the destination of our request.
@@ -145,7 +104,7 @@ LunaWebEngineView {
             ctxMenuInfo: webViewItem.experimental.contextMenuData
 
             onOpenNewCard: {
-                webViewItem.openNewCard(url);
+                webViewItem.triggerWebAction(WebEngineView.OpenLinkInNewWindow);
             }
 
             onShareLinkViaEmail: {

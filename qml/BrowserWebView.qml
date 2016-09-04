@@ -74,12 +74,6 @@ LunaWebEngineView {
 
     userScripts: [
         WebEngineScript {
-            name: "qwebchannel";
-            sourceUrl: Qt.resolvedUrl("js/qwebchannel.js");
-            injectionPoint: WebEngineScript.DocumentCreation;
-            worldId:WebEngineScript.MainWorld;
-        },
-        WebEngineScript {
             name: "setupViewport";
             sourceUrl: Qt.resolvedUrl("js/setupViewport.js");
             injectionPoint: WebEngineScript.DocumentReady;

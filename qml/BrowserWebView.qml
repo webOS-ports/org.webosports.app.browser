@@ -28,6 +28,7 @@ import LuneOS.Service 1.0
 
 import browserutils 0.1
 import "js/util-uri.js" as EnyoUriUtils
+import "js/util-sharing.js" as SharingUtils
 
 import "AppTweaks"
 import "Models"
@@ -42,6 +43,7 @@ LunaWebEngineView {
     property HistoryDbModel historyDbModel
 
     signal openNewCard(string urlToOpen);
+    signal openNewCardForRequest(var request);
     signal openContextualMenu(var contextMenuData);
 
     readonly property string webViewBackgroundSource: "images/background-startpage.png"
@@ -122,17 +124,49 @@ LunaWebEngineView {
                     }
                 }
                 break
-            case 'longpress':
-                if (data.href && data.href !== "CANT FIND LINK")
-                    webViewItem.openContextualMenu(data)
-                break
             }
         }
+    }
+
+    // Handle the signal. Dynamically create the window and
+    // use its WebEngineView as the destination of our request.
+    onNewViewRequested: {
+        webViewItem.openNewCardForRequest(request);
     }
 
     BrowserUtils {
         id: utils
         webview: webViewItem
+    }
+
+    Component {
+        id: ctxMenuComponent
+        ContextMenu {
+            ctxMenuInfo: webViewItem.experimental.contextMenuData
+
+            onOpenNewCard: {
+                webViewItem.openNewCard(url);
+            }
+
+            onShareLinkViaEmail: {
+                SharingUtils.shareLinkViaEmail(url, text);
+            }
+        }
+    }
+    Connections {
+        target: webViewItem.experimental
+        onContextMenuDataChanged: {
+            var contextMenuData = webViewItem.experimental.contextMenuData;
+            var linkUrl = contextMenuData.linkUrl.toString();
+            if( contextMenuData &&
+                contextMenuData.linkUrl &&
+                EnyoUriUtils.isValidUri(EnyoUriUtils.parseUri(linkUrl)) ) {
+                webViewItem.experimental.extraContextMenuEntriesComponent = ctxMenuComponent;
+            }
+            else {
+                webViewItem.experimental.extraContextMenuEntriesComponent = null;
+            }
+        }
     }
 
     readonly property size thumbnail_size: Qt.size(90, 120)

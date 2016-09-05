@@ -234,12 +234,14 @@ LunaWebEngineView {
 
         function show()
         {
-            if(AppTweaks.progressBarTweakValue) visible = true;
+            visible = true;
         }
+
         Timer {
-            interval: 100
+            interval: 1000
             repeat: false
-            running: !webViewItem.loading && loadingProgressBarItem.visible
+            //We only want to show the progress bar permanently when the Tweak value is set to true
+            running: !webViewItem.loading && loadingProgressBarItem.visible && !AppTweaks.progressBarTweakValue
             onTriggered: loadingProgressBarItem.visible = false
         }
 

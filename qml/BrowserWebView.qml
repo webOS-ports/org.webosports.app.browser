@@ -207,6 +207,7 @@ LunaWebEngineView {
         if (webViewItem.loadProgress === 100) {
             //Brought this back from legacy to make sure that we don't clutter the history with multiple items for the same website ;)
             //Only create history item in case we're not using Private Browsing
+            loadingProgressBarItem.hide();
             if (!AppTweaks.privateByDefaultTweakValue) {
 
                 //Create the icon/images for the page
@@ -234,13 +235,15 @@ LunaWebEngineView {
 
         function show()
         {
-            if(AppTweaks.progressBarTweakValue) visible = true;
+            visible = true;
         }
-        Timer {
-            interval: 100
-            repeat: false
-            running: !webViewItem.loading && loadingProgressBarItem.visible
-            onTriggered: loadingProgressBarItem.visible = false
+
+        function hide()
+        {
+            //We only want to show the progress bar permanently when the Tweak value is set to true
+            if(!AppTweaks.progressBarTweakValue) {
+                visible = false;
+            }
         }
 
         value: webViewItem.loadProgress / 100

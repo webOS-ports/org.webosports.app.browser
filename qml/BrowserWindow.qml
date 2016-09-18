@@ -49,10 +49,6 @@ LuneOSWindow {
     property alias internalWebView: webViewItem
     property Item windowManager
 
-    UserAgent {
-        id: userAgent
-    }
-
     /////// private //////
     LunaService {
         id: luna

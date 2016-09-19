@@ -1,7 +1,7 @@
 /*
 * Copyright (C) 2014 Simon Busch <morphis@gravedo.de>
-* Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
-* Copyright (C) 2014 Christophe Chapuis <chris.chapuis@gmail.com>
+* Copyright (C) 2014-2016 Herman van Hazendonk <github.com@herrie.org>
+* Copyright (C) 2014-2016 Christophe Chapuis <chris.chapuis@gmail.com>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -259,6 +259,11 @@ LuneOSWindow {
             navigationBar.defaultSearchURL = defaultSearchURL;
             navigationBar.defaultSearchIcon = defaultSearchIcon;
             navigationBar.defaultSearchDisplayName = defaultSearchDisplayName;
+            webViewItem.settings.javascriptEnabled = enableJavascript;
+            webViewItem.settings.javascriptCanOpenWindows = !blockPopups;
+            webViewItem.settings.pluginsEnabled = enablePlugins;
+            webViewItem.profile.persistentCookiesPolicy = acceptCookies ? "AllowPersistentCookies" : "NoPersistentCookies"
+            webViewItem.profile.offTheRecord = acceptCookies ? false : true
         }
     }
 

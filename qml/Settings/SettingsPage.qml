@@ -1,6 +1,6 @@
 /*
-* Copyright (C) 2014 Christophe Chapuis <chris.chapuis@gmail.com>
-* Copyright (C) 2014 Herman van Hazendonk <github.com@herrie.org>
+* Copyright (C) 2014-2016 Christophe Chapuis <chris.chapuis@gmail.com>
+* Copyright (C) 2014-2016 Herman van Hazendonk <github.com@herrie.org>
 *
 * This program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,10 +30,11 @@ Rectangle {
     color: "#e5e5e5"
 
     property bool enableDebugOutput: false
-    property bool blockPopups: true
-    property bool enableJavascript: true
-    property bool enablePlugins: true
-    property bool rememberPasswords: true
+    property alias blockPopups: blockPopupsToggle.checked
+    property alias enableJavascript: enableJavascriptToggle.checked
+    property alias enablePlugins: enablePluginsToggle.checked
+    property alias rememberPasswords: rememberPasswordsToggle.checked
+    property alias acceptCookies: acceptCookiesToggle.checked
     property var defaultBrowserPreferences
     property var searchProviderResults
     property string searchProvidersAll: "{}"
@@ -47,7 +48,7 @@ Rectangle {
 
     signal closePage()
     signal showPage()
-    signal applyNewPreferences(string defaultSearchURL, string defaultSearchIcon, string defaultSearchDisplayName)
+    signal applyNewPreferences(string defaultSearchURL, string defaultSearchIcon, string defaultSearchDisplayName, bool enableJavascript, bool blockPopups, bool enablePlugins, bool rememberPasswords, bool acceptCookies)
 
     MouseArea {
         anchors.fill: parent
@@ -77,8 +78,7 @@ Rectangle {
         luna.call("luna://com.palm.universalsearch/setSearchPreference", '{"key":"defaultSearchEngine", "value": "'+defaultSearchProvider+'"}', __handleSPSuccess, __handleSPError)
 
         //Make sure we update the search engine as well
-        applyNewPreferences(defaultSearchProviderURL, defaultSearchProviderIcon, defaultSearchProviderDisplayName);
-
+        applyNewPreferences(defaultSearchProviderURL, defaultSearchProviderIcon, defaultSearchProviderDisplayName, enableJavascript, blockPopups, enablePlugins, rememberPasswords, acceptCookies);
         root.visible = false
     }
 
@@ -125,6 +125,8 @@ Rectangle {
                 enablePlugins = t.value
             } else if (t.key === "rememberPasswords") {
                 rememberPasswords = t.value
+            } else if (t.key === "acceptCookies") {
+                acceptCookies = t.value
             }
         }
     }
@@ -351,7 +353,7 @@ Rectangle {
         anchors.top: searchPrefsOutside.bottom
         anchors.topMargin: Units.gu(1.5)
         width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-        height: Units.gu(27.6)
+        height: Units.gu(33.6)
         color: "#A2A2A2"
         radius: 10
 
@@ -391,60 +393,12 @@ Rectangle {
                     font.pixelSize: FontUtils.sizeToPixels("medium")
                     anchors.verticalCenter: parent.verticalCenter
                 }
-                Image {
-                    id: blockPopupsToggleOff
+                ToggleButton
+                {
+                    id: blockPopupsToggle
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "../images/toggle-button-off.png"
                     anchors.right: parent.right
                     anchors.rightMargin: Units.gu(1)
-                    height: Units.gu(4)
-                    width: Units.gu(8)
-
-                    visible: blockPopups ? false : true
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: {
-                            blockPopups = true
-                            blockPopupsToggleOn.visible = true
-                            blockPopupsToggleOff.visible = false
-                        }
-                    }
-                    Text {
-                        anchors.left: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "white"
-                        text: "OFF"
-                        font.bold: true
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("small")
-                    }
-                }
-                Image {
-                    id: blockPopupsToggleOn
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Units.gu(1)
-                    source: "../images/toggle-button-on.png"
-                    height: Units.gu(4)
-                    width: Units.gu(8)
-                    anchors.right: parent.right
-                    visible: blockPopups ? true : false
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: {
-                            blockPopups = false
-                            blockPopupsToggleOn.visible = false
-                            blockPopupsToggleOff.visible = true
-                        }
-                    }
-                    Text {
-                        anchors.right: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "white"
-                        text: "ON"
-                        font.bold: true
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("small")
-                    }
                 }
             }
             Rectangle {
@@ -455,11 +409,44 @@ Rectangle {
                 anchors.top: blockPopupsRect.bottom
             }
             Rectangle {
+                id: acceptCookiesRect
+                width: parent.width
+                height: Units.gu(6)
+                color: "transparent"
+                anchors.left: parent.left
+                anchors.top: browserPrefsDivider1.bottom
+                Text {
+                    id: acceptCookiesText
+                    anchors.left: parent.left
+                    anchors.leftMargin: Units.gu(1)
+                    text: "Accept Cookies"
+                    color: "#444444"
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("medium")
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                ToggleButton
+                {
+                    id: acceptCookiesToggle
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.right: parent.right
+                    anchors.rightMargin: Units.gu(1)
+                }
+            }
+            Rectangle {
+                id: browserPrefsDivider2
+                color: "silver"
+                width: parent.width
+                height: Units.gu(1 / 5)
+                anchors.top: acceptCookiesRect.bottom
+            }
+
+            Rectangle {
                 id: enableJavascriptRect
                 width: parent.width
                 height: Units.gu(6)
                 color: "transparent"
-                anchors.top: browserPrefsDivider1.bottom
+                anchors.top: browserPrefsDivider2.bottom
                 anchors.left: parent.left
                 Text {
                     id: enableJavascriptText
@@ -471,64 +458,15 @@ Rectangle {
                     font.pixelSize: FontUtils.sizeToPixels("medium")
                     anchors.verticalCenter: parent.verticalCenter
                 }
-                Image {
-                    id: enableJavascriptToggleOff
+               ToggleButton
+                {
+                    id: enableJavascriptToggle
                     anchors.verticalCenter: parent.verticalCenter
-                    source: "../images/toggle-button-off.png"
                     anchors.right: parent.right
                     anchors.rightMargin: Units.gu(1)
-                    visible: enableJavascript ? false : true
-                    height: Units.gu(4)
-                    width: Units.gu(8)
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: {
-                            enableJavascript = true
-                            enableJavascriptToggleOn.visible = true
-                            enableJavascriptToggleOff.visible = false
-                        }
-                    }
-                    Text {
-                        anchors.left: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "white"
-                        text: "OFF"
-                        font.bold: true
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("small")
-                    }
-                }
-                Image {
-                    id: enableJavascriptToggleOn
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.rightMargin: Units.gu(1)
-                    source: "../images/toggle-button-on.png"
-                    anchors.right: parent.right
-                    visible: enableJavascript ? true : false
-                    height: Units.gu(4)
-                    width: Units.gu(8)
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onPressed: {
-                            enableJavascript = false
-                            enableJavascriptToggleOn.visible = false
-                            enableJavascriptToggleOff.visible = true
-                        }
-                    }
-                    Text {
-                        anchors.right: parent.horizontalCenter
-                        anchors.verticalCenter: parent.verticalCenter
-                        color: "white"
-                        text: "ON"
-                        font.bold: true
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("small")
-                    }
                 }
                 Rectangle {
-                    id: browserPrefsDivider2
+                    id: browserPrefsDivider3
                     color: "silver"
                     width: parent.width
                     height: Units.gu(1 / 5)
@@ -540,7 +478,7 @@ Rectangle {
                     width: parent.width
                     height: Units.gu(6)
                     color: "transparent"
-                    anchors.top: browserPrefsDivider2.bottom
+                    anchors.top: browserPrefsDivider3.bottom
                     anchors.left: parent.left
                     Text {
                         id: enablePluginsText
@@ -552,65 +490,16 @@ Rectangle {
                         font.pixelSize: FontUtils.sizeToPixels("medium")
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    Image {
-                        id: enablePluginsToggleOff
+                    ToggleButton
+                    {
+                        id: enablePluginsToggle
                         anchors.verticalCenter: parent.verticalCenter
-                        source: "../images/toggle-button-off.png"
                         anchors.right: parent.right
                         anchors.rightMargin: Units.gu(1)
-                        visible: enablePlugins ? false : true
-                        height: Units.gu(4)
-                        width: Units.gu(8)
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onPressed: {
-                                enablePlugins = true
-                                enablePluginsToggleOn.visible = true
-                                enablePluginsToggleOff.visible = false
-                            }
-                        }
-                        Text {
-                            anchors.left: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: "white"
-                            text: "OFF"
-                            font.bold: true
-                            font.family: "Prelude"
-                            font.pixelSize: FontUtils.sizeToPixels("small")
-                        }
-                    }
-                    Image {
-                        id: enablePluginsToggleOn
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.rightMargin: Units.gu(1)
-                        source: "../images/toggle-button-on.png"
-                        anchors.right: parent.right
-                        visible: enablePlugins ? true : false
-                        height: Units.gu(4)
-                        width: Units.gu(8)
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onPressed: {
-                                enablePlugins = false
-                                enablePluginsToggleOn.visible = false
-                                enablePluginsToggleOff.visible = true
-                            }
-                        }
-                        Text {
-                            anchors.right: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: "white"
-                            text: "ON"
-                            font.bold: true
-                            font.family: "Prelude"
-                            font.pixelSize: FontUtils.sizeToPixels("small")
-                        }
                     }
                 }
                 Rectangle {
-                    id: browserPrefsDivider3
+                    id: browserPrefsDivider4
                     color: "silver"
                     width: parent.width
                     height: Units.gu(1 / 5)
@@ -622,7 +511,7 @@ Rectangle {
                     width: parent.width
                     height: Units.gu(6)
                     color: "transparent"
-                    anchors.top: browserPrefsDivider3.bottom
+                    anchors.top: browserPrefsDivider4.bottom
                     anchors.left: parent.left
                     Text {
                         id: rememberPasswordsText
@@ -634,61 +523,12 @@ Rectangle {
                         font.pixelSize: FontUtils.sizeToPixels("medium")
                         anchors.verticalCenter: parent.verticalCenter
                     }
-                    Image {
-                        id: rememberPasswordsToggleOff
+                    ToggleButton
+                    {
+                        id: rememberPasswordsToggle
                         anchors.verticalCenter: parent.verticalCenter
-                        source: "../images/toggle-button-off.png"
                         anchors.right: parent.right
                         anchors.rightMargin: Units.gu(1)
-                        visible: rememberPasswords ? false : true
-                        height: Units.gu(4)
-                        width: Units.gu(8)
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onPressed: {
-                                rememberPasswords = true
-                                rememberPasswordsToggleOn.visible = true
-                                rememberPasswordsToggleOff.visible = false
-                            }
-                        }
-                        Text {
-                            anchors.left: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: "white"
-                            text: "OFF"
-                            font.bold: true
-                            font.family: "Prelude"
-                            font.pixelSize: FontUtils.sizeToPixels("small")
-                        }
-                    }
-                    Image {
-                        id: rememberPasswordsToggleOn
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.rightMargin: Units.gu(1)
-                        source: "../images/toggle-button-on.png"
-                        anchors.right: parent.right
-                        visible: rememberPasswords ? true : false
-                        height: Units.gu(4)
-                        width: Units.gu(8)
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onPressed: {
-                                rememberPasswords = false
-                                rememberPasswordsToggleOn.visible = false
-                                rememberPasswordsToggleOff.visible = true
-                            }
-                        }
-                        Text {
-                            anchors.right: parent.horizontalCenter
-                            anchors.verticalCenter: parent.verticalCenter
-                            color: "white"
-                            text: "ON"
-                            font.bold: true
-                            font.family: "Prelude"
-                            font.pixelSize: FontUtils.sizeToPixels("small")
-                        }
                     }
                 }
             }

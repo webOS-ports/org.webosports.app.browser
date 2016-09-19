@@ -51,8 +51,8 @@ Known bugs:
 12. <s>Authentication dialog doesn't look good on N4</s>
 13. <s>Error message is not correct when no network connection is available.</s>
 14. <s>Selection markers are not displayed at the correct location for long URL's. </s>
-15. Long URL's running behind stop/reload icon on address bar
-16. Text in addressbar needs some spacing
+15. <s>Long URL's running behind stop/reload icon on address bar. </s>
+16. <s>Text in addressbar needs some spacing. </s>
 17. <s>Opening URL's 1 and 2 via luna-send will open URL 1 twice.</s>
 
 To do:
@@ -75,18 +75,19 @@ To do:
 14. <s>Add possibility to edit bookmarks.</s>
 15. <s>Add authentication dialog.</s>
 16. Add password manager.
-17. Add cookies support.
-18. Look into https everywhere (probably need to use sqlite DB created by https://github.com/EFForg/https-everywhere/tree/master/utils because to use 16000 XML files is a no-go).
+17. <s>Add cookies support.</s>
+18. <s>Look into https everywhere (probably need to use sqlite DB created by https://github.com/EFForg/https-everywhere/tree/master/utils because to use 16000 XML files is a no-go).</s> SQLite DB is now provided, need to add logics to update URL before loading
 19. Confirmation dialog for Clearing Downloads.
-20. Further make the preferences actually do something in the app.
+20. <s>Further make the preferences actually do something in the app.</s>
 21. Make separate layouts for phones (portrait) and tablets (landscape) due to limited real estate in portrait mode, we want to reduce the number of buttons and find a solution for thos.
 22. <s>Fix layout of address bar on TP. Anchoring seems off a bit sometimes</s>.
-23. Add scroll bar and style it webOS-y.
+23. <s>Add scroll bar and style it webOS-y.</s>
 24. <s>Clean up code and make separate QML files for components.</s>
 25. <s>Add additional share options, based on check to see if certain app is installed?</s><i>Shelved for now, pending a "Sharing Manager" implementation</i>
 26. Add divider for History items (as per legacy)
 27. <s>Add "Input"->"File" support</s>
-28. Add further experimental support (minimal fontsize, viewport, device pixel ratio etc)
+28. <s>Add further experimental support (minimal fontsize, viewport, device pixel ratio etc)</s>
+29. Add Download Manager implementation
 
 ## Contributing
 

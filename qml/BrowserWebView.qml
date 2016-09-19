@@ -35,7 +35,6 @@ import "Models"
 
 LunaWebEngineView {
     id: webViewItem
-    profile.httpUserAgent: userAgent.defaultUA
 
     url: ""
 

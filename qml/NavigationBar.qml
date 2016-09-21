@@ -297,7 +297,7 @@ Rectangle {
                     if (Qt.inputMethod.visible) {
                         Qt.inputMethod.hide()
                     } else {
-                        addressBar.focus = true
+                        addressBarItem.focus = true
                         Qt.inputMethod.show()
                     }
                 }

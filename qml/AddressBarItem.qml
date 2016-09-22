@@ -93,13 +93,13 @@ Item {
                 MouseArea {
                     anchors.fill: parent
 
-                    // here's the WebOS 3.0 text selection behavior
-                    // on clic:
+                    // Here's the webOS 3.0 text selection behavior
+                    // On click:
                     //  If entry is unfocused --> focus + selectAll
-                    //  clic on selected text --> show actions Copy/Cut/(Paste if clipboard non empty)
+                    //  Click on selected text --> show actions Copy/Cut/(Paste if clipboard non empty)
                     //  If actions are shown --> unselect all + position cursor
                     //  If already focused but no selection --> position cursor
-                    // on long press
+                    // On long press
                     //  focused but no selection --> Select/SelectAll/(Paste if clipboard non empty)
 
                     onClicked: {

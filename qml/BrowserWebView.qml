@@ -17,8 +17,7 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 import QtQuick 2.0
-import QtWebEngine 1.2
-import QtWebEngine.experimental 1.0
+import QtWebEngine 1.4
 import QtWebChannel 1.0
 import Qt.labs.settings 1.0
 
@@ -106,17 +105,17 @@ LunaWebEngineView {
         }
     }
     Connections {
-        target: webViewItem.experimental
-        onContextMenuDataChanged: {
-            var contextMenuData = webViewItem.experimental.contextMenuData;
+        target: webViewItem
+        onContextMenuRequested: {
+            var contextMenuData = request;
             var linkUrl = contextMenuData.linkUrl.toString();
             if( contextMenuData &&
                 contextMenuData.linkUrl &&
                 EnyoUriUtils.isValidUri(EnyoUriUtils.parseUri(linkUrl)) ) {
-                webViewItem.experimental.extraContextMenuEntriesComponent = ctxMenuComponent;
+                webViewItem.extraContextMenuEntriesComponent = ctxMenuComponent;
             }
             else {
-                webViewItem.experimental.extraContextMenuEntriesComponent = null;
+                webViewItem.extraContextMenuEntriesComponent = null;
             }
         }
     }

@@ -93,7 +93,7 @@ LunaWebEngineView {
     Component {
         id: ctxMenuComponent
         ContextMenu {
-            ctxMenuInfo: webViewItem.experimental.contextMenuData
+            ctxMenuInfo: webViewItem.ctxMenuLastRequest
 
             onOpenNewCard: {
                 webViewItem.triggerWebAction(WebEngineView.OpenLinkInNewWindow);
@@ -104,13 +104,14 @@ LunaWebEngineView {
             }
         }
     }
+
+    property var ctxMenuLastRequest;
     Connections {
         target: webViewItem
         onContextMenuRequested: {
-            var contextMenuData = request;
-            var linkUrl = contextMenuData.linkUrl.toString();
-            if( contextMenuData &&
-                contextMenuData.linkUrl &&
+            webViewItem.ctxMenuLastRequest = request;
+            var linkUrl = request.linkUrl.toString();
+            if( request.linkUrl &&
                 EnyoUriUtils.isValidUri(EnyoUriUtils.parseUri(linkUrl)) ) {
                 webViewItem.extraContextMenuEntriesComponent = ctxMenuComponent;
             }

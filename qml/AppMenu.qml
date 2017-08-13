@@ -16,59 +16,27 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-import QtQuick 2.0
+import QtQuick 2.6
+
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
+
 import LunaNext.Common 0.1
 
-Item {
+Menu {
     id: menuRoot
 
+    width: Units.gu(23)
+    background: Rectangle {
+        radius: Units.gu(0.4)
+        color: "#313131"
+    }
     signal settingsMenuItem
-    onSettingsMenuItem: {
-        menuRoot.visible = false
-        Qt.inputMethod.hide()
-    }
 
-    MouseArea {
-        anchors.fill: parent
-        onClicked: menuRoot.visible = false
-    }
-
-    ListView {
-        id: menuListView
-        width: Units.gu(23)
-        height: Units.gu(4) * menuListView.count
-        anchors.top: parent.top
-        anchors.left: parent.left
-        interactive: false
-
-        model: ListModel {
-            ListElement {
-                itemText: "Preferences..."
-                itemAction: "settingsMenuItem"
-            }
-        }
-        delegate: Rectangle {
-            color: "#313131"
-            width: parent.width
-            height: Units.gu(4)
-            radius: 4
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                text: itemText
-                anchors.leftMargin: Units.gu(1)
-                font.family: "Prelude"
-                color: "#E5E5E5"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
-            MouseArea {
-                anchors.fill: parent
-                onClicked:
-                {
-                    menuRoot[itemAction]()
-                }
-            }
-        }
+    MenuItem {
+        height:Units.gu(4)
+        text: "Preferences..."
+        darkTheme: true
+        onTriggered: settingsMenuItem();
     }
 }

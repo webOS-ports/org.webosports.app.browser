@@ -21,6 +21,9 @@ import QtWebEngine 1.4
 import QtWebChannel 1.0
 import Qt.labs.settings 1.0
 
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
+
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import LuneOS.Service 1.0
@@ -43,9 +46,6 @@ LunaWebEngineView {
     signal openNewCard(string urlToOpen);
     signal openNewCardForRequest(var request);
     signal openContextualMenu(var contextMenuData);
-
-    readonly property string webViewBackgroundSource: "images/background-startpage.png"
-    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
 
     LunaService {
         id: service
@@ -173,8 +173,7 @@ LunaWebEngineView {
     onLoadingChanged: {
         if (loadRequest.status == WebEngineView.LoadStartedStatus) {
             console.log("Loading started...")
-            loadingProgressBarItem.show();
-            webViewBackground.visible = false;
+            loadingProgressBarItem.visible = true;
         }
         else if (loadRequest.status == WebEngineView.LoadFailedStatus) {
             console.log("Load failed! Error code: " + loadRequest.errorCode)
@@ -228,13 +227,11 @@ LunaWebEngineView {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        height: Units.gu(0.3)
         visible: false
         z: 1
 
-        function show()
-        {
-            visible = true;
-        }
+        to: 100
 
         Timer {
             interval: 1000
@@ -244,10 +241,12 @@ LunaWebEngineView {
             onTriggered: loadingProgressBarItem.visible = false
         }
 
-        value: webViewItem.loadProgress / 100
+        value: webViewItem.loadProgress
     }
 
     //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
+    readonly property string webViewBackgroundSource: "images/background-startpage.png"
+    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     Image {
         z: 1
         id: webViewBackground
@@ -259,6 +258,15 @@ LunaWebEngineView {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -Qt.inputMethod.keyboardRectangle.height / 2.
             source: webViewPlaceholderSource
+        }
+
+        Connections {
+            target: webViewBackground.visible ? webViewItem : null // just listen once
+            onLoadingChanged: {
+                if (loadRequest.status == WebEngineView.LoadStartedStatus) {
+                    webViewBackground.visible = false;
+                }
+            }
         }
     }
 }

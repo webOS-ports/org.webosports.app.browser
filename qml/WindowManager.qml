@@ -53,7 +53,7 @@ Item {
     function create(url) {
         var parentWindow = findActiveWindow();
         var parentWindowId = (parentWindow !== null)?parentWindow.windowId:0;
-        var windowComponent = Qt.createComponent("BrowserWindow.qml");
+        var windowComponent = Qt.createComponent(Qt.resolvedUrl("BrowserWindow.qml"));
         if(windowComponent.status===Component.Ready) {
             var window = windowComponent.createObject(windowManager, {
                                                           url: url,

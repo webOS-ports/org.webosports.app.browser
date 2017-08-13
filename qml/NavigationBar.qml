@@ -305,10 +305,6 @@ Rectangle {
         }
     }
 
-    DialogHelper {
-        id: navigationBarDlgHelper
-    }
-
     SearchSuggestions {
         id: searchSuggestions
         anchors.left: parent.left
@@ -338,7 +334,7 @@ Rectangle {
                (searchSuggestions.suggestionsCount > 0 || navigationBar.defaultSearchURL !== "") &&
                searchSuggestions.searchString.length >= 2)
             {
-                navigationBarDlgHelper.showDialog(searchSuggestions, false);
+                searchSuggestions.show();
             }
             else
             {

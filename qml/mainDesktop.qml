@@ -83,6 +83,7 @@ ApplicationWindow {
         else {
             console.error("Error during instantiation of main.qml!");
             console.error(mainComponent.errorString());
+            Qt.quit();
         }
     }
 }

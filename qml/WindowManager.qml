@@ -69,6 +69,8 @@ Item {
         else {
             console.error("Error during instantiation of BrowserWindow.qml!");
             console.error(windowComponent.errorString());
+            // if we can't even create a window, let's just exit the app
+            Qt.quit();
         }
     }
 }

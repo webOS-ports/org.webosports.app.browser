@@ -27,16 +27,12 @@ Menu {
     id: menuRoot
 
     width: Units.gu(23)
-    background: Rectangle {
-        radius: Units.gu(0.4)
-        color: "#313131"
-    }
+    LuneOSMenu.appMenuStyle: true
     signal settingsMenuItem
 
     MenuItem {
         height:Units.gu(4)
         text: "Preferences..."
-        darkTheme: true
         onTriggered: settingsMenuItem();
     }
 }

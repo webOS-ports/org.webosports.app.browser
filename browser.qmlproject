@@ -15,6 +15,9 @@ Project {
     ImageFiles {
         directory: "."
     }
+    Files {
+        filter: "*.json"
+    }
     /* List of plugin directories passed to QML runtime */
     /* The order of the imports is of importance, as the latest one override the previous definitions */
     importPaths: [ "../luneos-components/modules", "../luneos-components/test/imports", "qml/test/imports" ]

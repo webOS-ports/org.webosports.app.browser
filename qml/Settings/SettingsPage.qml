@@ -222,7 +222,6 @@ Page {
                 currentIndex: 0
 
                 onActivated: {
-                    searchPrefsText.text = model.get(index).displayName
                     defaultSearchProvider = model.get(index).id
                     defaultSearchProviderURL = model.get(index).url
                     defaultSearchProviderIcon = model.get(index).iconFilePath

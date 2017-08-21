@@ -17,14 +17,29 @@
 */
 
 import QtQuick 2.0
+import QtQuick.Controls 2.0
 
 import LuneOS.Service 1.0
 
-Item {
+ApplicationWindow {
     id: desktopRoot
 
     width: 1024
     height: 768
+
+    // qmlscene always shows the top level window, but we are a headless app, so hide it
+    // see https://bugreports.qt.io/browse/QTBUG-53508
+    Timer {
+        interval: 100
+        repeat: false
+        running: true
+        onTriggered: {
+            desktopRoot.visible = false;
+
+            //to debug settings page
+            //application.relaunched('{"palm-command": "open-app-menu"}');
+        }
+    }
 
     property QtObject application: QtObject {
         property string launchParameters: "{}"
@@ -68,6 +83,7 @@ Item {
         else {
             console.error("Error during instantiation of main.qml!");
             console.error(mainComponent.errorString());
+            Qt.quit();
         }
     }
 }

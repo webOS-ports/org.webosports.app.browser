@@ -53,7 +53,7 @@ Item {
     function create(url) {
         var parentWindow = findActiveWindow();
         var parentWindowId = (parentWindow !== null)?parentWindow.windowId:0;
-        var windowComponent = Qt.createComponent("BrowserWindow.qml");
+        var windowComponent = Qt.createComponent(Qt.resolvedUrl("BrowserWindow.qml"));
         if(windowComponent.status===Component.Ready) {
             var window = windowComponent.createObject(windowManager, {
                                                           url: url,
@@ -69,6 +69,8 @@ Item {
         else {
             console.error("Error during instantiation of BrowserWindow.qml!");
             console.error(windowComponent.errorString());
+            // if we can't even create a window, let's just exit the app
+            Qt.quit();
         }
     }
 }

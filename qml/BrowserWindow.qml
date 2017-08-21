@@ -19,8 +19,9 @@
 
 import QtQuick 2.0
 import QtQuick.Window 2.1
-import QtQuick.Controls 1.1
-import QtQuick.Controls.Styles 1.1
+
+import QtQuick.Controls 2.0
+
 import LunaNext.Common 0.1
 import LuneOS.Service 1.0
 import LuneOS.Application 1.0
@@ -32,10 +33,8 @@ import "Utils"
 import "Models"
 import "js/util-sharing.js" as SharingUtils
 
-LuneOSWindow {
+ApplicationWindow {
     id: appWindow
-
-    type: LuneOSWindow.Card
 
     width: 1024
     height: 768
@@ -142,8 +141,13 @@ LuneOSWindow {
         height: Units.gu(5.2)
 
         onLaunchApplication: appWindow.__launchApplication(id, params);
-        onToggleShareOptionsList: windowDlgHelper.toggleDialog(shareOptionsList, false);
-        onToggleSidePanel: windowDlgHelper.toggleDialog(sidePanel, false);
+        onToggleShareOptionsList: shareOptionsList.open();
+        onToggleSidePanel: {
+            if(sidePanel.visible)
+                sidePanel.close();
+            else
+                sidePanel.open();
+        }
 
         Behavior on y {
             NumberAnimation { duration: 300 }
@@ -174,22 +178,12 @@ LuneOSWindow {
         z: (webViewItem.z + navigationBar.z)/2
     }*/
 
-    DialogHelper {
-        // the purpose of this item is simply to catch mouse clicks outside of the
-        // eventually currently shown dialog/panel.
-        id: windowDlgHelper
-        anchors.fill: parent
-        z: 2
-
-        onDialogHidden: windowDlgHelper.hideCurrentDialog();
-    }
-
     ShareOptionList
     {
         id: shareOptionsList
-        anchors.top: navigationBar.bottom
-        anchors.right: parent.right
-        anchors.rightMargin: Units.gu(2)
+        y: navigationBar.y+navigationBar.height
+        x: parent.width-width
+        rightMargin: Units.gu(2)
 
         onShowBookmarkDialog: {
             bookmarkDialog.action = action;
@@ -197,15 +191,17 @@ LuneOSWindow {
             bookmarkDialog.myTitle = webViewItem.title;
             bookmarkDialog.myButtonText = buttonText;
 
-            windowDlgHelper.showDialog(bookmarkDialog, true);
+            bookmarkDialog.open();
         }
     }
 
     BookmarkDialog {
         id: bookmarkDialog
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset : -Qt.inputMethod.keyboardRectangle.height/2.
-        z: 2
+
+        x: parent.width/2-width/2
+        y: parent.height/2-height/2
+
+        width: Math.min(Units.gu(46), appWindow.width-Units.gu(2));
 
         bookmarksDbModel: mainBookmarkDbModel
     }
@@ -213,11 +209,10 @@ LuneOSWindow {
     SidePanel
     {
         id: sidePanel
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        anchors.right: parent.right
-        width: Screen.width < 900 ? parent.width : Units.gu(32)
-        z: 2
+
+        edge: Qt.RightEdge
+        height: parent.height
+        width: appWindow.width < 900 ? parent.width : Units.gu(32)
 
         historyDbModel: mainHistoryDbModel
         bookmarksDbModel: mainBookmarkDbModel
@@ -231,7 +226,7 @@ LuneOSWindow {
             bookmarkDialog.myTitle = webViewItem.title
             bookmarkDialog.myButtonText = "Add Bookmark"
 
-            windowDlgHelper.showDialog(bookmarkDialog, true);
+            bookmarkDialog.open();
         }
         onEditBookmark:  {
             bookmarkDialog.action = "editBookmark";
@@ -241,7 +236,7 @@ LuneOSWindow {
             bookmarkDialog.myBookMarkId = id
             bookmarkDialog.myButtonText = "Save"
 
-            windowDlgHelper.showDialog(bookmarkDialog, true);
+            bookmarkDialog.open();
         }
     }
 
@@ -269,9 +264,8 @@ LuneOSWindow {
 
     AppMenu {
         id: appMenu
-        z: 100 // above everything in the app
         visible: false
-        anchors.fill: parent
+        x: 0; y: 0
 
         onSettingsMenuItem:
         {

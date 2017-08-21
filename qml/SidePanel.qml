@@ -17,20 +17,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-import QtQuick 2.0
-import QtQuick.Window 2.1
+import QtQuick 2.6
+
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
 
 import LunaNext.Common 0.1
 import LuneOS.Service 1.0
 
 import "Models"
 
-Rectangle {
+Drawer {
     id: sidePanelRoot
-
-    visible: false
-    enabled: visible
-    color: "#E5E5E5"
 
     signal goToURL(string url);
     signal addBookmark();
@@ -40,133 +38,35 @@ Rectangle {
     property HistoryDbModel   historyDbModel
     property DownloadsDbModel downloadsDbModel
 
-    function show() {
-        visible = true;
-    }
-    function hide() {
-        visible = false;
-    }
+    property alias modeIndex: tabBar.currentIndex
+    property string dataMode: modeIndex===0 ? "bookmarks" : modeIndex === 1 ? "history" : "downloads"
 
-    MouseArea {
+    Page {
         anchors.fill: parent
-    }
 
-    property string dataMode: "bookmarks"
-
-    Rectangle {
-        id: sidePanelHeader
-        height: Units.gu(5.2)
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
-        color: "#343434"
-        Row {
-            id: buttonRow
-            anchors.left: parent.left
-            anchors.right: parent.right
+        header: TabBar {
+            id: tabBar
             height: Units.gu(4)
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: Units.gu(1)
-            anchors.rightMargin: Units.gu(1)
+            currentIndex: 0
 
-            Item {
-                id: bookmarkButton
-                implicitWidth: buttonRow.width/3
-                implicitHeight: Units.gu(4)
-
-                Image {
-                    id: bookmarkButtonImage
-                    source: dataMode === "bookmarks" ? "images/radiobuttondarkleftpressed.png" : "images/radiobuttondarkleft.png"
-                    anchors.fill: parent
-                    anchors.left: bookmarkButton.left
-                    MouseArea {
-                        anchors.fill: bookmarkButtonImage
-                        onClicked: dataMode = "bookmarks"
-                    }
-
-                    Image {
-                        id: bookmarkButtonImageInside
-                        source: "images/toaster-icon-bookmarks.png"
-                        height: Units.gu(4)
-                        width: Units.gu(4)
-                        fillMode: Image.PreserveAspectCrop
-                        clip: true
-                        verticalAlignment: dataMode === "bookmarks" ? Image.AlignBottom : Image.AlignTop
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
+            TabButton {
+                height: parent.height
+                LuneOSButton.image: Qt.resolvedUrl("images/toaster-icon-bookmarks.png")
             }
-
-            Item {
-                id: historyButton
-                implicitWidth: buttonRow.width/3
-                implicitHeight: Units.gu(4)
-                Image {
-                    id: historyButtonImage
-                    anchors.fill: parent
-                    source: dataMode === "history" ? "images/radiobuttondarkmiddlepressed.png" : "images/radiobuttondarkmiddle.png"
-                    anchors.left: parent.left
-
-                    MouseArea {
-                        anchors.fill: historyButtonImage
-                        onClicked: dataMode = "history"
-                    }
-
-                    Image {
-                        id: historyButtonImageInside
-                        source: "images/toaster-icon-history.png"
-                        height: Units.gu(4)
-                        width: Units.gu(4)
-                        fillMode: Image.PreserveAspectCrop
-                        clip: true
-                        verticalAlignment: dataMode === "history" ? Image.AlignBottom : Image.AlignTop
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
+            TabButton {
+                height: parent.height
+                LuneOSButton.image: Qt.resolvedUrl("images/toaster-icon-history.png")
             }
-            Item {
-                id: downloadButton
-                implicitWidth: buttonRow.width/3
-                implicitHeight: Units.gu(4)
-                Image {
-                    id: downloadButtonImage
-                    source: dataMode === "downloads" ? "images/radiobuttondarkrightpressed.png" : "images/radiobuttondarkright.png"
-                    anchors.fill: parent
-                    anchors.left: parent.left
-
-                    MouseArea {
-                        anchors.fill: downloadButtonImage
-                        onClicked: dataMode = "downloads"
-                    }
-
-                    Image {
-                        id: downloadButtonImageInside
-                        source: "images/toaster-icon-downloads.png"
-                        height: Units.gu(4)
-                        width: Units.gu(4)
-                        fillMode: Image.PreserveAspectCrop
-                        clip: true
-                        verticalAlignment: dataMode === "downloads" ? Image.AlignBottom : Image.AlignTop
-                        anchors.horizontalCenter: parent.horizontalCenter
-                    }
-                }
+            TabButton {
+                height: parent.height
+                LuneOSButton.image: Qt.resolvedUrl("images/toaster-icon-downloads.png")
             }
         }
-    }
-
-    Rectangle {
-        id: sidePanelBody
-        height: parent.height - sidePanelHeader.height - sidePanelFooter.height
-        width: parent.width
-        color: "#E5E5E5"
-        anchors.top: sidePanelHeader.bottom
 
         ListView {
-            anchors.top: sidePanelBody.top
+            anchors.fill: parent
             clip: true
             id: dataList
-            width: parent.width
-            height: parent.height
 
             model: dataMode === "history" ? historyDbModel:
                    dataMode === "bookmarks" ? bookmarksDbModel: undefined
@@ -232,7 +132,7 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            sidePanelRoot.hide();
+                            sidePanelRoot.close();
                             goToURL(model.url);
                         }
                     }
@@ -264,76 +164,70 @@ Rectangle {
                 }
             }
         }
-    }
 
+        footer: ToolBar {
+            id: handleToolbar
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: Units.gu(5.2)
 
-    Rectangle {
-        id: sidePanelFooter
-        height: Units.gu(5.2)
-        width: parent.width
-        color: "#343434"
-        anchors.bottom: parent.bottom
+            Image {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
 
-        Image {
-            id: dragHandle
-            source: "images/drag-handle.png"
-            anchors.verticalCenter: parent.verticalCenter
-            MouseArea {
-                anchors.fill: dragHandle
-                onClicked: {
-                    sidePanelRoot.visible = false
+                fillMode: Image.Pad
+                horizontalAlignment: Image.AlignHCenter
+                verticalAlignment: Image.AlignVCenter
+                source: Qt.resolvedUrl("images/drag-handle.png")
+            }
 
+            Image {
+                id: addBookMark
+                source: "images/menu-icon-add.png"
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                height: Units.gu(4)
+                width: Units.gu(4)
+                fillMode: Image.PreserveAspectCrop
+                verticalAlignment: addBookmarkMouseArea.pressed ? Image.AlignBottom : Image.AlignTop
+                visible: dataMode === "bookmarks"
+
+                MouseArea {
+                    id: addBookmarkMouseArea
+                    anchors.fill: parent
+                    enabled: webViewItem.url != ""
+                    onClicked: addBookmark();
                 }
             }
-        }
 
-        Image {
-            id: addBookMark
-            source: "images/menu-icon-add.png"
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: parent.right
-            height: Units.gu(4)
-            width: Units.gu(4)
-            fillMode: Image.PreserveAspectCrop
-            verticalAlignment: addBookmarkMouseArea.pressed ? Image.AlignBottom : Image.AlignTop
-            visible: dataMode === "bookmarks"
-
-            MouseArea {
-                id: addBookmarkMouseArea
-                anchors.fill: addBookMark
-                enabled: webViewItem.url != ""
-                onClicked: addBookmark();
-            }
-        }
-
-        Rectangle {
-            id: clearDownloads
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.right: sidePanelFooter.right
-            anchors.rightMargin: Units.gu(2)
-            height: Units.gu(3.5)
-            width: Units.gu(6)
-            radius: 4
-            color: "transparent"
-            border.width: 1
-            border.color: "#2D2D2D"
-            visible: dataMode === "downloads"
-
-            Text {
-                id: clearDownloadsText
-                text: "Clear"
-                color: "#E5E5E5"
+            Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
+                anchors.right: parent.right
+                anchors.rightMargin: Units.gu(2)
+                height: Units.gu(3.5)
+                width: Units.gu(6)
+                radius: 4
+                color: "transparent"
+                border.width: 1
+                border.color: "#2D2D2D"
+                visible: dataMode === "downloads"
 
-            MouseArea {
-                anchors.fill: clearDownloads
-                onClicked: {
-                    //TODO need to do proper handling once Download Manager is there
-                    console.log("clearDownloads clicked, ")
+                Text {
+                    text: "Clear"
+                    color: "#E5E5E5"
+                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: "Prelude"
+                    font.pixelSize: FontUtils.sizeToPixels("medium")
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        //TODO need to do proper handling once Download Manager is there
+                        console.log("clearDownloads clicked, ")
+                    }
                 }
             }
         }

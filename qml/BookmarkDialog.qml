@@ -17,14 +17,18 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-import QtQuick 2.0
+import QtQuick 2.6
+
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
+
 import LunaNext.Common 0.1
 
 import "Models"
 
 //For sure not the cleanest or nicest implementation, but QML is a bit limited with it's
 //dialogs in QT 5.2 so doing it the nasty way for now to resemble legacy look
-Item {
+Popup {
     id: bookmarkDialog
 
     property string action: ""
@@ -36,36 +40,16 @@ Item {
 
     property BookmarkDbModel bookmarksDbModel
 
-    visible: false
-    width: Units.gu(40)
-    height: dialogContentColumn.height + Units.gu(6)
-
-    function show() {
-        visible = true;
-    }
-    function hide() {
-        visible = false;
-    }
-
-    MouseArea {
-        anchors.fill: parent
-    }
-
-    BorderImage {
-        source: "images/dialog-bg.png"
-        anchors.fill: parent
-        border.left: 25; border.top: 25
-        border.right: 25; border.bottom: 25
-    }
+    topPadding: Units.gu(3)
+    leftPadding: Units.gu(4)
+    rightPadding: Units.gu(4)
+    modal: true
 
     Column {
         id: dialogContentColumn
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.topMargin: Units.gu(3)
-        anchors.leftMargin: Units.gu(4)
-        anchors.rightMargin: Units.gu(4)
 
         spacing: Units.gu(1)
 

@@ -16,8 +16,10 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 
-import QtQuick 2.0
-import QtQuick.Window 2.1
+import QtQuick 2.6
+
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
 
 import LunaNext.Common 0.1
 import LuneOS.Service 1.0
@@ -25,9 +27,8 @@ import LuneOS.Service 1.0
 import "../Models"
 import "../Utils"
 
-Rectangle {
+Page {
     id: root
-    color: "#e5e5e5"
 
     property bool enableDebugOutput: false
     property alias blockPopups: blockPopupsToggle.checked
@@ -49,10 +50,6 @@ Rectangle {
     signal closePage()
     signal showPage()
     signal applyNewPreferences(string defaultSearchURL, string defaultSearchIcon, string defaultSearchDisplayName, bool enableJavascript, bool blockPopups, bool enablePlugins, bool rememberPasswords, bool acceptCookies)
-
-    MouseArea {
-        anchors.fill: parent
-    }
 
     LunaService {
         id: luna
@@ -164,551 +161,193 @@ Rectangle {
         return searchProvidersAll
     }
 
+    readonly property real _contentWidth: root.width >= 900 ? root.width / 2 : (root.width * 2 / 3)
 
-    Image {
-        id: header
-        width: parent.width
+    header: Image {
         height: Units.gu(7)
-
-        source: "../images/header.png"
+        width: root.width
+        source: "../images/toolbar-light.png"
         fillMode: Image.TileHorizontally
 
-        Image {
-            id: headerImage
-            height: Units.gu(6)
-            width: Units.gu(6)
-            anchors.left: parent.left
-            anchors.leftMargin: (header.width / 2) - (headerText.width / 2) - Units.gu(
-                                    3)
-            anchors.verticalCenter: parent.verticalCenter
-            source: "../images/header-icon-prefs.png"
-        }
-        Text {
-            id: headerText
-            text: "Preferences"
-            font.family: "Prelude"
-            color: "#444444"
-            font.pixelSize: FontUtils.sizeToPixels("large")
-            anchors.left: headerImage.right
-            anchors.leftMargin: Units.gu(1)
-            anchors.verticalCenter: parent.verticalCenter
-        }
-    }
-
-    Rectangle {
-        id: searchPrefsOutside
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: header.bottom
-        anchors.topMargin: Units.gu(3)
-        width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-        height: Units.gu(7)
-        color: "#A2A2A2"
-        radius: 10
-
-        Text {
-            text: "DEFAULT WEB SEARCH ENGINE"
-            font.family: "Prelude"
-            font.bold: true
-            font.pixelSize: FontUtils.sizeToPixels("small")
-            color: "white"
-            anchors.top: searchPrefsOutside.top
-            anchors.topMargin: Units.gu(1 / 2)
-            anchors.left: searchPrefsOutside.left
-            anchors.leftMargin: Units.gu(1)
-        }
-        Rectangle {
-            id: searchPrefsInside
+        Row {
+            height:parent.height
+            spacing: Units.gu(1)
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: searchPrefsOutside.bottom
-            anchors.bottomMargin: 1
-            width: Screen.width >= 900 ? (Screen.width / 4 - 2) : ((Screen.width * 2 / 3) - 2)
-            height: searchPrefsOutside.height - Units.gu(3)
-            color: "#D8D8D8"
-            radius: 10
 
-            Text {
-                id: searchPrefsText
-                anchors.left: parent.left
-                anchors.leftMargin: Units.gu(1)
+            Image {
+                height: Units.gu(6)
+                width: Units.gu(6)
+                source: "../images/header-icon-prefs.png"
                 anchors.verticalCenter: parent.verticalCenter
-                text: root.defaultSearchProviderDisplayName
+            }
+            Text {
+                text: "Preferences"
                 font.family: "Prelude"
                 color: "#444444"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-            }
-            Image
-            {
-                id: searchPrefsImage
-                source: "../images/menu-arrow.png"
-                anchors.right: parent.right
-                anchors.rightMargin: Units.gu(1)
+                font.pixelSize: FontUtils.sizeToPixels("large")
+
                 anchors.verticalCenter: parent.verticalCenter
             }
-
-            MouseArea
-            {
-                anchors.fill: parent
-                onPressed:
-                {
-                    searchProviderList.visible = true
-                }
-            }
-
-
         }
     }
 
-    ListView {
-        id: searchProviderList
-        anchors.top: searchPrefsOutside.bottom
-        anchors.right: searchPrefsOutside.right
-        anchors.rightMargin: Units.gu(1) + searchPrefsImage.width / 2
-        width: Units.gu(18)
-        height: Units.gu(30)
-        visible: false
-        z: 500
+    Column {
+        topPadding: Units.gu(2)
+        width: _contentWidth
+        spacing: Units.gu(3)
+        anchors.horizontalCenter: parent.horizontalCenter
 
-        Rectangle
-        {
-            anchors.fill: parent
-            radius: 6
-            border.width: Units.gu(1/10)
-            border.color: "#7D7D7D"
-            color: "transparent"
-            z: 500
-        }
-
-        JSONListModel {
-            id: searchProviderModel
-            json: getSearchProviders()
-            //We only want the enabled search engines, seems there are some disabled ones too
-            query: "$[?(@.enabled == true)]"
-
-            function getSearchProviders()
-            {
-                return searchProvidersAll
-            }
-
-        }
-        model: searchProviderModel.model
-
-        delegate: Rectangle {
-            id: sectionRect
-            height: Units.gu(5)
+        GroupBox {
+            id: searchPrefsGroupBox
             width: parent.width
-            anchors.left: parent.left
-            color: "#D9D9D9"
 
-            Text {
-                id: searchProviderName
-                height: sectionRect.height
-                clip: true
-                width: sectionRect.width
-                anchors.left: sectionRect.left
-                anchors.leftMargin: Units.gu(2)
-                horizontalAlignment: Text.AlignLeft
-                verticalAlignment: Text.AlignVCenter
-                font.family: "Prelude"
-                font.pixelSize: FontUtils.sizeToPixels("medium")
-                color: "#494949"
-                text: model.displayName
-            }
-           Image {
-                id: defaultSearchProviderImage
-                anchors.right: searchProviderName.right
-                anchors.rightMargin: Units.gu(3)
-                anchors.verticalCenter: parent.verticalCenter
-                source: searchPrefsText.text === model.displayName ? "../images/checkmark.png" : ""
-            }
-            Rectangle {
-                color: "silver"
-                height: Units.gu(1 / 10)
+            title: "Default Web Search Engine"
+
+            ComboBox {
                 width: parent.width
-                anchors.top: parent.top
-                z: 2
-            }
+                JSONListModel {
+                    id: searchProviderModel
+                    json: getSearchProviders()
+                    //We only want the enabled search engines, seems there are some disabled ones too
+                    query: "$[?(@.enabled == true)]"
 
-            MouseArea {
-                anchors.fill: parent
-                onClicked: {
-                    searchPrefsText.text = model.displayName
-                    defaultSearchProvider = model.id
-                    defaultSearchProviderURL = model.url
-                    defaultSearchProviderIcon = model.iconFilePath
-                    defaultSearchProviderDisplayName = model.displayName
-                    searchProviderList.visible = false
+                    function getSearchProviders()
+                    {
+                        return searchProvidersAll
+                    }
+
+                }
+                textRole: "displayName"
+                model: searchProviderModel.model
+                currentIndex: 0
+
+                onActivated: {
+                    defaultSearchProvider = model.get(index).id
+                    defaultSearchProviderURL = model.get(index).url
+                    defaultSearchProviderIcon = model.get(index).iconFilePath
+                    defaultSearchProviderDisplayName = model.get(index).displayName
                 }
             }
-
-            Component.onCompleted:
-            {
-                searchProviderList.height = (searchProviderModel.count) * sectionRect.height
-            }
         }
-    }
 
-    Rectangle {
-        id: browserPrefsOutside
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: searchPrefsOutside.bottom
-        anchors.topMargin: Units.gu(1.5)
-        width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-        height: Units.gu(33.6)
-        color: "#A2A2A2"
-        radius: 10
+        GroupBox {
+            id: browserPrefsGroupBox
+            width: parent.width
 
-        Text {
-            text: "CONTENT"
-            font.family: "Prelude"
-            font.bold: true
-            font.pixelSize: FontUtils.sizeToPixels("small")
-            color: "white"
-            anchors.top: browserPrefsOutside.top
-            anchors.topMargin: Units.gu(1 / 2)
-            anchors.left: browserPrefsOutside.left
-            anchors.leftMargin: Units.gu(1)
-        }
-        Rectangle {
-            id: browserPrefsInside
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.bottom: browserPrefsOutside.bottom
-            anchors.bottomMargin: 1
-            width: Screen.width >= 900 ? (Screen.width / 4 - 2) : ((Screen.width * 2 / 3) - 2)
-            height: browserPrefsOutside.height - Units.gu(3)
-            color: "#D8D8D8"
-            radius: 10
-            Rectangle {
-                id: blockPopupsRect
+            title: "Content"
+
+            Column {
                 width: parent.width
-                height: Units.gu(6)
-                color: "transparent"
-                anchors.left: parent.left
-                Text {
-                    id: blockPopupsText
-                    anchors.left: parent.left
-                    anchors.leftMargin: Units.gu(1)
-                    text: "Block Popups"
-                    color: "#444444"
-                    font.family: "Prelude"
-                    font.pixelSize: FontUtils.sizeToPixels("medium")
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                ToggleButton
-                {
+
+                Switch {
                     id: blockPopupsToggle
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: Units.gu(1)
+                    width: parent.width
+                    text: "Block Popups"
+                    font.weight: Font.Normal
+                    LayoutMirroring.enabled: true
+
+                    //mirrored: true
+                    LuneOSSwitch.labelOn: "On"
+                    LuneOSSwitch.labelOff: "Off"
                 }
-            }
-            Rectangle {
-                id: browserPrefsDivider1
-                color: "silver"
-                width: parent.width
-                height: Units.gu(1 / 5)
-                anchors.top: blockPopupsRect.bottom
-            }
-            Rectangle {
-                id: acceptCookiesRect
-                width: parent.width
-                height: Units.gu(6)
-                color: "transparent"
-                anchors.left: parent.left
-                anchors.top: browserPrefsDivider1.bottom
-                Text {
-                    id: acceptCookiesText
-                    anchors.left: parent.left
-                    anchors.leftMargin: Units.gu(1)
-                    text: "Accept Cookies"
-                    color: "#444444"
-                    font.family: "Prelude"
-                    font.pixelSize: FontUtils.sizeToPixels("medium")
-                    anchors.verticalCenter: parent.verticalCenter
-                }
-                ToggleButton
-                {
+                Rectangle { color: "silver"; width: parent.width; height: 2 }
+                Switch {
                     id: acceptCookiesToggle
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: Units.gu(1)
-                }
-            }
-            Rectangle {
-                id: browserPrefsDivider2
-                color: "silver"
-                width: parent.width
-                height: Units.gu(1 / 5)
-                anchors.top: acceptCookiesRect.bottom
-            }
+                    width: parent.width
+                    text: "Accept Cookies"
+                    font.weight: Font.Normal
+                    LayoutMirroring.enabled: true
 
-            Rectangle {
-                id: enableJavascriptRect
-                width: parent.width
-                height: Units.gu(6)
-                color: "transparent"
-                anchors.top: browserPrefsDivider2.bottom
-                anchors.left: parent.left
-                Text {
-                    id: enableJavascriptText
-                    anchors.left: parent.left
-                    anchors.leftMargin: Units.gu(1)
-                    text: "Enable JavaScript"
-                    color: "#444444"
-                    font.family: "Prelude"
-                    font.pixelSize: FontUtils.sizeToPixels("medium")
-                    anchors.verticalCenter: parent.verticalCenter
+                    LuneOSSwitch.labelOn: "On"
+                    LuneOSSwitch.labelOff: "Off"
                 }
-               ToggleButton
-                {
+                Rectangle { color: "silver"; width: parent.width; height: 2 }
+                Switch {
                     id: enableJavascriptToggle
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.right: parent.right
-                    anchors.rightMargin: Units.gu(1)
-                }
-                Rectangle {
-                    id: browserPrefsDivider3
-                    color: "silver"
                     width: parent.width
-                    height: Units.gu(1 / 5)
-                    anchors.top: enableJavascriptRect.bottom
-                }
+                    text: "Enable JavaScript"
+                    font.weight: Font.Normal
+                    LayoutMirroring.enabled: true
 
-                Rectangle {
-                    id: enablePluginsRect
-                    width: parent.width
-                    height: Units.gu(6)
-                    color: "transparent"
-                    anchors.top: browserPrefsDivider3.bottom
-                    anchors.left: parent.left
-                    Text {
-                        id: enablePluginsText
-                        anchors.left: parent.left
-                        anchors.leftMargin: Units.gu(1)
-                        text: "Enable Plugins"
-                        font.family: "Prelude"
-                        color: "#444444"
-                        font.pixelSize: FontUtils.sizeToPixels("medium")
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    ToggleButton
-                    {
-                        id: enablePluginsToggle
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right
-                        anchors.rightMargin: Units.gu(1)
-                    }
+                    LuneOSSwitch.labelOn: "On"
+                    LuneOSSwitch.labelOff: "Off"
                 }
-                Rectangle {
-                    id: browserPrefsDivider4
-                    color: "silver"
+                Rectangle { color: "silver"; width: parent.width; height: 2 }
+                Switch {
+                    id: enablePluginsToggle
                     width: parent.width
-                    height: Units.gu(1 / 5)
-                    anchors.top: enablePluginsRect.bottom
-                }
+                    text: "Enable Plugins"
+                    font.weight: Font.Normal
+                    LayoutMirroring.enabled: true
 
-                Rectangle {
-                    id: rememberPasswordsRect
+                    LuneOSSwitch.labelOn: "On"
+                    LuneOSSwitch.labelOff: "Off"
+                }
+                Rectangle { color: "silver"; width: parent.width; height: 2 }
+                Switch {
+                    id: rememberPasswordsToggle
                     width: parent.width
-                    height: Units.gu(6)
-                    color: "transparent"
-                    anchors.top: browserPrefsDivider4.bottom
-                    anchors.left: parent.left
-                    Text {
-                        id: rememberPasswordsText
-                        anchors.left: parent.left
-                        anchors.leftMargin: Units.gu(1)
-                        text: "Remember Passwords"
-                        color: "#444444"
-                        font.family: "Prelude"
-                        font.pixelSize: FontUtils.sizeToPixels("medium")
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                    ToggleButton
-                    {
-                        id: rememberPasswordsToggle
-                        anchors.verticalCenter: parent.verticalCenter
-                        anchors.right: parent.right
-                        anchors.rightMargin: Units.gu(1)
-                    }
+                    text: "Remember Passwords"
+                    font.weight: Font.Normal
+                    LayoutMirroring.enabled: true
+
+                    LuneOSSwitch.labelOn: "On"
+                    LuneOSSwitch.labelOff: "Off"
                 }
             }
         }
-    }
 
-    Item {
-        id: clearBookmarksButton
-        anchors.top: browserPrefsOutside.bottom
-        anchors.topMargin: Units.gu(1.5)
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-        height: Units.gu(4)
+        Button {
+            height: Units.gu(4)
+            width: _contentWidth
 
-        MouseArea {
-            anchors.fill: parent
-            onPressed: {
-                dialogHelper.showDialog(popupConfirmClearBookmarks, true);
-            }
-        }
-
-        Image {
-            id: clearBookmarksButtonImageLeft
-            source: "../images/button-up-left.png"
-            anchors.left: parent.left
-            height: parent.height
-        }
-
-        Image {
-            id: clearBookmarksButtonImageCenter
-            source: "../images/button-up-center.png"
-            fillMode: Image.Stretch
-            anchors.left: clearBookmarksButtonImageLeft.right
-            anchors.right: clearBookmarksButtonImageRight.left
-            height: parent.height
-        }
-
-        Image {
-            id: clearBookmarksButtonImageRight
-            source: "../images/button-up-right.png"
-            anchors.right: parent.right
-            height: parent.height
-        }
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: "#292929"
             text: "Clear Bookmarks"
-            font.family: "Prelude"
-            font.pixelSize: FontUtils.sizeToPixels("medium")
-        }
-    }
+            LuneOSButton.mainColor: LuneOSButton.secondaryColor
 
-    Item {
-        id: clearHistoryButton
-        anchors.top: clearBookmarksButton.bottom
-        anchors.topMargin: Units.gu(0.75)
-        anchors.horizontalCenter: parent.horizontalCenter
-        width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-        height: Units.gu(4)
-
-        MouseArea {
-            anchors.fill: parent
-            onPressed: {
-                dialogHelper.showDialog(popupConfirmClearHistory, true);
-            }
+            onClicked: popupConfirmClearBookmarks.open();
         }
 
-        Image {
-            id: clearHistoryButtonImageLeft
-            source: "../images/button-up-left.png"
-            anchors.left: parent.left
-            height: parent.height
-        }
+        Button {
+            height: Units.gu(4)
+            width: _contentWidth
 
-        Image {
-            id: clearHistoryButtonImageCenter
-            source: "../images/button-up-center.png"
-            fillMode: Image.Stretch
-            anchors.left: clearHistoryButtonImageLeft.right
-            anchors.right: clearHistoryButtonImageRight.left
-            height: parent.height
-        }
-
-        Image {
-            id: clearHistoryButtonImageRight
-            source: "../images/button-up-right.png"
-            anchors.right: parent.right
-            height: parent.height
-        }
-
-        Text {
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            color: "#292929"
             text: "Clear History"
-            font.family: "Prelude"
-            font.pixelSize: FontUtils.sizeToPixels("medium")
+            LuneOSButton.mainColor: LuneOSButton.secondaryColor
+
+            onClicked: popupConfirmClearHistory.open();
         }
     }
 
-    Rectangle {
-        id: footer
+    footer: Image {
         height: Units.gu(7)
-        width: parent.width
-        color: "transparent"
-        anchors.bottom: parent.bottom
-        Image {
-            anchors.fill: parent
-            id: footerBG
-            source: "../images/toolbar-light.png"
-            fillMode: Image.TileHorizontally
+        width: root.width
+        source: "../images/toolbar-light.png"
+        fillMode: Image.TileHorizontally
 
-            Rectangle {
-                id: footerButton
-                width: Screen.width >= 900 ? Screen.width / 4 : (Screen.width * 2 / 3)
-                height: Units.gu(5)
-                radius: 4
-                color: "#4B4B4B"
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.horizontalCenter: parent.horizontalCenter
-                Image {
-                    id: footerButtonImageLeft
-                    source: "../images/button-up-left.png"
-                    anchors.left: parent.left
-                    height: parent.height
-                }
+        Button {
+            height: Units.gu(5)
+            width: _contentWidth
+            anchors.centerIn: parent
 
-                Image {
-                    id: footerButtonImageCenter
-                    source: "../images/button-up-center.png"
-                    fillMode: Image.Stretch
-                    anchors.left: footerButtonImageLeft.right
-                    anchors.right: footerButtonImageRight.left
-                    height: parent.height
-                }
+            text: "Done"
 
-                Image {
-                    id: footerButtonImageRight
-                    source: "../images/button-up-right.png"
-                    anchors.right: parent.right
-                    height: parent.height
-                }
-
-                Text {
-                    id: footerButtonText
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    font.family: "Prelude"
-                    color: "white"
-                    text: "Done"
-                    font.bold: true
-                    font.pixelSize: FontUtils.sizeToPixels("small")
-                }
-                MouseArea {
-                    anchors.fill: parent
-                    onPressed:
-                    {
-                        closePage()
-                    }
-                }
-            }
+            onClicked: closePage();
         }
     }
 
-    DialogHelper {
-        id: dialogHelper
-        anchors.fill: parent
-    }
 
     ConfirmDialogCustom
     {
         id: popupConfirmClearHistory
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: false;
 
-        title: "Clear History"
-        buttonText: "Would you like to clear your browser history?"
+        x: parent.width/2-width/2
+        y: parent.height/2-height/2
+
+        width: Math.min(Units.gu(40), parent.width-Units.gu(2));
+        height: Units.gu(23)
+
+        title: "Would you like to clear your browser history?"
+        buttonText: "Clear History"
 
         onCommitAction: historyDbModel.clearDB();
     }
@@ -716,12 +355,15 @@ Rectangle {
     ConfirmDialogCustom
     {
         id: popupConfirmClearBookmarks
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: false;
 
-        title: "Clear Bookmarks"
-        buttonText: "Would you like to clear your bookmarks?"
+        x: parent.width/2-width/2
+        y: parent.height/2-height/2
+
+        width: Math.min(Units.gu(40), parent.width-Units.gu(2));
+        height: Units.gu(23)
+
+        title: "Would you like to clear your bookmarks?"
+        buttonText: "Clear Bookmarks"
 
         onCommitAction: bookmarkDbModel.clearDB();
     }

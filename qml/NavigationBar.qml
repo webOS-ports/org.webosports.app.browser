@@ -16,7 +16,6 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>
 */
 import QtQuick 2.5
-import QtQuick.Window 2.1
 import QtQuick.Layouts 1.1
 
 import LuneOS.Service 1.0
@@ -91,14 +90,23 @@ Rectangle {
         var defbrows2 = JSON.parse(message.payload)
 
         //Maybe not very pretty, but it works
-        for (var i = 0, s; s = defbrows2.UniversalSearchList[i]; i++) {
-            if (s.id === defaultSearch) {
-                defaultSearchURL = s.url
-                defaultSearchIcon = s.iconFilePath
-                defaultSearchDisplayName = s.displayName
-            } else {
-                console.log("Cannot find information for default search engine")
+        for (var i=0; i<defbrows2.UniversalSearchList.length; ++i) {
+            var searchElt = defbrows2.UniversalSearchList[i];
+            if (searchElt.id === defaultSearch) {
+                defaultSearchURL = searchElt.url
+                defaultSearchIcon = searchElt.iconFilePath
+                defaultSearchDisplayName = searchElt.displayName
+
+                if (appWindow.enableDebugOutput) {
+                    console.log("Default search details: "+JSON.stringify(searchElt));
+                }
+
+                break;
             }
+        }
+
+        if (defaultSearchURL === "") {
+            console.log("Cannot find information for default search engine")
         }
     }
 
@@ -305,16 +313,12 @@ Rectangle {
         }
     }
 
-    DialogHelper {
-        id: navigationBarDlgHelper
-    }
-
     SearchSuggestions {
         id: searchSuggestions
         anchors.left: parent.left
         anchors.top: parent.bottom
-        anchors.leftMargin: Screen.width < 900 ? 0 : addressBarItem.x
-        width: Screen.width < 900 ? Screen.width : addressBarItem.width
+        anchors.leftMargin: navigationBar.width < 900 ? 0 : addressBarItem.x
+        anchors.right: parent.right
 
         searchString: addressBarItem.addressBarText
         optSearchText: defaultSearchDisplayName
@@ -338,7 +342,7 @@ Rectangle {
                (searchSuggestions.suggestionsCount > 0 || navigationBar.defaultSearchURL !== "") &&
                searchSuggestions.searchString.length >= 2)
             {
-                navigationBarDlgHelper.showDialog(searchSuggestions, false);
+                searchSuggestions.show();
             }
             else
             {

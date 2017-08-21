@@ -21,6 +21,9 @@ import QtWebEngine 1.4
 import QtWebChannel 1.0
 import Qt.labs.settings 1.0
 
+import QtQuick.Controls 2.0
+import QtQuick.Controls.LuneOS 2.0
+
 import LunaNext.Common 0.1
 import LuneOS.Components 1.0
 import LuneOS.Service 1.0
@@ -43,9 +46,6 @@ LunaWebEngineView {
     signal openNewCard(string urlToOpen);
     signal openNewCardForRequest(var request);
     signal openContextualMenu(var contextMenuData);
-
-    readonly property string webViewBackgroundSource: "images/background-startpage.png"
-    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
 
     LunaService {
         id: service
@@ -93,7 +93,7 @@ LunaWebEngineView {
     Component {
         id: ctxMenuComponent
         ContextMenu {
-            ctxMenuInfo: webViewItem.experimental.contextMenuData
+            ctxMenuInfo: webViewItem.ctxMenuLastRequest
 
             onOpenNewCard: {
                 webViewItem.triggerWebAction(WebEngineView.OpenLinkInNewWindow);
@@ -104,13 +104,14 @@ LunaWebEngineView {
             }
         }
     }
+
+    property var ctxMenuLastRequest;
     Connections {
         target: webViewItem
         onContextMenuRequested: {
-            var contextMenuData = request;
-            var linkUrl = contextMenuData.linkUrl.toString();
-            if( contextMenuData &&
-                contextMenuData.linkUrl &&
+            webViewItem.ctxMenuLastRequest = request;
+            var linkUrl = request.linkUrl.toString();
+            if( request.linkUrl &&
                 EnyoUriUtils.isValidUri(EnyoUriUtils.parseUri(linkUrl)) ) {
                 webViewItem.extraContextMenuEntriesComponent = ctxMenuComponent;
             }
@@ -172,29 +173,29 @@ LunaWebEngineView {
     onLoadingChanged: {
         if (loadRequest.status == WebEngineView.LoadStartedStatus) {
             console.log("Loading started...")
-            loadingProgressBarItem.show();
-            webViewBackground.visible = false;
+            loadingProgressBarItem.visible = true;
+        }
+        else if (loadRequest.status == WebEngineView.LoadStoppedStatus) {
+            console.log("Load cancelled by user")
+            webViewItem.loadHtml(
+                        "Loading of " + loadRequest.url + " cancelled by user",
+                        "", loadRequest.url)
         }
         else if (loadRequest.status == WebEngineView.LoadFailedStatus) {
-            console.log("Load failed! Error code: " + loadRequest.errorCode)
-            webViewItem.loadHtml("Failed to load " + loadRequest.url, "",
-                                 loadRequest.url)
+            console.log("Load failed! Error: " + loadRequest.errorString)
 
-            if (loadRequest.errorCode === NetworkReply.OperationCanceledError
-                    && internetAvailable) {
-                console.log("Load cancelled by user")
-                webViewItem.loadHtml(
-                            "Loading of " + loadRequest.url + " cancelled by user",
-                            "", loadRequest.url)
-            }
-            else if (loadRequest.errorCode === NetworkReply.OperationCanceledError
+            if (loadRequest.errorDomain === WebEngineView.ConnectionErrorDomain
                     && !internetAvailable) {
                 console.log("No internet connection available")
-                console.log("loadRequest.status: " + loadRequest.status
-                            + " loadRequest.errorCode: " + loadRequest.errorCode
-                            + " loadRequest.errorString: " + loadRequest.errorString)
                 webViewItem.loadHtml(
-                            "No internet connection available, cannot load " + loadRequest.url,
+                            "No internet connection available, cannot load " + loadRequest.url +
+                            ", error is: "+loadRequest.errorString,
+                            "", loadRequest.url)
+            }
+            else {
+                webViewItem.loadHtml(
+                            "Cannot load " + loadRequest.url +
+                            ", error is: "+loadRequest.errorString,
                             "", loadRequest.url)
             }
         }
@@ -227,13 +228,11 @@ LunaWebEngineView {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
+        height: Units.gu(0.3)
         visible: false
         z: 1
 
-        function show()
-        {
-            visible = true;
-        }
+        to: 100
 
         Timer {
             interval: 1000
@@ -243,10 +242,12 @@ LunaWebEngineView {
             onTriggered: loadingProgressBarItem.visible = false
         }
 
-        value: webViewItem.loadProgress / 100
+        value: webViewItem.loadProgress
     }
 
     //Add the "gray" background when no page is loaded and show the globe. This does feel like legacy doesn't it?
+    readonly property string webViewBackgroundSource: "images/background-startpage.png"
+    readonly property string webViewPlaceholderSource: "images/startpage-placeholder.png"
     Image {
         z: 1
         id: webViewBackground
@@ -258,6 +259,15 @@ LunaWebEngineView {
             anchors.verticalCenter: parent.verticalCenter
             anchors.verticalCenterOffset: -Qt.inputMethod.keyboardRectangle.height / 2.
             source: webViewPlaceholderSource
+        }
+
+        Connections {
+            target: webViewBackground.visible ? webViewItem : null // just listen once
+            onLoadingChanged: {
+                if (loadRequest.status == WebEngineView.LoadStartedStatus) {
+                    webViewBackground.visible = false;
+                }
+            }
         }
     }
 }

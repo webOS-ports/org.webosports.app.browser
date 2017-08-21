@@ -201,7 +201,7 @@ ApplicationWindow {
         x: parent.width/2-width/2
         y: parent.height/2-height/2
 
-        width: Units.gu(46);
+        width: Math.min(Units.gu(46), appWindow.width-Units.gu(2));
 
         bookmarksDbModel: mainBookmarkDbModel
     }

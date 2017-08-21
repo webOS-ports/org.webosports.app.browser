@@ -33,9 +33,6 @@ Popup {
     visible: false    
     modal: true
 
-    width: Units.gu(40)
-    height: Units.gu(23)
-
     signal commitAction();
 
     Column {

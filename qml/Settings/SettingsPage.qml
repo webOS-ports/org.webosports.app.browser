@@ -343,6 +343,9 @@ Page {
         x: parent.width/2-width/2
         y: parent.height/2-height/2
 
+        width: Math.min(Units.gu(40), parent.width-Units.gu(2));
+        height: Units.gu(23)
+
         title: "Would you like to clear your browser history?"
         buttonText: "Clear History"
 
@@ -355,6 +358,9 @@ Page {
 
         x: parent.width/2-width/2
         y: parent.height/2-height/2
+
+        width: Math.min(Units.gu(40), parent.width-Units.gu(2));
+        height: Units.gu(23)
 
         title: "Would you like to clear your bookmarks?"
         buttonText: "Clear Bookmarks"

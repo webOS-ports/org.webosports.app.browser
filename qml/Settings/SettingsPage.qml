@@ -92,13 +92,13 @@ Page {
 
     function __findDB(params) {
         if (root.enableDebugOutput) {
-            console.log("Querying DB with action: " + action + " and params: " + params)
+            console.log("Querying DB with action find and params: " + params)
         }
         luna.call("luna://com.palm.db/find", params, __handleQueryDBSuccess, __handleQueryDBError)
     }
     function __mergeDB(params) {
         if (root.enableDebugOutput) {
-            console.log("Merging DB with action: " + action + " and params: " + params)
+            console.log("Merging DB with action merge and params: " + params)
         }
         luna.call("luna://com.palm.db/merge", params, undefined, __handleQueryDBError)
     }

@@ -191,6 +191,10 @@ Rectangle {
             }
         }
 
+        UserAgent {
+            id: userAgent
+        }
+
         AddressBarItem {
             id: addressBarItem
             Layout.fillWidth: true
@@ -204,6 +208,7 @@ Rectangle {
             onCommitURL: {
                 //TODO Dirty function for prefixing with http:// for now. Would be good if we can detect if site can do https and use that or else http
                 var uri = EnyoUriUtils.parseUri(newURL);
+                webView.profile.httpUserAgent = userAgent.getUAString(newURL);
                 if ((EnyoUriUtils.isValidScheme(uri) && EnyoUriUtils.isUri(newURL,uri))) {
                     if (newURL.substring(0, 7).toLowerCase() === "http://" ||
                         newURL.substring(0, 8).toLowerCase() === "https://" ||

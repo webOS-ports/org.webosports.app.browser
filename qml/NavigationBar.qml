@@ -330,7 +330,10 @@ Rectangle {
         defaultSearchIcon: navigationBar.defaultSearchIcon
 
         onSuggestionsCountChanged: searchSuggestions.refreshVisibileStatus()
+        webViewItem: webView
+
         onRequestUrl: {
+            webView.profile.httpUserAgent = userAgent.getUAString(url);
             webView.url = url;
             addressBarItem.addressBarText = url;
         }

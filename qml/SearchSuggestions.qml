@@ -30,7 +30,6 @@ Rectangle {
 
     property string optSearchText: ""
     property string defaultSearchIcon: ""
-    property Item webViewItem
 
     color: "#DADADA"
     radius: 4

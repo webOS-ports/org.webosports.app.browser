@@ -7,7 +7,7 @@ set(SOURCES
     browserutils.cpp)
 
 add_library(browserutils MODULE ${SOURCES})
-qt5_use_modules(browserutils Quick WebEngine)
+target_link_libraries(browserutils Qt5::Quick Qt5::WebEngine)
 
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/qmldir"
                                                               "${CMAKE_CURRENT_BINARY_DIR}/qmldir")

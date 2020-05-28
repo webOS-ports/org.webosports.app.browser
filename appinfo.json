@@ -12,6 +12,7 @@
     "icon": "icon.png",
 	"splashicon": "icon-256x256.png",
 	"uiRevision": "2",
-	"keywords": [ "Universe", "Navigator", "web", "Browser", "Internet" ]
+	"keywords": [ "Universe", "Navigator", "web", "Browser", "Internet" ],
+	"requiredPermissions": ["networking", "networking.internal", "database", "settings", "applications"]
 }
 
